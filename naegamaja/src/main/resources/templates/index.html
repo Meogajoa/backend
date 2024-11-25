@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사랑해 마이뇽뇽아~</title>
+    <style>
+        /* 하트 모양 스타일 */
+        .heart {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            margin: 50px auto;
+        }
+        .heart:before, .heart:after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            border-radius: 50%;
+        }
+        .heart:before {
+            top: -50px;
+            left: 0;
+        }
+        .heart:after {
+            left: 50px;
+            top: 0;
+        }
+
+        /* 사랑해 마이뇽뇽아~ 문구 스타일 */
+        .message {
+            font-size: 50px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+            color: #FF1493;
+        }
+    </style>
+</head>
+<body>
+<div class="heart"></div>
+<div class="message">사랑해 마이뇽뇽아~</div>
+</body>
+</html>
+

@@ -1,18 +1,19 @@
 package naegamaja_server.naegamaja;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 public class HelloController {
 
-    @GetMapping("/hello")
-    public String hello(){
-        return "안녕 배종찬 서버\nㅋㅋ";
+    @GetMapping("/사랑해")
+    public String 사랑해(){
+        return "index";
     }
 
-    @GetMapping("/")
-    public String go(){
-        return "Test입니당";
+    @GetMapping("/잘자용")
+    public String 잘자용(){
+        return "goodnight";
     }
 
 
