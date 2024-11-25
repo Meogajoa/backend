@@ -21,7 +21,6 @@ jobs:
           script_stop: true
           script: |
             cd /home/ubuntu/backend/naegamaja
-            
             rm -rf src/main/resources/application.yml
             git pull origin main
             echo $APPLICATION_PROPERTIES > src/main/resources/application.yml
