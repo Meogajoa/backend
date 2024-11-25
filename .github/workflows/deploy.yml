@@ -10,7 +10,43 @@ jobs:
         runs-on: ubuntu-latest
         steps:
           - name: Checkout
-            uses: appleboy/ssh-action@v1.0.3
+            run: |
+              git fetch origin main
+              git reset --hard origin/main
+            uses: appleboy/ssh-actioname: CI/CD Settings
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Git Pull Strategy
+        run: git config pull.rebase false
+
+      - name: Checkout
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          env: APPLICATION_PROPERTIES
+          script_stop: true
+          script: |
+            cd /home/ubuntu/backend/naegamaja
+            rm -rf src/main/resources/application.yml
+            git pull origin main
+            echo $APPLICATION_PROPERTIES > src/main/resources/application.yml
+            ./gradlew clean build
+            sudo fuser -k -n tcp 8080 || true
+            nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &
+
+  n@v1.0.3
             env:
               APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
             with:
