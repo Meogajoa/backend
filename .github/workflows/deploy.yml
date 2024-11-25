@@ -9,9 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Configure Git Pull Strategy
-        run: git config pull.rebase false
-
       - name: Checkout
         uses: appleboy/ssh-action@v1.0.3
         env:
@@ -24,6 +21,12 @@ jobs:
           script_stop: true
           script: |
             cd /home/ubuntu/backend/naegamaja
+            
+            git config pull.rebase false
+            
+            git fetch origin main
+            git reset --hard origin/main
+            
             rm -rf src/main/resources/application.yml
             git pull origin main
             echo $APPLICATION_PROPERTIES > src/main/resources/application.yml
