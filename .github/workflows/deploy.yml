@@ -17,7 +17,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          env: APPLICATION_PROPERTIES
+          envs: APPLICATION_PROPERTIES
           script_stop: true
           script: |
             cd /home/ubuntu/backend/naegamaja
