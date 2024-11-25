@@ -22,11 +22,6 @@ jobs:
           script: |
             cd /home/ubuntu/backend/naegamaja
             
-            git config pull.rebase false
-            
-            git fetch origin main
-            git reset --hard origin/main
-            
             rm -rf src/main/resources/application.yml
             git pull origin main
             echo $APPLICATION_PROPERTIES > src/main/resources/application.yml
