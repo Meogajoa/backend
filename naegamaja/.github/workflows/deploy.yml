@@ -1,0 +1,26 @@
+name: CI/CD Settings
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout
+            uses: appleboy/ssh-action@v1.0.3
+            with:
+              host: ${{ secrets.EC2_HOST }}
+              username: ${{ secrets.EC2_USERNAME }}
+              key: ${{ secrets.EC2_PRIVATE_KEY }}
+              script_stop: true
+              script: |
+                cd /home/ubuntu/backend
+                rm -rf src/main/resources/application.yml
+                git pull origin main
+                ./gradlew clean build
+                sudo fuser -k -n tcp 8080 || true
+                nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &
+          
