@@ -29,5 +29,10 @@ public class HelloController {
         return "tempo";
     }
 
+    @GetMapping("/tempo2")
+    public String tempo2(){
+        return "tempo2";
+    }
+
 
 }

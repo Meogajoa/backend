@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        #messages {
+            border: 1px solid #ccc;
+            height: 300px;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #inputArea {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        #inputArea input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            width: calc(100% - 120px); /* 버튼 크기를 고려한 입력창 크기 */
+        }
+        #inputArea button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        /* 반응형 스타일 */
+        @media (max-width: 768px) {
+            #inputArea {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            #inputArea input {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            #inputArea button {
+                width: 100%;
+            }
+
+            #messages {
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 18px;
+            }
+
+            #messages {
+                height: 200px;
+                font-size: 14px;
+            }
+
+            #inputArea input, #inputArea button {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket 테스트 페이지</h1>
+    <div id="messages"></div>
+    <div id="inputArea">
+        <input type="text" id="messageInput" placeholder="메시지를 입력하세요...">
+        <button onclick="sendMessage()">전송</button>
+    </div>
+
+    <script>
+        let socket;
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+
+        function appendMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function connect() {
+            // WebSocket 서버 URL 설정 (인스턴스 기준)
+            socket = new WebSocket('ws://13.209.235.132:8080/ws');
+
+            socket.onopen = () => {
+                appendMessage('서버에 연결되었습니다.');
+            };
+
+            socket.onmessage = (event) => {
+                appendMessage('서버로부터: ' + event.data);
+            };
+
+            socket.onclose = () => {
+                appendMessage('서버와의 연결이 종료되었습니다.');
+            };
+
+            socket.onerror = (error) => {
+                appendMessage('오류 발생: ' + error);
+            };
+        }
+
+        function sendMessage() {
+            const message = messageInput.value;
+            if (message && socket.readyState === WebSocket.OPEN) {
+                socket.send(message);
+                appendMessage('나: ' + message);
+                messageInput.value = '';
+            } else {
+                alert('WebSocket이 열려있지 않거나 메시지가 비어있습니다.');
+            }
+        }
+
+        // 페이지 로드 시 WebSocket 연결 시도
+        window.onload = connect;
+    </script>
+</body>
+</html>

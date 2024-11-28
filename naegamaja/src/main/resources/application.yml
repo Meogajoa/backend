@@ -1,3 +1,2 @@
-aws:
-  access-key: ABCDEFG
-  secret-key: 123456
+custom:
+  url: http://localhost:8080/ws
