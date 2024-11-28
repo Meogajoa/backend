@@ -1,10 +1,13 @@
 package naegamaja_server.naegamaja;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Controller
+@RequiredArgsConstructor
 public class HelloController {
+    private final HelloService helloService;
 
     @GetMapping("/사랑해")
     public String 사랑해(){
@@ -16,10 +19,15 @@ public class HelloController {
         return "goodnight";
     }
 
-//    @GetMapping("/테스트")
-//    public String 테스트(){
-//        return "test";
-//    }
+    @GetMapping("/test")
+    public void test(){
+        helloService.sendMessageToAll("날라옴");
+    }
+
+    @GetMapping("/tempo")
+    public String tempo(){
+        return "tempo";
+    }
 
 
 }
