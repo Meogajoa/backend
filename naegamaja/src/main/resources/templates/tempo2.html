@@ -101,7 +101,7 @@
 
     function connect() {
         // WebSocket 서버 URL 설정 (인스턴스 기준)
-        socket = new WebSocket('ws://13.209.235.132/ws');
+        socket = new WebSocket('ws://13.209.235.132:8080/ws');
 
         socket.onopen = () => {
             appendMessage('서버에 연결되었습니다.');
