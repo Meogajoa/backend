@@ -76,59 +76,65 @@
     </style>
 </head>
 <body>
-    <h1>WebSocket 테스트 페이지</h1>
-    <div id="messages"></div>
-    <div id="inputArea">
-        <input type="text" id="messageInput" placeholder="메시지를 입력하세요...">
-        <button onclick="sendMessage()">전송</button>
-    </div>
+<h1>WebSocket 테스트 페이지</h1>
+<div id="messages"></div>
+<div id="inputArea">
+    <input type="text" id="messageInput" placeholder="메시지를 입력하세요...">
+    <button onclick="sendMessage()">전송</button>
+</div>
 
-    <script>
-        let socket;
-        const messagesDiv = document.getElementById('messages');
-        const messageInput = document.getElementById('messageInput');
+<script>
+    let socket;
+    const messagesDiv = document.getElementById('messages');
+    const messageInput = document.getElementById('messageInput');
 
-        function appendMessage(message) {
-            const messageElement = document.createElement('div');
-            messageElement.textContent = message;
-            messagesDiv.appendChild(messageElement);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    function appendMessage(message) {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+        messagesDiv.appendChild(messageElement);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function connect() {
+        // WebSocket 서버 URL 설정 (인스턴스 기준)
+        socket = new WebSocket('ws://13.209.235.132:8080/ws');
+
+        socket.onopen = () => {
+            appendMessage('서버에 연결되었습니다.');
+        };
+
+        socket.onmessage = (event) => {
+            appendMessage('서버로부터: ' + event.data);
+        };
+
+        socket.onclose = () => {
+            appendMessage('서버와의 연결이 종료되었습니다.');
+        };
+
+        socket.onerror = (error) => {
+            appendMessage('오류 발생: ' + error);
+        };
+    }
+
+    function sendMessage() {
+        const message = messageInput.value;
+        if (message && socket.readyState === WebSocket.OPEN) {
+            socket.send(message);
+            messageInput.value = '';
+        } else {
+            alert('WebSocket이 열려있지 않거나 메시지가 비어있습니다.');
         }
+    }
 
-        function connect() {
-            // WebSocket 서버 URL 설정 (인스턴스 기준)
-            socket = new WebSocket('ws://13.209.235.132:8080/ws');
-
-            socket.onopen = () => {
-                appendMessage('서버에 연결되었습니다.');
-            };
-
-            socket.onmessage = (event) => {
-                appendMessage('서버로부터: ' + event.data);
-            };
-
-            socket.onclose = () => {
-                appendMessage('서버와의 연결이 종료되었습니다.');
-            };
-
-            socket.onerror = (error) => {
-                appendMessage('오류 발생: ' + error);
-            };
+    // 엔터 키로 메시지 전송 기능 추가
+    messageInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            sendMessage();
         }
+    });
 
-        function sendMessage() {
-            const message = messageInput.value;
-            if (message && socket.readyState === WebSocket.OPEN) {
-                socket.send(message);
-                appendMessage('나: ' + message);
-                messageInput.value = '';
-            } else {
-                alert('WebSocket이 열려있지 않거나 메시지가 비어있습니다.');
-            }
-        }
-
-        // 페이지 로드 시 WebSocket 연결 시도
-        window.onload = connect;
-    </script>
+    // 페이지 로드 시 WebSocket 연결 시도
+    window.onload = connect;
+</script>
 </body>
 </html>
