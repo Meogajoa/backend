@@ -1,8 +1,10 @@
 package naegamaja_server.naegamaja;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.MediaType;
 
 @Controller
 @RequiredArgsConstructor
@@ -19,9 +21,11 @@ public class HelloController {
         return "goodnight";
     }
 
-    @GetMapping("/test")
-    public void test(){
+    @GetMapping(value = "/test", produces = MediaType.TEXT_PLAIN_VALUE)
+    @ResponseBody
+    public String test(){
         helloService.sendMessageToAll("날라옴");
+        return "1";
     }
 
     @GetMapping("/tempo")
@@ -33,6 +37,4 @@ public class HelloController {
     public String tempo2(){
         return "tempo2";
     }
-
-
 }

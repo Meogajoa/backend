@@ -134,7 +134,6 @@
         if (message && socket.readyState === WebSocket.OPEN) {
             isSending = true;
             socket.send(message);
-            appendMessage('보낸 메시지: ' + message); // 클라이언트가 보낸 메시지를 표시
             messageInput.value = '';
             isSending = false;
             console.log('메시지 전송:', message);

@@ -15,7 +15,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class GameWebsocketHandler extends TextWebSocketHandler {
-    private final ObjectMapper objectMapper;
     HashMap<String, Connection> connections = new HashMap<>();
 
     @Override
@@ -39,7 +38,7 @@ public class GameWebsocketHandler extends TextWebSocketHandler {
             try{
                 connection.getSession().sendMessage(message);
             } catch (IOException e) {
-                //e.printStackTrace();
+                e.printStackTrace();
             }
         });
 
@@ -50,7 +49,7 @@ public class GameWebsocketHandler extends TextWebSocketHandler {
             try{
                 connection.getSession().sendMessage(new TextMessage(message));
             } catch (IOException e) {
-                //e.printStackTrace();
+                e.printStackTrace();
             }
         });
     }
