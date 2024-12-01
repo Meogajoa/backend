@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>게임 상태 대시보드</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 20px;
+    }
+    #status {
+      margin-bottom: 20px;
+      font-size: 1.2em;
+      color: green;
+    }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(20, 30px);
+      grid-template-rows: repeat(20, 30px);
+      gap: 2px;
+      justify-content: center;
+    }
+    .cell {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    /* 셀 값에 따른 색상 정의 */
+    .cell-0 {
+      background-color: #333; /* 벽 */
+    }
+    .cell-1 {
+      background-color: #4CAF50; /* 길 */
+    }
+    .cell-2 {
+      background-color: #FF5722; /* 현재 위치 */
+      color: white;
+    }
+  </style>
+</head>
+<body>
+<h1>미로찾기 게임!</h1>
+<div id="status">웹소켓에 연결 중...</div>
+<div id="board"></div>
+
+<script>
+  // 웹소켓 연결 초기화
+  const socket = new WebSocket('ws://localhost:8080/streaming');
+
+  const statusDiv = document.getElementById('status');
+  const boardDiv = document.getElementById('board');
+
+  // 보드 그리드를 생성하는 함수
+  function createBoard(boardData) {
+    // 기존 보드 삭제
+    boardDiv.innerHTML = '';
+
+    // 2D 보드 배열을 순회
+    for (let i = 0; i < boardData.length; i++) {
+      for (let j = 0; j < boardData[i].length; j++) {
+        const cell = document.createElement('div');
+        const cellValue = boardData[i][j];
+
+        cell.classList.add('cell');
+
+        // 셀 값에 따라 클래스 할당
+        if (cellValue === 0) {
+          cell.classList.add('cell-0');
+          cell.textContent = ''; // 벽은 텍스트 없음
+        } else if (cellValue === 1) {
+          cell.classList.add('cell-1');
+          cell.textContent = ''; // 길은 텍스트 없음
+        } else if (cellValue === 2) {
+          cell.classList.add('cell-2');
+          cell.textContent = 'P'; // 플레이어 또는 현재 위치 표시
+        }
+
+        boardDiv.appendChild(cell);
+      }
+    }
+  }
+
+  // 현재 위치 업데이트
+  function updatePosition(positionData) {
+    // 게임 상태에 맞게 캐릭터 위치 처리 (P 표시)
+    console.log('현재 위치:', positionData);
+  }
+
+  // 웹소켓 이벤트 핸들러
+  socket.onopen = function() {
+    statusDiv.textContent = '웹소켓에 연결되었습니다.';
+    statusDiv.style.color = 'green';
+  };
+
+  socket.onmessage = function(event) {
+    try {
+      const gameStatus = JSON.parse(event.data);
+      if (gameStatus.board && Array.isArray(gameStatus.board)) {
+        createBoard(gameStatus.board);
+      }
+      if (gameStatus.position) {
+        updatePosition(gameStatus.position);
+      }
+    } catch (e) {
+      console.error('메시지 파싱 오류:', e);
+    }
+  };
+
+  socket.onerror = function(error) {
+    console.error('웹소켓 오류:', error);
+    statusDiv.textContent = '웹소켓 오류 발생.';
+    statusDiv.style.color = 'red';
+  };
+
+  socket.onclose = function(event) {
+    if (event.wasClean) {
+      statusDiv.textContent = `웹소켓이 정상적으로 닫혔습니다, 코드=${event.code} 이유=${event.reason}`;
+    } else {
+      statusDiv.textContent = '웹소켓 연결이 예기치 않게 종료되었습니다.';
+    }
+    statusDiv.style.color = 'red';
+  };
+
+  // 선택 사항: 재연결 로직 구현 가능
+  // 필요 시 추가 구현
+</script>
+</body>
+</html>
