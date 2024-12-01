@@ -3,6 +3,7 @@ package naegamaja_server.naegamaja;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.http.MediaType;
 
@@ -21,12 +22,34 @@ public class HelloController {
         return "goodnight";
     }
 
-    @GetMapping(value = "/test", produces = MediaType.TEXT_PLAIN_VALUE)
-    @ResponseBody
-    public String test(){
-        helloService.sendMessageToAll("날라옴");
-        return "1";
+    import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+    @RestController
+    public class TestController {
+
+        private final HelloService helloService;
+
+        public TestController(HelloService helloService) {
+            this.helloService = helloService;
+        }
+
+        @GetMapping(value = "/test", produces = MediaType.TEXT_PLAIN_VALUE)
+        @ResponseBody
+        public String test(@RequestParam(value = "value", required = false, defaultValue = "-1") int value){
+            if(value != -1){
+                helloService.sendMessageToAll("Received value: " + value);
+                return "Received value: " + value;
+            } else {
+                helloService.sendMessageToAll("No value received");
+                return "No value received";
+            }
+        }
     }
+
 
     @GetMapping("/tempo")
     public String tempo(){
