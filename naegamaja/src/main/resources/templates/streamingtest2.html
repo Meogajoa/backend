@@ -149,7 +149,7 @@
 
 <script>
   // -------------------- 게임 WebSocket 연결 --------------------
-  const gameSocket = new WebSocket('ws://13.209.235.132:8080/streaming');
+  const gameSocket = new WebSocket('ws://localhost:8080/streaming');
 
   const gameStatusDiv = document.getElementById('status');
   const boardDiv = document.getElementById('board');
@@ -243,7 +243,7 @@
 
   function connectChat() {
     // WebSocket 서버 URL 설정 (채팅)
-    chatSocket = new WebSocket('ws://13.209.235.132:8080/ws');
+    chatSocket = new WebSocket('ws://localhost:8080/ws');
 
     chatSocket.onopen = () => {
       appendMessage('채팅 서버에 연결되었습니다.');
