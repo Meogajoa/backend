@@ -2,6 +2,7 @@ package naegamaja_server.naegamaja.domain.auth.controller;
 
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.auth.dto.AuthDto;
+import naegamaja_server.naegamaja.domain.auth.service.AuthService;
 import naegamaja_server.naegamaja.system.security.service.UserDetailService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,8 +22,11 @@ public class AuthController {
     @PostMapping("/sign-in")
     public AuthDto.SessionIdResponse signIn(@RequestBody AuthDto.SignInRequest request) {
         return authService.signIn(request);
-
     }
 
+    @PostMapping("/sign-up")
+    public AuthDto.SessionIdResponse signUp(@RequestBody AuthDto.SignUpRequest request) {
+        return authService.signUp(request);
+    }
 
 }

@@ -1,7 +1,6 @@
 package naegamaja_server.naegamaja;
 
 import lombok.RequiredArgsConstructor;
-import naegamaja_server.naegamaja.domain.game.GameStatus;
 import naegamaja_server.naegamaja.domain.game.Service.BroadcastService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

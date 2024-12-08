@@ -12,7 +12,9 @@ public enum ErrorCode {
     GLOBAL_ALREADY_EXIST(400, "요청의 대상이 이미 존재합니다."),
     GLOBAL_METHOD_NOT_ALLOWED(405, "허용되지 않는 Method 입니다."),
 
-    INTERNAL_SERVER_ERROR(500, "서버 내부 오류입니다.");
+    INTERNAL_SERVER_ERROR(500, "서버 내부 오류입니다."),
+
+    USER_ALREADY_EXIST(400, "이미 존재하는 사용자입니다.");
 
 
     private final int statusCode;
