@@ -23,4 +23,5 @@ public class UserSession implements Serializable {
                 .roomNumber(roomNumber)
                 .build();
     }
+
 }

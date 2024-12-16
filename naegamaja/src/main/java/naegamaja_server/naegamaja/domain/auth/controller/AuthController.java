@@ -19,14 +19,14 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/sign-in")
-    public AuthDto.SessionIdResponse signIn(@RequestBody AuthDto.SignInRequest request) {
-        return authService.signIn(request);
-    }
-
-    @PostMapping("/sign-up")
-    public AuthDto.SessionIdResponse signUp(@RequestBody AuthDto.SignUpRequest request) {
-        return authService.signUp(request);
-    }
+//    @PostMapping("/sign-in")
+//    public AuthDto.SessionIdResponse signIn(@RequestBody AuthDto.SignInRequest request) {
+//        return authService.signIn(request);
+//    }
+//
+//    @PostMapping("/sign-up")
+//    public AuthDto.SessionIdResponse signUp(@RequestBody AuthDto.SignUpRequest request) {
+//        return authService.signUp(request);
+//    }
 
 }

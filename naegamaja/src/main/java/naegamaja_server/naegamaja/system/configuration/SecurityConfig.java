@@ -33,15 +33,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(new SessionIdAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                ).build();
+          return http
+                  .csrf(AbstractHttpConfigurer::disable)
+                  .authorizeHttpRequests(auth -> auth
+                          .anyRequest().permitAll()
+                  )
+                  .build();
+
+//        return http
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/auth").permitAll()
+//                        .anyRequest().authenticated()
+//                )
+//                .addFilterBefore(new SessionIdAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+//                .sessionManagement(session -> session
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                ).build();
     }
 }
