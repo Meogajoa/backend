@@ -1,6 +1,8 @@
 package naegamaja_server.naegamaja.system.configuration;
 
 
+import lombok.RequiredArgsConstructor;
+import naegamaja_server.naegamaja.domain.redis.service.RedisService;
 import naegamaja_server.naegamaja.system.security.filter.SessionIdAuthenticationFilter;
 import naegamaja_server.naegamaja.system.security.provider.SessionIdAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +21,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final RedisService redisService;
 
     @Bean
     public PasswordEncoder bCryptPasswordEncoder(){
@@ -33,22 +38,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-          return http
-                  .csrf(AbstractHttpConfigurer::disable)
-                  .authorizeHttpRequests(auth -> auth
-                          .anyRequest().permitAll()
-                  )
-                  .build();
+//          return http
+//                  .csrf(AbstractHttpConfigurer::disable)
+//                  .authorizeHttpRequests(auth -> auth
+//                          .anyRequest().permitAll()
+//                  )
+//                  .build();
 
-//        return http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/auth").permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .addFilterBefore(new SessionIdAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-//                .sessionManagement(session -> session
-//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                ).build();
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(new SessionIdAuthenticationFilter(redisService), UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                ).build();
     }
 }

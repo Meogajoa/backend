@@ -23,41 +23,63 @@ public class StompChannelInterceptor implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-//        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-//
-//        StompCommand command = accessor.getCommand();
-//        if(command == null) return message;
-//
-//        switch (command) {
-//            case SUBSCRIBE:
-//                handleSubscribe(accessor);
-//                break;
-//            case UNSUBSCRIBE:
-//                handleUnsubscribe(accessor);
-//                break;
-//            case DISCONNECT:
-//                handleDisconnect(accessor);
-//                break;
-//        }
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        String sessionId = accessor.getFirstNativeHeader("DdingjiSessionId");
+
+        StompCommand command = accessor.getCommand();
+        System.out.println("command: " + command + "로 들어왔다");
+
+        if(!redisService.isValidSessionId(sessionId))
+            throw new RestException(ErrorCode.GLOBAL_UNAUTHORIZED);
+
+        if(command == null) return message;
+
+        switch (command) {
+            case SUBSCRIBE:
+                handleSubscribe(accessor);
+                break;
+            case UNSUBSCRIBE:
+                handleUnsubscribe(accessor);
+                break;
+            case DISCONNECT:
+                handleDisconnect(accessor);
+                break;
+            case CONNECT:
+                handleConnect(accessor);
+        }
 
         return message;
     }
 
     private void handleSubscribe(StompHeaderAccessor accessor) {
-        String sessionId = accessor.getSessionId();
-        String destination = accessor.getFirstNativeHeader("sessionId");
-        if(!StringUtils.hasText(sessionId))
-            throw new RestException(ErrorCode.GLOBAL_BAD_REQUEST);
+
+        String destination = accessor.getDestination();
+
+        System.out.println("구독함");
     }
 
     private void handleUnsubscribe(StompHeaderAccessor accessor) {
         String sessionId = accessor.getSessionId();
-        String destination = accessor.getFirstNativeHeader("sessionId");
-        if(!StringUtils.hasText(sessionId))
-            throw new RestException(ErrorCode.GLOBAL_BAD_REQUEST);
+        String destination = accessor.getFirstNativeHeader("DdingjiSessionId");
+
+        if(!redisService.isValidSessionId(sessionId))
+            throw new RestException(ErrorCode.GLOBAL_UNAUTHORIZED);
+
+        System.out.println("sessionId: " + sessionId);
+        System.out.println("destination: " + destination);
+        System.out.println("구독해제함");
+
+
+
+
     }
 
     private void handleDisconnect(StompHeaderAccessor accessor) {
+        String sessionId = accessor.getSessionId();
+        redisService.deleteSessionId(sessionId);
+    }
+
+    private void handleConnect(StompHeaderAccessor accessor) {
         String sessionId = accessor.getSessionId();
         if(!StringUtils.hasText(sessionId))
             throw new RestException(ErrorCode.GLOBAL_BAD_REQUEST);

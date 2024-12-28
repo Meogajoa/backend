@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @RequiredArgsConstructor
 public class NaegamajaApplication {
-	private final BroadcastService broadcastService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(NaegamajaApplication.class, args);
