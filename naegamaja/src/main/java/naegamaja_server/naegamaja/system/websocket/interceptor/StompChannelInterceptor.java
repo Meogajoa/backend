@@ -27,12 +27,27 @@ public class StompChannelInterceptor implements ChannelInterceptor {
         String sessionId = accessor.getFirstNativeHeader("DdingjiSessionId");
 
         StompCommand command = accessor.getCommand();
-        System.out.println("command: " + command + "로 들어왔다");
 
-        if(!redisService.isValidSessionId(sessionId))
-            throw new RestException(ErrorCode.GLOBAL_UNAUTHORIZED);
+        if(command != null) {
+            System.out.println("command: " + command + "로 들어왔다");
+            System.out.println("sessionId: " + sessionId);
+        }
+
+        if(command == StompCommand.CONNECT) {
+            return message;
+        }
+
+        if(command == StompCommand.DISCONNECT) {
+            return message;
+        }
 
         if(command == null) return message;
+
+        if(!redisService.isValidSessionId(sessionId)) {
+            System.out.println("세션아이디가 유효하지 않다");
+        }else{
+            System.out.println("세션아이디가 유효하다");
+        }
 
         switch (command) {
             case SUBSCRIBE:
@@ -52,10 +67,7 @@ public class StompChannelInterceptor implements ChannelInterceptor {
     }
 
     private void handleSubscribe(StompHeaderAccessor accessor) {
-
-        String destination = accessor.getDestination();
-
-        System.out.println("구독함");
+        System.out.println("최종구독");
     }
 
     private void handleUnsubscribe(StompHeaderAccessor accessor) {
@@ -64,13 +76,6 @@ public class StompChannelInterceptor implements ChannelInterceptor {
 
         if(!redisService.isValidSessionId(sessionId))
             throw new RestException(ErrorCode.GLOBAL_UNAUTHORIZED);
-
-        System.out.println("sessionId: " + sessionId);
-        System.out.println("destination: " + destination);
-        System.out.println("구독해제함");
-
-
-
 
     }
 

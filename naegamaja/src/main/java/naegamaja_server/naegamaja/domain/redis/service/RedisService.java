@@ -16,8 +16,15 @@ public class RedisService {
     }
 
     public boolean isValidSessionId(String sessionId) {
-        return redisTemplate.hasKey(sessionId);
+        try {
+            Boolean exists = redisTemplate.hasKey(sessionId);
+            return exists != null && exists;
+        } catch (Exception e) {
+            System.out.println("Redis 예외 발생: " + e.getMessage());
+            return false;
+        }
     }
+
 
     public void saveSessionId(String sessionId, String email) {
         redisTemplate.opsForValue().set(sessionId, email);

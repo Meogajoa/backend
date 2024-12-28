@@ -14,11 +14,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Component
 @RequiredArgsConstructor
 public class SessionIdAuthenticationFilter extends OncePerRequestFilter {
 
     private final RedisService redisService;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        boolean isExcludedPath = path.startsWith("/auth") || path.startsWith("/ws");
+        boolean isWebSocketUpgrade = "websocket".equalsIgnoreCase(request.getHeader("Upgrade"));
+        return isExcludedPath || isWebSocketUpgrade;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
