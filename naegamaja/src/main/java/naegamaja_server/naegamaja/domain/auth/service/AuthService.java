@@ -29,8 +29,11 @@ public class AuthService {
 
     @Transactional
     public AuthDto.SessionIdResponse signIn(AuthDto.SignInRequest request) {
-        User found = userRepository.findByEmailAndPassword(request.getEmail(), passwordEncoder.encode(request.getPassword()))
-                .orElseThrow(() -> new RestException(ErrorCode.GLOBAL_NOT_FOUND));
+        User found = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RestException(ErrorCode.AUTH_USER_NOT_FOUND));
+
+        if(!passwordEncoder.matches(request.getPassword(), found.getPassword()))
+            throw new RestException(ErrorCode.AUTH_BAD_CREDENTIALS);
 
         UserDto.UserResponse userResponse = UserDto.UserResponse.from(found);
 

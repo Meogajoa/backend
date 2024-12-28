@@ -13,6 +13,8 @@ public enum ErrorCode {
     GLOBAL_METHOD_NOT_ALLOWED(405, "허용되지 않는 Method 입니다."),
 
     INTERNAL_SERVER_ERROR(500, "서버 내부 오류입니다."),
+    AUTH_USER_NOT_FOUND(400, "사용자를 찾을 수 없습니다."),
+    AUTH_BAD_CREDENTIALS(400, "비밀번호가 일치하지 않습니다."),
 
     USER_ALREADY_EXIST(400, "이미 존재하는 사용자입니다.");
 
