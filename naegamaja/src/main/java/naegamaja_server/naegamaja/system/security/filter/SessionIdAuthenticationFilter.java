@@ -22,20 +22,25 @@ public class SessionIdAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        boolean isExcludedPath = path.startsWith("/auth") || path.startsWith("/ws");
+        boolean isExcludedPath = path.startsWith("/auth") || path.startsWith("/ws") || path.startsWith("/app") || path.startsWith("/topic");
         boolean isWebSocketUpgrade = "websocket".equalsIgnoreCase(request.getHeader("Upgrade"));
         return isExcludedPath || isWebSocketUpgrade;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        if(shouldNotFilter(request)){
+            return;
+        }
+
         String sessionId = request.getHeader("DdingjiSessionId");
         if (sessionId != null && !sessionId.isBlank() && redisService.isValidSessionId(sessionId)) {
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(sessionId, null, null);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }else{
-            response.sendRedirect("/auth/login");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
         filterChain.doFilter(request, response);
     }

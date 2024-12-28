@@ -43,11 +43,11 @@ public class StompChannelInterceptor implements ChannelInterceptor {
 
         if(command == null) return message;
 
-        if(!redisService.isValidSessionId(sessionId)) {
-            System.out.println("세션아이디가 유효하지 않다");
-        }else{
-            System.out.println("세션아이디가 유효하다");
-        }
+//        if(!redisService.isValidSessionId(sessionId)) {
+//            System.out.println("세션아이디가 유효하지 않다");
+//        }else{
+//            System.out.println("세션아이디가 유효하다");
+//        }
 
         switch (command) {
             case SUBSCRIBE:
@@ -61,6 +61,9 @@ public class StompChannelInterceptor implements ChannelInterceptor {
                 break;
             case CONNECT:
                 handleConnect(accessor);
+                break;
+            case SEND:
+                break;
         }
 
         return message;
@@ -73,9 +76,6 @@ public class StompChannelInterceptor implements ChannelInterceptor {
     private void handleUnsubscribe(StompHeaderAccessor accessor) {
         String sessionId = accessor.getSessionId();
         String destination = accessor.getFirstNativeHeader("DdingjiSessionId");
-
-        if(!redisService.isValidSessionId(sessionId))
-            throw new RestException(ErrorCode.GLOBAL_UNAUTHORIZED);
 
     }
 
