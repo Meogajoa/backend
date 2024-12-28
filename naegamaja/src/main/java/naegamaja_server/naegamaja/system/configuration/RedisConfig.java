@@ -24,14 +24,13 @@ public class RedisConfig {
         return new LettuceConnectionFactory(new RedisStandaloneConfiguration(host, port));
     }
 
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        redisTemplate.setEnableDefaultSerializer(true);
+        redisTemplate.afterPropertiesSet();
 
-//    @Bean
-//    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-//        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-//        redisTemplate.setConnectionFactory(redisConnectionFactory);
-//        redisTemplate.setEnableDefaultSerializer(true);
-//        redisTemplate.afterPropertiesSet();
-//
-//        return redisTemplate;
-//    }
+        return redisTemplate;
+    }
 }
