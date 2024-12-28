@@ -58,4 +58,12 @@ public class AuthDto {
 
     }
 
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class LogoutRequest{
+        private String sessionId;
+    }
+
 }

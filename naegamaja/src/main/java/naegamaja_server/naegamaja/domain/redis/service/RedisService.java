@@ -23,6 +23,11 @@ public class RedisService {
         redisTemplate.opsForValue().set(sessionId, email);
     }
 
+    public boolean deleteSessionId(String sessionId) {
+        Boolean result = redisTemplate.delete(sessionId);
+        return result != null && result;
+    }
+
 
 
 }

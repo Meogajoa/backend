@@ -26,7 +26,13 @@ public class AuthController {
 
     @PostMapping("/sign-up")
     public AuthDto.SessionIdResponse signUp(@RequestBody AuthDto.SignUpRequest request) {
+        System.out.println("켜졌어\n");
         return authService.signUp(request);
+    }
+
+    @PostMapping("/logout")
+    public void logout(@RequestBody AuthDto.LogoutRequest request) {
+        authService.logout(request);
     }
 
 }

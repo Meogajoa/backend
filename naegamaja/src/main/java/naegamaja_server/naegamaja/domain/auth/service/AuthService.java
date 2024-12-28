@@ -62,4 +62,9 @@ public class AuthService {
         return AuthDto.SessionIdResponse.of(saved, sessionId);
     }
 
+    @Transactional
+    public void logout(AuthDto.LogoutRequest request) {
+        redisService.deleteSessionId(request.getSessionId());
+    }
+
 }
