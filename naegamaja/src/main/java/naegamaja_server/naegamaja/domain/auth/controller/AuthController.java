@@ -5,12 +5,10 @@ import naegamaja_server.naegamaja.domain.auth.dto.AuthDto;
 import naegamaja_server.naegamaja.domain.auth.service.AuthService;
 import naegamaja_server.naegamaja.system.security.service.UserDetailService;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,13 +17,22 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/sign-in")
-    public AuthDto.SessionIdResponse signIn(@RequestBody AuthDto.SignInRequest request) {
+    @PostMapping(value = "/sign-in", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public AuthDto.SessionIdResponse signIn(
+            @RequestParam String email,
+            @RequestParam String password) {
+        AuthDto.SignInRequest request = new AuthDto.SignInRequest();
+        request.setEmail(email);
+        request.setPassword(password);
         return authService.signIn(request);
     }
 
-    @PostMapping("/sign-up")
-    public AuthDto.SessionIdResponse signUp(@RequestBody AuthDto.SignUpRequest request) {
+    @PostMapping(value = "/sign-up", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public AuthDto.SessionIdResponse signUp(@RequestParam String email, @RequestParam String nickName, @RequestParam String password) {
+        AuthDto.SignUpRequest request = new AuthDto.SignUpRequest();
+        request.setEmail(email);
+        request.setNickName(nickName);
+        request.setPassword(password);
         return authService.signUp(request);
     }
 

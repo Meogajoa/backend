@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.room.dto.RoomRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @Service
@@ -15,4 +14,7 @@ public class RedisRoomService {
     public void joinRoom(RoomRequest.JoinRoomRequest request) {
         redisTemplate.opsForValue().set(request.getRoomId(), request);
     }
+
+
+
 }
