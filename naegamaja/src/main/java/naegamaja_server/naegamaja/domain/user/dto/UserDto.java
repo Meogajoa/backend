@@ -14,12 +14,12 @@ public class UserDto {
     @Data
     public static class UserResponse{
         private String email;
-        private String nickName;
+        private String nickname;
 
         public static UserResponse from(User user){
             return UserResponse.builder()
                     .email(user.getEmail())
-                    .nickName(user.getNickname())
+                    .nickname(user.getNickname())
                     .build();
         }
     }
