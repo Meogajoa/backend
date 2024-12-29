@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @RequiredArgsConstructor
 public class NaegamajaApplication implements CommandLineRunner {
 
-	private final RedisTemplate<String, Object> redisTemplate;
+	private final RedisTemplate<String, String> redisTemplate;
 
 	public static void main(String[] args) {
 		SpringApplication.run(NaegamajaApplication.class, args);
@@ -26,13 +26,14 @@ public class NaegamajaApplication implements CommandLineRunner {
 	}
 
 	private void addAvailableRooms() {
-		ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
+		ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
 		String key = "availableRoomList:";
 
 		redisTemplate.delete(key);
 
-		for (int i = 1; i <= 1000; i++) {
-			zSetOps.add(key, i, i); // roomNumber를 Integer로 저장
+		for (int i = 1; i <= 10; i++) {
+			String roomNumberStr = String.valueOf(i);
+			zSetOps.add(key, roomNumberStr, i); // roomNumber를 String으로 저장
 		}
 
 		System.out.println("availableRoomList ZSET에 1부터 1000까지의 숫자가 추가되었습니다.");

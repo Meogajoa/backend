@@ -26,21 +26,36 @@ public class RedisConfig {
         return new LettuceConnectionFactory(new RedisStandaloneConfiguration(host, port));
     }
 
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory);
+    @Bean(name = "stringRedisTemplate")
+    public RedisTemplate<String, String> stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
 
         StringRedisSerializer stringSerializer = new StringRedisSerializer();
-        redisTemplate.setKeySerializer(stringSerializer);
-        redisTemplate.setHashKeySerializer(stringSerializer);
 
+        template.setKeySerializer(stringSerializer);
+        template.setHashKeySerializer(stringSerializer);
+        template.setValueSerializer(stringSerializer);
+        template.setHashValueSerializer(stringSerializer);
+
+        template.afterPropertiesSet();
+        return template;
+    }
+
+    @Bean(name = "objectRedisTemplate")
+    public RedisTemplate<String, Object> objectRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+
+        StringRedisSerializer stringSerializer = new StringRedisSerializer();
         JdkSerializationRedisSerializer jdkSerializer = new JdkSerializationRedisSerializer();
-        redisTemplate.setValueSerializer(jdkSerializer);
-        redisTemplate.setHashValueSerializer(jdkSerializer);
 
-        redisTemplate.afterPropertiesSet();
+        template.setKeySerializer(stringSerializer);
+        template.setHashKeySerializer(stringSerializer);
+        template.setValueSerializer(jdkSerializer);
+        template.setHashValueSerializer(jdkSerializer);
 
-        return redisTemplate;
+        template.afterPropertiesSet();
+        return template;
     }
 }
