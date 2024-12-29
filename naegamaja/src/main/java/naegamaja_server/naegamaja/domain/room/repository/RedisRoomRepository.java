@@ -24,7 +24,7 @@ public class RedisRoomRepository {
     private final RedisTemplate<String, Object> redisTemplate;
 
     private static final String ROOM_KEY_PREFIX = "room:";
-    private static final String AVAILABLE_ROOM_LIST_KEY = "availalbeRoomList";
+    private static final String AVAILABLE_ROOM_LIST_KEY = "availalbeRoomList:";
 
     public Room findById(String roomId) {
         Room room = (Room) redisTemplate.opsForHash().get(ROOM_KEY_PREFIX + roomId, roomId);
