@@ -3,11 +3,7 @@ package naegamaja_server.naegamaja.domain.auth.controller;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.auth.dto.AuthDto;
 import naegamaja_server.naegamaja.domain.auth.service.AuthService;
-import naegamaja_server.naegamaja.system.security.service.UserDetailService;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,8 +22,8 @@ public class AuthController {
     }
 
     @PostMapping(value = "/sign-up", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public AuthDto.SignUpResponse signUp(@RequestParam String email, @RequestParam String nickName, @RequestParam String password) {
-        AuthDto.SignUpRequest request = AuthDto.SignUpRequest.of(email, nickName, password);
+    public AuthDto.SignUpResponse signUp(@RequestParam String email, @RequestParam String nickname, @RequestParam String password) {
+        AuthDto.SignUpRequest request = AuthDto.SignUpRequest.of(email, nickname, password);
         return authService.signUp(request);
     }
 
