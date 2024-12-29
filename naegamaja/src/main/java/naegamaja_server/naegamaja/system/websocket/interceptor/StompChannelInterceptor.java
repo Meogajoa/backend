@@ -23,7 +23,7 @@ public class StompChannelInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        String sessionId = accessor.getFirstNativeHeader("DdingjiSessionId");
+        String sessionId = accessor.getFirstNativeHeader("Authorization");
 
         StompCommand command = accessor.getCommand();
 
