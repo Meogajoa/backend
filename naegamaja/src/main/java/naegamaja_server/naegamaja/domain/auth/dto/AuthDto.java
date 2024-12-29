@@ -42,7 +42,7 @@ public class AuthDto {
         public User toEntity(PasswordEncoder encoder){
             return User.builder()
                     .email(email)
-                    .nickName(nickName)
+                    .nickname(nickName)
                     .password(encoder.encode(password))
                     .build();
         }
@@ -71,6 +71,14 @@ public class AuthDto {
                     .build();
         }
 
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class SignUpResponse{
+        private UserDto.UserResponse user;
     }
 
     @AllArgsConstructor

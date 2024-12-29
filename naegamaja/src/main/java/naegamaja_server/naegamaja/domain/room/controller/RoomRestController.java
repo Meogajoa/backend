@@ -1,29 +1,30 @@
 package naegamaja_server.naegamaja.domain.room.controller;
 
 import lombok.RequiredArgsConstructor;
+import naegamaja_server.naegamaja.domain.room.dto.RoomCreationDto;
 import naegamaja_server.naegamaja.domain.room.dto.RoomRequest;
 import naegamaja_server.naegamaja.domain.room.dto.RoomResponse;
-import naegamaja_server.naegamaja.domain.room.service.RedisRoomService;
+import naegamaja_server.naegamaja.domain.room.service.RoomService;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/room")
 public class RoomRestController {
 
-    private final RedisRoomService redisRoomService;
+    private final RoomService roomService;
 
-    @PostMapping("/room/{roomId}/join")
+    @PostMapping("/{roomId}/join")
     public void joinRoom(RoomRequest.JoinRoomRequest request) {
-        redisRoomService.joinRoom(request);
+        roomService.joinRoom(request);
     }
 
-//    @GetMapping("/room/pages/{pageNum}")
-//    public Page<RoomResponse> getRoomList(@RequestParam(defaultValue = "0") int pageNum) {
-//        redisRoomService.getRoomList(pageNum);
-//    }
+    @PostMapping("/create")
+    public int createRoom(RoomRequest.CreateRoomRequest request) {
+        return roomService.createRoom(request);
+    }
+
+
 
 }

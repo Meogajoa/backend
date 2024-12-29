@@ -31,7 +31,7 @@ public class SessionIdAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String sessionId = request.getHeader("DdingjiSessionId");
+        String sessionId = request.getHeader("Authorization");
         if (sessionId != null && !sessionId.isBlank() && redisAuthService.isValidSessionId(sessionId)) {
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(sessionId, null, null);

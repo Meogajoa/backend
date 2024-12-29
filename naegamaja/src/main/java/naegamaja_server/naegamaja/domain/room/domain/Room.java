@@ -13,7 +13,7 @@ import lombok.*;
 public class Room {
 
     @Id
-    private String roomId;
+    private String id;
 
     private String roomName;
 
@@ -26,6 +26,5 @@ public class Room {
     private int roomCurrentUser;
 
     private boolean roomIsPlaying;
-
 
 }

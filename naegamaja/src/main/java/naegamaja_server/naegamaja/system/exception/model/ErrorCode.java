@@ -16,6 +16,9 @@ public enum ErrorCode {
     AUTH_USER_NOT_FOUND(400, "사용자를 찾을 수 없습니다."),
     AUTH_BAD_CREDENTIALS(400, "비밀번호가 일치하지 않습니다."),
     GLOBAL_UNAUTHORIZED(401, "인증되지 않은 사용자입니다."),
+    ROOM_FULL(400, "방이 꽉 찼습니다."),
+    ROOM_NOT_FOUND(400, "방을 찾을 수 없습니다."),
+    NO_AVAILABLE_ROOM(400, "사용 가능한 방이 없습니다."),
     USER_ALREADY_EXIST(400, "이미 존재하는 사용자입니다.");
 
 

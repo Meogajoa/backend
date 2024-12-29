@@ -3,6 +3,7 @@ package naegamaja_server.naegamaja.domain.auth.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.auth.dto.AuthDto;
+import naegamaja_server.naegamaja.domain.session.entity.UserSession;
 import naegamaja_server.naegamaja.domain.session.service.SessionService;
 import naegamaja_server.naegamaja.domain.user.dto.UserDto;
 import naegamaja_server.naegamaja.domain.user.entity.User;
@@ -34,6 +35,15 @@ public class AuthService {
 
         String sessionId = sessionService.createSessionId();
 
+        UserSession userSession = UserSession.builder()
+                .nickname(found.getNickname())
+                .state("LOBBY")
+                .sessionId(sessionId)
+                .roomNumber(null)
+                .isInGame(false)
+                .isInRoom(false)
+                .build();
+
         redisAuthService.saveSessionId(sessionId, found.getEmail());
 
         return AuthDto.SessionIdResponse.builder()
@@ -44,7 +54,7 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthDto.SessionIdResponse signUp(AuthDto.SignUpRequest request) {
+    public AuthDto.SignUpResponse signUp(AuthDto.SignUpRequest request) {
         Optional<User> found = userRepository.findById(request.getEmail());
 
         if(found.isPresent()) throw new RestException(ErrorCode.GLOBAL_ALREADY_EXIST);
@@ -53,11 +63,9 @@ public class AuthService {
 
         User saved = userRepository.save(toSave);
 
-        String sessionId = sessionService.createSessionId();
-
-        redisAuthService.saveSessionId(sessionId, saved.getEmail());
-
-        return AuthDto.SessionIdResponse.of(saved, sessionId);
+        return AuthDto.SignUpResponse.builder()
+                .user(UserDto.UserResponse.from(saved))
+                .build();
     }
 
     public void logout(AuthDto.LogoutRequest request) {

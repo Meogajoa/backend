@@ -28,7 +28,7 @@ public class UserDetail implements AuthenticatedPrincipal {
         return UserDetail.builder()
                 .user(user)
                 .email(user.getEmail())
-                .nickName(user.getNickName())
+                .nickName(user.getNickname())
                 .build();
     }
 

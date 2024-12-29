@@ -1,7 +1,6 @@
 package naegamaja_server.naegamaja.domain.user.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.*;
 
@@ -16,7 +15,7 @@ public class User {
     @Id
     private String email;
 
-    private String nickName;
+    private String nickname;
 
     private String password;
 }

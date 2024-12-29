@@ -1,6 +1,7 @@
 package naegamaja_server.naegamaja.domain.room.dto;
 
 import lombok.*;
+import naegamaja_server.naegamaja.domain.room.domain.Room;
 
 @Builder
 @Getter
@@ -23,6 +24,17 @@ public class RoomResponse {
                 .roomMaxUser(roomMaxUser)
                 .roomCurrentUser(roomCurrentUser)
                 .roomIsPlaying(roomIsPlaying)
+                .build();
+    }
+
+    public static RoomResponse from(Room room){
+        return RoomResponse.builder()
+                .roomId(room.getId())
+                .roomName(room.getRoomName())
+                .roomOwner(room.getRoomOwner())
+                .roomMaxUser(room.getRoomMaxUser())
+                .roomCurrentUser(room.getRoomCurrentUser())
+                .roomIsPlaying(room.isRoomIsPlaying())
                 .build();
     }
 }

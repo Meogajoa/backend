@@ -19,7 +19,7 @@ public class UserDto {
         public static UserResponse from(User user){
             return UserResponse.builder()
                     .email(user.getEmail())
-                    .nickName(user.getNickName())
+                    .nickName(user.getNickname())
                     .build();
         }
     }
