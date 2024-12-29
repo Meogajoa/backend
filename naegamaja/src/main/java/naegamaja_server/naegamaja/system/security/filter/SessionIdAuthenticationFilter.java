@@ -5,11 +5,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import naegamaja_server.naegamaja.domain.redis.service.RedisService;
-import org.springframework.context.annotation.Bean;
+import naegamaja_server.naegamaja.domain.auth.service.RedisAuthService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -17,7 +15,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class SessionIdAuthenticationFilter extends OncePerRequestFilter {
 
-    private final RedisService redisService;
+    private final RedisAuthService redisAuthService;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -34,7 +32,7 @@ public class SessionIdAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String sessionId = request.getHeader("DdingjiSessionId");
-        if (sessionId != null && !sessionId.isBlank() && redisService.isValidSessionId(sessionId)) {
+        if (sessionId != null && !sessionId.isBlank() && redisAuthService.isValidSessionId(sessionId)) {
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(sessionId, null, null);
             SecurityContextHolder.getContext().setAuthentication(auth);

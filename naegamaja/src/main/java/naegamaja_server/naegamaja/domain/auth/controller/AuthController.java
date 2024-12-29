@@ -29,8 +29,8 @@ public class AuthController {
         return authService.signUp(request);
     }
 
-    @PostMapping("/logout")
-    public void logout(@RequestBody AuthDto.LogoutRequest request) {
+    @PostMapping("/sign-out")
+    public void signOut(@RequestBody AuthDto.LogoutRequest request) {
         authService.logout(request);
     }
 
