@@ -45,10 +45,10 @@ public class AuthDto {
                     .build();
         }
 
-        public static SignUpRequest of(String email, String nickName, String password){
+        public static SignUpRequest of(String email, String nickname, String password){
             return SignUpRequest.builder()
                     .email(email)
-                    .nickname(nickName)
+                    .nickname(nickname)
                     .password(password)
                     .build();
         }
