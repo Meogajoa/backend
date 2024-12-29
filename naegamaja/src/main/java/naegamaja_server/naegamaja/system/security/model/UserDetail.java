@@ -16,7 +16,7 @@ public class UserDetail implements AuthenticatedPrincipal {
     private User user;
 
     private String email;
-    private String nickName;
+    private String nickname;
 
     @JsonIgnore
     @Override
@@ -28,7 +28,7 @@ public class UserDetail implements AuthenticatedPrincipal {
         return UserDetail.builder()
                 .user(user)
                 .email(user.getEmail())
-                .nickName(user.getNickname())
+                .nickname(user.getNickname())
                 .build();
     }
 
