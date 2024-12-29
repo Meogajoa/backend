@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import naegamaja_server.naegamaja.domain.user.dto.UserDto;
 import naegamaja_server.naegamaja.domain.user.entity.User;
-import org.hibernate.Session;
-import org.springframework.cglib.core.Local;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class AuthDto {
@@ -35,14 +33,14 @@ public class AuthDto {
     public static class SignUpRequest{
         private String email;
 
-        private String nickName;
+        private String nickname;
 
         private String password;
 
         public User toEntity(PasswordEncoder encoder){
             return User.builder()
                     .email(email)
-                    .nickname(nickName)
+                    .nickname(nickname)
                     .password(encoder.encode(password))
                     .build();
         }
@@ -50,7 +48,7 @@ public class AuthDto {
         public static SignUpRequest of(String email, String nickName, String password){
             return SignUpRequest.builder()
                     .email(email)
-                    .nickName(nickName)
+                    .nickname(nickName)
                     .password(password)
                     .build();
         }
