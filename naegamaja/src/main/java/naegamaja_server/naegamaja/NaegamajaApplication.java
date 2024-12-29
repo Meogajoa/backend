@@ -5,7 +5,6 @@ import naegamaja_server.naegamaja.domain.room.repository.RedisRoomRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -28,19 +27,14 @@ public class NaegamajaApplication implements CommandLineRunner {
 
 	private void addAvailableRooms() {
 		ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
-		String key = "availableRoomList";
-
+		String key = "availableRoomList:";
 
 		redisTemplate.delete(key);
 
-		redisTemplate.executePipelined((RedisCallback<?>) (connection) -> {
-			for (int i = 1; i <= 1000; i++) {
-				connection.zAdd(key.getBytes(), i, String.valueOf(i).getBytes());
-			}
-			return null;
-		});
+		for (int i = 1; i <= 1000; i++) {
+			zSetOps.add(key, i, i); // roomNumber를 Integer로 저장
+		}
 
-		System.out.println("availalbeRoomList ZSET에 1부터 1000까지의 숫자가 추가되었습니다.");
+		System.out.println("availableRoomList ZSET에 1부터 1000까지의 숫자가 추가되었습니다.");
 	}
-
 }

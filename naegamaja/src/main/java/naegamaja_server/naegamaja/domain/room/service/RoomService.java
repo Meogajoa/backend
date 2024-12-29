@@ -46,6 +46,8 @@ public class RoomService {
                 .roomIsPlaying(false)
                 .build();
 
+        redisRoomRepository.createRoom(room, roomNumber);
+
         return roomNumber;
     }
 

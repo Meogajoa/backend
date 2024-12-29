@@ -32,6 +32,7 @@ public class SessionIdAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String sessionId = request.getHeader("Authorization");
+        System.out.println("sessionId: " + sessionId);
         if (sessionId != null && !sessionId.isBlank() && redisAuthService.isValidSessionId(sessionId)) {
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(sessionId, null, null);

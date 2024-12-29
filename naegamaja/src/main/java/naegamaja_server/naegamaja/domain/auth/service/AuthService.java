@@ -44,7 +44,7 @@ public class AuthService {
                 .isInRoom(false)
                 .build();
 
-        redisAuthService.saveSessionId(sessionId, found.getEmail());
+        redisAuthService.saveSession(userSession);
 
         return AuthDto.SessionIdResponse.builder()
                 .user(userResponse)

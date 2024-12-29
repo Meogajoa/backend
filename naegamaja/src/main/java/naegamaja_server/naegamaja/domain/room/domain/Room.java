@@ -4,13 +4,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Getter
 @Setter
 @Builder
-public class Room {
+@ToString
+public class Room implements Serializable {
 
     @Id
     private String id;

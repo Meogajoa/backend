@@ -20,6 +20,9 @@ public class RedisAuthService {
     public boolean isValidSessionId(String sessionId) {
         try {
             Boolean exists = redisTemplate.hasKey(SESSION_PREFIX + sessionId);
+            if(exists == false) {
+                System.out.println("세션아이디가 유효하지 않다");
+            }
             return exists != null && exists;
         } catch (Exception e) {
             System.out.println("Redis 예외 발생: " + e.getMessage());
