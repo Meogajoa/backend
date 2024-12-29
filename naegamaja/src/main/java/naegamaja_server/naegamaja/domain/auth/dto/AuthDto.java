@@ -19,6 +19,13 @@ public class AuthDto {
     public static class SignInRequest{
         private String email;
         private String password;
+
+        public static SignInRequest of(String email, String password){
+            return SignInRequest.builder()
+                    .email(email)
+                    .password(password)
+                    .build();
+        }
     }
 
     @AllArgsConstructor
@@ -37,6 +44,14 @@ public class AuthDto {
                     .email(email)
                     .nickName(nickName)
                     .password(encoder.encode(password))
+                    .build();
+        }
+
+        public static SignUpRequest of(String email, String nickName, String password){
+            return SignUpRequest.builder()
+                    .email(email)
+                    .nickName(nickName)
+                    .password(password)
                     .build();
         }
     }

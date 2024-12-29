@@ -21,18 +21,13 @@ public class AuthController {
     public AuthDto.SessionIdResponse signIn(
             @RequestParam String email,
             @RequestParam String password) {
-        AuthDto.SignInRequest request = new AuthDto.SignInRequest();
-        request.setEmail(email);
-        request.setPassword(password);
+        AuthDto.SignInRequest request = AuthDto.SignInRequest.of(email, password);
         return authService.signIn(request);
     }
 
     @PostMapping(value = "/sign-up", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public AuthDto.SessionIdResponse signUp(@RequestParam String email, @RequestParam String nickName, @RequestParam String password) {
-        AuthDto.SignUpRequest request = new AuthDto.SignUpRequest();
-        request.setEmail(email);
-        request.setNickName(nickName);
-        request.setPassword(password);
+        AuthDto.SignUpRequest request = AuthDto.SignUpRequest.of(email, nickName, password);
         return authService.signUp(request);
     }
 
