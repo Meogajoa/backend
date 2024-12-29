@@ -29,7 +29,7 @@ public class RedisAuthService {
     }
 
     public void saveSession(UserSession userSession) {
-        redisTemplate.opsForHash().
+//        redisTemplate.opsForHash().
     }
 
     public void deleteSessionId(String sessionId) {
