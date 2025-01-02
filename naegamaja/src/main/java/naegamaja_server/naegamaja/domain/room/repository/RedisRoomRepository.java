@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -20,7 +21,6 @@ import java.util.stream.Collectors;
 @Repository
 @RequiredArgsConstructor
 public class RedisRoomRepository {
-    private final RedisTemplate<String, Object> redisTemplate;
     private final StringRedisTemplate stringRedisTemplate;
 
     private static final String ROOM_KEY_PREFIX = "room:";
@@ -30,13 +30,13 @@ public class RedisRoomRepository {
 
     public Room findById(String roomId) {
         String roomKey = ROOM_KEY_PREFIX + roomId;
-        String id = (String) redisTemplate.opsForHash().get(roomKey, "id");
-        String roomName = (String) redisTemplate.opsForHash().get(roomKey, "roomName");
-        String roomPassword = (String) redisTemplate.opsForHash().get(roomKey, "roomPassword");
-        String roomOwner = (String) redisTemplate.opsForHash().get(roomKey, "roomOwner");
-        String roomMaxUserStr = (String) redisTemplate.opsForHash().get(roomKey, "roomMaxUser");
-        String roomCurrentUserStr = (String) redisTemplate.opsForHash().get(roomKey, "roomCurrentUser");
-        String roomIsPlayingStr = (String) redisTemplate.opsForHash().get(roomKey, "roomIsPlaying");
+        String id = (String) stringRedisTemplate.opsForHash().get(roomKey, "id");
+        String roomName = (String) stringRedisTemplate.opsForHash().get(roomKey, "roomName");
+        String roomPassword = (String) stringRedisTemplate.opsForHash().get(roomKey, "roomPassword");
+        String roomOwner = (String) stringRedisTemplate.opsForHash().get(roomKey, "roomOwner");
+        String roomMaxUserStr = (String) stringRedisTemplate.opsForHash().get(roomKey, "roomMaxUser");
+        String roomCurrentUserStr = (String) stringRedisTemplate.opsForHash().get(roomKey, "roomCurrentUser");
+        String roomIsPlayingStr = (String) stringRedisTemplate.opsForHash().get(roomKey, "roomIsPlaying");
 
         if(id == null) {
             throw new RestException(ErrorCode.ROOM_NOT_FOUND);
@@ -59,11 +59,11 @@ public class RedisRoomRepository {
 
     public void saveUserToRoom(String nickname, Room room) {
         String key = ROOM_KEY_PREFIX + room.getId() + ":users";
-        redisTemplate.opsForSet().add(key, nickname);
+        stringRedisTemplate.opsForSet().add(key, nickname);
     }
 
     public boolean isAlreadyExistRoom(String roomId) {
-        return roomId != null && redisTemplate.hasKey(ROOM_KEY_PREFIX + roomId);
+        return roomId != null && stringRedisTemplate.hasKey(ROOM_KEY_PREFIX + roomId);
     }
 
     public int getAvailableRoomNumber() {
@@ -115,8 +115,6 @@ public class RedisRoomRepository {
 
         int page = (pageNum <= 0) ? 0 : pageNum - 1;
         int size = 10;
-
-        System.out.println("여기까진\n");
 
         long start = (long) page * size;
         long end = start + size - 1;
