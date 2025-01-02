@@ -1,6 +1,7 @@
 package naegamaja_server.naegamaja.domain.session.service;
 
 import lombok.RequiredArgsConstructor;
+import naegamaja_server.naegamaja.domain.auth.service.RedisAuthService;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -9,8 +10,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SessionService {
 
+    private final RedisAuthService redisAuthService;
+
     public String createSessionId() {
-        return UUID.randomUUID().toString();
+        String sessionId;
+        do{
+            sessionId = UUID.randomUUID().toString();
+        }while(redisAuthService.isValidSessionId(sessionId));
+        
+        return sessionId;
     }
 
 }
