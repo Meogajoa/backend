@@ -3,12 +3,13 @@ package naegamaja_server.naegamaja.domain.room.domain;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
+import naegamaja_server.naegamaja.domain.session.entity.UserSession;
 
 import java.io.Serializable;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Getter
 @Setter
 @Builder
@@ -29,5 +30,7 @@ public class Room implements Serializable {
     private int roomCurrentUser;
 
     private boolean roomIsPlaying;
+
+    List<UserSession> userSessions;
 
 }
