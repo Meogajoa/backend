@@ -17,7 +17,7 @@ public class SessionService {
         do{
             sessionId = UUID.randomUUID().toString();
         }while(redisAuthService.isValidSessionId(sessionId));
-        
+
         return sessionId;
     }
 

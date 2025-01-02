@@ -57,9 +57,11 @@ public class RedisRoomRepository {
                 .build();
     }
 
-    public void saveUserToRoom(String nickname, Room room) {
-        String key = ROOM_KEY_PREFIX + room.getId() + ":users";
-        stringRedisTemplate.opsForSet().add(key, nickname);
+    public void saveUserToRoom(String authorization, Room room) {
+        String userKey = ROOM_KEY_PREFIX + room.getId() + ":users";
+        String roomKey = ROOM_KEY_PREFIX + room.getId();
+        stringRedisTemplate.opsForSet().add(userKey, authorization);
+        stringRedisTemplate.opsForHash().put(roomKey, "roomCurrentUser", String.valueOf(room.getRoomCurrentUser() + 1));
     }
 
     public boolean isAlreadyExistRoom(String roomId) {

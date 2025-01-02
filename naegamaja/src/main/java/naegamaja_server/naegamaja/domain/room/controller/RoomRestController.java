@@ -5,7 +5,9 @@ import naegamaja_server.naegamaja.domain.room.dto.RoomCreationDto;
 import naegamaja_server.naegamaja.domain.room.dto.RoomRequest;
 import naegamaja_server.naegamaja.domain.room.dto.RoomResponse;
 import naegamaja_server.naegamaja.domain.room.service.RoomService;
+import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,9 +17,11 @@ public class RoomRestController {
 
     private final RoomService roomService;
 
-    @PostMapping("/{roomId}/join")
-    public void joinRoom(@RequestHeader String authorization, @RequestBody RoomRequest.JoinRoomRequest request) {
+    @PostMapping("/join")
+    public ResponseEntity<?> joinRoom(@RequestHeader String authorization, @RequestBody RoomRequest.JoinRoomRequest request) {
         roomService.joinRoom(request, authorization);
+
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/create")
