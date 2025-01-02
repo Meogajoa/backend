@@ -99,7 +99,7 @@ public class RedisRoomRepository {
         stringRedisTemplate.opsForHash().put(roomKey, "roomMaxUser", String.valueOf(room.getRoomMaxUser()));
         stringRedisTemplate.opsForHash().put(roomKey, "roomCurrentUser", String.valueOf(room.getRoomCurrentUser()));
         stringRedisTemplate.opsForHash().put(roomKey, "roomIsPlaying", String.valueOf(room.isRoomIsPlaying()));
-        redisTemplate.opsForSet().add(roomKey + ":users", room.getRoomOwner());
+        stringRedisTemplate.opsForSet().add(roomKey + ":users", room.getRoomOwner());
 
         System.out.println("Room created and roomNumber removed from AVAILABLE: " + room);
     }

@@ -19,6 +19,7 @@ public class RoomService {
 
     private final RedisRoomRepository redisRoomRepository;
 
+
     public void joinRoom(RoomRequest.JoinRoomRequest request, String authorization) {
         Room room = redisRoomRepository.findById(request.getRoomId());
 
@@ -26,7 +27,7 @@ public class RoomService {
             throw new RestException(ErrorCode.ROOM_FULL);
         }
 
-        redisRoomRepository.saveUserToRoom(request.getNickname(), room);
+        redisRoomRepository.saveUserToRoom(authorization, room);
     }
 
     public boolean isAlreadyExistRoom(String roomId) {

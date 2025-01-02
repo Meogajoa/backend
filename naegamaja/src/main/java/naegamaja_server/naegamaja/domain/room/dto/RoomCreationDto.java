@@ -13,7 +13,6 @@ public class RoomCreationDto {
     @Data
     @Builder
     public static class RoomCreationRequest {
-        private String nickname;
         private String roomName;
         private String roomPassword;
         private int roomMaxUser;
