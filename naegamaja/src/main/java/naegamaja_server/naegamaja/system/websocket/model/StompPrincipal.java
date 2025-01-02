@@ -1,4 +1,4 @@
-package naegamaja_server.naegamaja.system.websocket;
+package naegamaja_server.naegamaja.system.websocket.model;
 
 import java.security.Principal;
 

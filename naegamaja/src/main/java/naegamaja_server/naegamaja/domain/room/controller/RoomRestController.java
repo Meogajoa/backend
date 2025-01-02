@@ -26,6 +26,11 @@ public class RoomRestController {
         return roomService.createRoom(request, authorization);
     }
 
+    @GetMapping("/pages/{pageNum}")
+    public Page<RoomResponse> getRooms(@PathVariable int pageNum) {
+        return roomService.getRooms(pageNum);
+    }
+
 
 
 }

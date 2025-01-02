@@ -21,7 +21,9 @@ public enum ErrorCode {
     ROOM_NOT_FOUND(400, "방을 찾을 수 없습니다."),
     INVALID_ROOM_NUMBER(400, "올바르지 않은 방 번호입니다."),
     NO_AVAILABLE_ROOM(400, "사용 가능한 방이 없습니다."),
+    NO_ROOMS(400, "방이 존재하지 않습니다."),
     USER_ALREADY_EXIST(400, "이미 존재하는 사용자입니다.");
+
 
 
     private final int statusCode;

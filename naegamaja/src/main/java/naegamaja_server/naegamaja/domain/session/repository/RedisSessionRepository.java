@@ -13,13 +13,12 @@ import java.util.Map;
 @Repository
 public class RedisSessionRepository {
     private final StringRedisTemplate stringRedisTemplate;
-    private final RedisTemplate<String, Object> redisTemplate;
 
     private final String SESSION_PREFIX = "session:";
 
     public boolean isValidSessionId(String sessionId) {
         try {
-            Boolean exists = redisTemplate.hasKey(SESSION_PREFIX + sessionId);
+            Boolean exists = stringRedisTemplate.hasKey(SESSION_PREFIX + sessionId);
             if(!exists) {
                 System.out.println("세션아이디가 유효하지 않다");
             }
@@ -32,30 +31,30 @@ public class RedisSessionRepository {
     }
 
     public void saveSessionId(String sessionId, String email) {
-        redisTemplate.opsForValue().set(sessionId, email);
+        stringRedisTemplate.opsForValue().set(sessionId, email);
     }
 
-    public UserSession saveSession(UserSession userSession) {
+    public void saveSession(UserSession userSession) {
         String key = SESSION_PREFIX + userSession.getSessionId();
 
         Map<String, Object> sessionMap = new HashMap<>();
         sessionMap.put("nickname", userSession.getNickname());
         sessionMap.put("state", userSession.getState());
-        sessionMap.put("roomNumber", userSession.getRoomNumber());
-        sessionMap.put("isInGame", userSession.isInGame());
-        sessionMap.put("isInRoom", userSession.isInRoom());
+        sessionMap.put("roomNumber", userSession.getRoomNumber().toString());
+        sessionMap.put("isInGame", String.valueOf(userSession.isInGame()));
+        sessionMap.put("isInRoom", String.valueOf(userSession.isInRoom()));
 
-        redisTemplate.opsForHash().putAll(key, sessionMap);
+        stringRedisTemplate.opsForHash().putAll(key, sessionMap);
     }
 
     public void deleteSessionId(String sessionId) {
         if(sessionId == null) return;
-        Boolean result = redisTemplate.delete(sessionId);
+        Boolean result = stringRedisTemplate.delete(sessionId);
     }
 
     public UserSession trackUserSession(String sessionId) {
         String key = SESSION_PREFIX + sessionId;
-        Map<Object, Object> sessionMap = redisTemplate.opsForHash().entries(key);
+        Map<Object, Object> sessionMap = stringRedisTemplate.opsForHash().entries(key);
 
         return UserSession.of(
                 (String) sessionMap.get("nickname"),

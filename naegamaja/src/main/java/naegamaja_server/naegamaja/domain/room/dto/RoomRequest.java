@@ -20,8 +20,8 @@ public class RoomRequest {
     @Data
     @Builder
     public static class CreateRoomRequest {
-        private String nickname;
         private String roomName;
+        private String nickname;
         private String roomPassword;
         private int roomMaxUser;
     }

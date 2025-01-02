@@ -37,6 +37,6 @@ public class NaegamajaApplication implements CommandLineRunner {
 			zSetOps.add(key, roomNumberStr, i); // roomNumber를 String으로 저장
 		}
 
-		System.out.println("availableRoomList ZSET에 1부터 1000까지의 숫자가 추가되었습니다.");
+		System.out.println("availableRoomList ZSET에 1부터 10까지의 숫자가 추가되었습니다.");
 	}
 }

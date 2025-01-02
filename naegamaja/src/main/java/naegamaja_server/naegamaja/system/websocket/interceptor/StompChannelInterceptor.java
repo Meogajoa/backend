@@ -3,16 +3,13 @@ package naegamaja_server.naegamaja.system.websocket.interceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import naegamaja_server.naegamaja.domain.auth.service.RedisAuthService;
-import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
-import naegamaja_server.naegamaja.system.exception.model.RestException;
-import naegamaja_server.naegamaja.system.websocket.StompPrincipal;
+import naegamaja_server.naegamaja.system.websocket.model.StompPrincipal;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component

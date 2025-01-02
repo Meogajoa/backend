@@ -2,14 +2,19 @@ package naegamaja_server.naegamaja.domain.room.repository;
 
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.room.domain.Room;
+import naegamaja_server.naegamaja.domain.room.dto.RoomResponse;
 import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
 import naegamaja_server.naegamaja.system.exception.model.RestException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -64,6 +69,7 @@ public class RedisRoomRepository {
     public int getAvailableRoomNumber() {
         Set<String> result = stringRedisTemplate.opsForZSet().range(AVAILABLE_ROOM_LIST_KEY, 0, 0);
 
+        assert result != null;
         if(result.isEmpty()) {
             throw new RestException(ErrorCode.NO_AVAILABLE_ROOM);
         }
@@ -83,7 +89,7 @@ public class RedisRoomRepository {
 
         // AVAILABLE ZSet에서 roomNumber 제거
         Long removed = stringRedisTemplate.opsForZSet().remove(AVAILABLE_ROOM_LIST_KEY, roomNumberStr);
-        if (removed == 0) {
+        if (removed == null || removed == 0) {
             throw new RestException(ErrorCode.FAILED_TO_REMOVE_AVAILABLE_ROOM);
         }
 
@@ -103,4 +109,54 @@ public class RedisRoomRepository {
 
         System.out.println("Room created and roomNumber removed from AVAILABLE: " + room);
     }
+
+
+    public Page<RoomResponse> getRooms(int pageNum) {
+
+        int page = (pageNum <= 0) ? 0 : pageNum - 1;
+        int size = 10;
+
+        System.out.println("여기까진\n");
+
+        long start = (long) page * size;
+        long end = start + size - 1;
+
+        Set<String> roomNumbers = stringRedisTemplate.opsForZSet()
+                .range(USING_ROOM_LIST_KEY, start, end);
+        if (roomNumbers == null) {
+            roomNumbers = Collections.emptySet();
+        }
+
+        List<RoomResponse> roomResponses = new ArrayList<>();
+        for (String roomNumber : roomNumbers) {
+            String roomKey = ROOM_KEY_PREFIX + roomNumber;
+            Map<Object, Object> roomMap = stringRedisTemplate.opsForHash().entries(roomKey);
+            if (roomMap != null && !roomMap.isEmpty()) {
+                Room room = mapToRoom(roomMap);
+                RoomResponse response = RoomResponse.from(room);
+                roomResponses.add(response);
+            }
+        }
+
+        // 전체 사용 중인 방 개수
+        long total = stringRedisTemplate.opsForZSet().zCard(USING_ROOM_LIST_KEY);
+
+        // PageRequest를 만들어 PageImpl에 넘김
+        // PageImpl(List<T> content, Pageable pageable, long total)
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return new PageImpl<>(roomResponses, pageRequest, total);
+    }
+
+    private Room mapToRoom(Map<Object, Object> roomData) {
+        Room room = new Room();
+        room.setId((String) roomData.get("id"));
+        room.setRoomName((String) roomData.get("roomName"));
+        room.setRoomPassword((String) roomData.get("roomPassword"));
+        room.setRoomOwner((String) roomData.get("roomOwner"));
+        room.setRoomMaxUser(Integer.parseInt((String) roomData.get("roomMaxUser")));
+        room.setRoomCurrentUser(Integer.parseInt((String) roomData.get("roomCurrentUser")));
+        room.setRoomIsPlaying(Boolean.parseBoolean((String) roomData.get("roomIsPlaying")));
+        return room;
+    }
+
 }

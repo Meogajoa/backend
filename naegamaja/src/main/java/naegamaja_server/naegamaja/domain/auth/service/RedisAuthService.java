@@ -26,7 +26,7 @@ public class RedisAuthService {
     }
 
     public void saveSession(UserSession userSession) {
-
+        redisSessionRepository.saveSession(userSession);
     }
 
     public void deleteSessionId(String sessionId) {

@@ -39,7 +39,7 @@ public class RoomService {
 
         Room room = Room.builder()
                 .id(String.valueOf(roomNumber))
-                .roomOwner(request.getNickname())
+                .roomOwner(authorization)
                 .roomName(request.getRoomName())
                 .roomPassword(request.getRoomPassword())
                 .roomMaxUser(request.getRoomMaxUser())
@@ -50,6 +50,10 @@ public class RoomService {
         redisRoomRepository.createRoom(room, roomNumber);
 
         return roomNumber;
+    }
+
+    public Page<RoomResponse> getRooms(int pageNum) {
+        return redisRoomRepository.getRooms(pageNum);
     }
 
 
