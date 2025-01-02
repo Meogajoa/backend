@@ -19,7 +19,7 @@ public class RoomService {
 
     private final RedisRoomRepository redisRoomRepository;
 
-    public void joinRoom(RoomRequest.JoinRoomRequest request) {
+    public void joinRoom(RoomRequest.JoinRoomRequest request, String authorization) {
         Room room = redisRoomRepository.findById(request.getRoomId());
 
         if(room.getRoomCurrentUser() == room.getRoomMaxUser()) {
@@ -33,7 +33,7 @@ public class RoomService {
         return redisRoomRepository.isAlreadyExistRoom(roomId);
     }
 
-    public int createRoom(RoomRequest.CreateRoomRequest request) {
+    public int createRoom(RoomRequest.CreateRoomRequest request, String authorization) {
         int roomNumber = redisRoomRepository.getAvailableRoomNumber();
 
         Room room = Room.builder()

@@ -16,14 +16,14 @@ public class RoomRestController {
     private final RoomService roomService;
 
     @PostMapping("/{roomId}/join")
-    public void joinRoom(@RequestBody RoomRequest.JoinRoomRequest request) {
-        roomService.joinRoom(request);
+    public void joinRoom(@RequestHeader String authorization, @RequestBody RoomRequest.JoinRoomRequest request) {
+        roomService.joinRoom(request, authorization);
     }
 
     @PostMapping("/create")
-    public int createRoom(@RequestBody RoomRequest.CreateRoomRequest request) {
+    public int createRoom(@RequestHeader String authorization, @RequestBody RoomRequest.CreateRoomRequest request) {
         System.out.println("request = " + request);
-        return roomService.createRoom(request);
+        return roomService.createRoom(request, authorization);
     }
 
 

@@ -83,7 +83,7 @@ public class RedisRoomRepository {
 
         // AVAILABLE ZSet에서 roomNumber 제거
         Long removed = stringRedisTemplate.opsForZSet().remove(AVAILABLE_ROOM_LIST_KEY, roomNumberStr);
-        if (removed == null || removed == 0) {
+        if (removed == 0) {
             throw new RestException(ErrorCode.FAILED_TO_REMOVE_AVAILABLE_ROOM);
         }
 
@@ -92,13 +92,14 @@ public class RedisRoomRepository {
 
         // Room 정보 저장
         String roomKey = ROOM_KEY_PREFIX + room.getId();
-        redisTemplate.opsForHash().put(roomKey, "id", room.getId());
-        redisTemplate.opsForHash().put(roomKey, "roomName", room.getRoomName());
-        redisTemplate.opsForHash().put(roomKey, "roomPassword", room.getRoomPassword());
-        redisTemplate.opsForHash().put(roomKey, "roomOwner", room.getRoomOwner());
-        redisTemplate.opsForHash().put(roomKey, "roomMaxUser", String.valueOf(room.getRoomMaxUser()));
-        redisTemplate.opsForHash().put(roomKey, "roomCurrentUser", String.valueOf(room.getRoomCurrentUser()));
-        redisTemplate.opsForHash().put(roomKey, "roomIsPlaying", String.valueOf(room.isRoomIsPlaying()));
+        stringRedisTemplate.opsForHash().put(roomKey, "id", room.getId());
+        stringRedisTemplate.opsForHash().put(roomKey, "roomName", room.getRoomName());
+        stringRedisTemplate.opsForHash().put(roomKey, "roomPassword", room.getRoomPassword());
+        stringRedisTemplate.opsForHash().put(roomKey, "roomOwner", room.getRoomOwner());
+        stringRedisTemplate.opsForHash().put(roomKey, "roomMaxUser", String.valueOf(room.getRoomMaxUser()));
+        stringRedisTemplate.opsForHash().put(roomKey, "roomCurrentUser", String.valueOf(room.getRoomCurrentUser()));
+        stringRedisTemplate.opsForHash().put(roomKey, "roomIsPlaying", String.valueOf(room.isRoomIsPlaying()));
+        redisTemplate.opsForSet().add(roomKey + ":users", room.getRoomOwner());
 
         System.out.println("Room created and roomNumber removed from AVAILABLE: " + room);
     }

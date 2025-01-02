@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import naegamaja_server.naegamaja.domain.auth.service.RedisAuthService;
 import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
 import naegamaja_server.naegamaja.system.exception.model.RestException;
+import naegamaja_server.naegamaja.system.websocket.StompPrincipal;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -32,15 +33,11 @@ public class StompChannelInterceptor implements ChannelInterceptor {
             System.out.println("sessionId: " + sessionId);
         }
 
-        if(command == StompCommand.CONNECT) {
-            return message;
-        }
-
         if(command == StompCommand.DISCONNECT) {
             return message;
         }
 
-        if(command == null) return message;
+        if(command.equals(null)) return message;
 
         if(!redisAuthService.isValidSessionId(sessionId)) {
             System.out.println("세션아이디가 유효하지 않다");
@@ -85,7 +82,12 @@ public class StompChannelInterceptor implements ChannelInterceptor {
 
     private void handleConnect(StompHeaderAccessor accessor) {
         String sessionId = accessor.getSessionId();
-        if(!StringUtils.hasText(sessionId))
-            throw new RestException(ErrorCode.GLOBAL_BAD_REQUEST);
+        if (!redisAuthService.isValidSessionId(sessionId)) {
+//            throw new RestException(ErrorCode.AUTH_SESSION_EXPIRED);
+        }
+
+        accessor.setUser(new StompPrincipal(sessionId));
     }
+
+
 }
