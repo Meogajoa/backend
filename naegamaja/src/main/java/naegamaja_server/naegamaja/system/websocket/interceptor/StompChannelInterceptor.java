@@ -37,7 +37,7 @@ public class StompChannelInterceptor implements ChannelInterceptor {
             return message;
         }
 
-        if(command.equals(null)) return message;
+        if(command == null) return message;
 
         if(!redisAuthService.isValidSessionId(sessionId)) {
             System.out.println("세션아이디가 유효하지 않다");
@@ -47,16 +47,16 @@ public class StompChannelInterceptor implements ChannelInterceptor {
 
         switch (command) {
             case SUBSCRIBE:
-                handleSubscribe(accessor);
+                handleSubscribe(accessor, sessionId);
                 break;
             case UNSUBSCRIBE:
-                handleUnsubscribe(accessor);
+                handleUnsubscribe(accessor, sessionId);
                 break;
             case DISCONNECT:
-                handleDisconnect(accessor);
+                handleDisconnect(accessor, sessionId);
                 break;
             case CONNECT:
-                handleConnect(accessor);
+                handleConnect(accessor, sessionId);
                 break;
             case SEND:
                 break;
@@ -65,23 +65,19 @@ public class StompChannelInterceptor implements ChannelInterceptor {
         return message;
     }
 
-    private void handleSubscribe(StompHeaderAccessor accessor) {
+    private void handleSubscribe(StompHeaderAccessor accessor, String sessionId) {
         System.out.println("최종구독");
     }
 
-    private void handleUnsubscribe(StompHeaderAccessor accessor) {
-        String sessionId = accessor.getSessionId();
-        String destination = accessor.getFirstNativeHeader("DdingjiSessionId");
+    private void handleUnsubscribe(StompHeaderAccessor accessor, String sessionId) {
 
     }
 
-    private void handleDisconnect(StompHeaderAccessor accessor) {
-        String sessionId = accessor.getSessionId();
+    private void handleDisconnect(StompHeaderAccessor accessor, String sessionId) {
         redisAuthService.deleteSessionId(sessionId);
     }
 
-    private void handleConnect(StompHeaderAccessor accessor) {
-        String sessionId = accessor.getSessionId();
+    private void handleConnect(StompHeaderAccessor accessor, String sessionId) {
         if (!redisAuthService.isValidSessionId(sessionId)) {
 //            throw new RestException(ErrorCode.AUTH_SESSION_EXPIRED);
         }
