@@ -36,6 +36,10 @@ public class AuthService {
 
         String sessionId = sessionService.createSessionId();
 
+        if(redisAuthService.isUserSessionActive(found.getNickname())) {
+            throw new RestException(ErrorCode.AUTH_ALREADY_LOGGED_IN);
+        }
+
         UserSession userSession = UserSession.builder()
                 .nickname(found.getNickname())
                 .state(State.LOBBY)
@@ -57,6 +61,10 @@ public class AuthService {
     @Transactional
     public AuthDto.SignUpResponse signUp(AuthDto.SignUpRequest request) {
         Optional<User> found = userRepository.findById(request.getEmail());
+
+        if(found.isPresent()) throw new RestException(ErrorCode.GLOBAL_ALREADY_EXIST);
+
+        found = userRepository.findByNickname(request.getNickname());
 
         if(found.isPresent()) throw new RestException(ErrorCode.GLOBAL_ALREADY_EXIST);
 

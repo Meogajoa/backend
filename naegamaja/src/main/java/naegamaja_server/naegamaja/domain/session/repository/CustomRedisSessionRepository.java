@@ -14,12 +14,13 @@ public class CustomRedisSessionRepository {
     private final StringRedisTemplate stringRedisTemplate;
 
     private final String SESSION_PREFIX = "session:";
+    private final String NICKNAME_TO_SESSIONID_PREFIX = "nicknameToSessionId:";
 
     public boolean isValidSessionId(String sessionId) {
         try {
             Boolean exists = stringRedisTemplate.hasKey(SESSION_PREFIX + sessionId);
             if(!exists) {
-                System.out.println("세션아이디가 유효하지 않다");
+                System.out.println("세션아이디가 유효하지 않다 1/4");
             }
 
             return exists;
@@ -57,5 +58,21 @@ public class CustomRedisSessionRepository {
         stringRedisTemplate.opsForHash().put(SESSION_PREFIX + authorization, "roomNumber", roomNumber.toString());
         stringRedisTemplate.opsForHash().put(SESSION_PREFIX + authorization, "isInRoom", "true");
 
+    }
+
+    public String getUserNickname(String authorization) {
+        return (String) stringRedisTemplate.opsForHash().get(SESSION_PREFIX + authorization, "nickname");
+    }
+
+    public void saveNicknameToSession(String nickname, String sessionId) {
+        stringRedisTemplate.opsForValue().set(NICKNAME_TO_SESSIONID_PREFIX + nickname, sessionId);
+    }
+
+    public String getNicknameToSessionId(String nickname) {
+        return (String) stringRedisTemplate.opsForValue().get(NICKNAME_TO_SESSIONID_PREFIX + nickname);
+    }
+
+    public boolean isUserSessionActive(String nickname) {
+        return stringRedisTemplate.hasKey(NICKNAME_TO_SESSIONID_PREFIX + nickname);
     }
 }

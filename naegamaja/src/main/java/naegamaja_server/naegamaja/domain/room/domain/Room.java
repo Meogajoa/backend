@@ -35,6 +35,6 @@ public class Room implements Serializable {
 
     private boolean roomIsPlaying;
 
-    List<UserSession> userSessions;
+    List<String> userSessions;
 
 }

@@ -35,18 +35,25 @@ public class RoomService {
             throw new RestException(ErrorCode.ROOM_FULL);
         }
 
+        String userNickname = customRedisSessionRepository.getUserNickname(authorization);
+
+        if(customRedisRoomRepository.isUserInRoom(userNickname, Long.parseLong(request.getRoomId()))) {
+            throw new RestException(ErrorCode.ROOM_ALREADY_JOINED);
+        }
+
         Long roomNumber = Long.parseLong(request.getRoomId());
         customRedisSessionRepository.setUserSessionState(authorization, State.valueOf("IN_ROOM"), roomNumber);
 
-        customRedisRoomRepository.saveUserToRoom(authorization, room);
+        customRedisRoomRepository.saveUserToRoom(userNickname, room);
     }
 
     public Long createRoom(RoomRequest.CreateRoomRequest request, String authorization) {
         Long roomNumber = customRedisRoomRepository.getAvailableRoomNumber();
+        String userNickname = customRedisSessionRepository.getUserNickname(authorization);
 
         Room room = Room.builder()
                 .id(String.valueOf(roomNumber))
-                .roomOwner(authorization)
+                .roomOwner(userNickname)
                 .roomName(request.getRoomName())
                 .roomPassword(request.getRoomPassword())
                 .roomMaxUser(request.getRoomMaxUser())

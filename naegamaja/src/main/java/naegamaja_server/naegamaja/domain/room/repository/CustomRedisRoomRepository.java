@@ -52,10 +52,10 @@ public class CustomRedisRoomRepository {
                 .build();
     }
 
-    public void saveUserToRoom(String authorization, Room room) {
+    public void saveUserToRoom(String nickname, Room room) {
         String userKey = ROOM_KEY_PREFIX + room.getId() + ":users";
         String roomKey = ROOM_KEY_PREFIX + room.getId();
-        stringRedisTemplate.opsForSet().add(userKey, authorization);
+        stringRedisTemplate.opsForSet().add(userKey, nickname);
         stringRedisTemplate.opsForHash().put(roomKey, "roomCurrentUser", String.valueOf(room.getRoomCurrentUser() + 1));
     }
 
@@ -63,9 +63,9 @@ public class CustomRedisRoomRepository {
         return roomId != null && stringRedisTemplate.hasKey(ROOM_KEY_PREFIX + roomId);
     }
 
-    public boolean isUserInRoom(String authorization, Long roomNumber) {
+    public boolean isUserInRoom(String nickname, Long roomNumber) {
         String roomKey = ROOM_KEY_PREFIX + roomNumber + ":users";
-        return Boolean.TRUE.equals(stringRedisTemplate.opsForSet().isMember(roomKey, authorization));
+        return Boolean.TRUE.equals(stringRedisTemplate.opsForSet().isMember(roomKey, nickname));
     }
 
     public void removeUserFromRoom(String authorization, Room room) {

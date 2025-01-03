@@ -12,7 +12,6 @@ public class RoomRequest {
     public static class JoinRoomRequest {
         private String roomId;
         private String roomPassword;
-        private String nickname;
     }
 
     @AllArgsConstructor
@@ -21,7 +20,6 @@ public class RoomRequest {
     @Builder
     public static class CreateRoomRequest {
         private String roomName;
-        private String nickname;
         private String roomPassword;
         private int roomMaxUser;
     }

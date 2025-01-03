@@ -34,6 +34,11 @@ public class RoomRestController {
         return roomService.getRooms(pageNum);
     }
 
+    @GetMapping("/lobby")
+    public Page<RoomResponse> getLobby(){
+        return roomService.getRooms(1);
+    }
+
 
 
 }

@@ -22,6 +22,8 @@ public enum ErrorCode {
     INVALID_ROOM_NUMBER(400, "올바르지 않은 방 번호입니다."),
     NO_AVAILABLE_ROOM(400, "사용 가능한 방이 없습니다."),
     NO_ROOMS(400, "방이 존재하지 않습니다."),
+    ROOM_ALREADY_JOINED(400, "이미 참여중인 방입니다."),
+    AUTH_ALREADY_LOGGED_IN(400, "이미 로그인 되어있습니다."),
     USER_ALREADY_EXIST(400, "이미 존재하는 사용자입니다.");
 
 

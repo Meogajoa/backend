@@ -24,6 +24,7 @@ public class RedisAuthService {
 
     public void saveSession(UserSession userSession) {
         redisSessionRepository.save(userSession);
+        customRedisSessionRepository.saveNicknameToSession(userSession.getNickname(), userSession.getSessionId());
     }
 
     public void deleteSessionId(String sessionId) {
@@ -35,5 +36,12 @@ public class RedisAuthService {
     }
 
 
+    public boolean isUserSessionActive(String nickname) {
+        return (customRedisSessionRepository.isUserSessionActive(nickname));
+    }
+
+    public String getSessionIdByNickname(String nickname) {
+        return customRedisSessionRepository.getNicknameToSessionId(nickname);
+    }
 
 }
