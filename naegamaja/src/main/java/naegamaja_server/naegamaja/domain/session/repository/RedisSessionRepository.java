@@ -2,6 +2,7 @@ package naegamaja_server.naegamaja.domain.session.repository;
 
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.session.entity.UserSession;
+import naegamaja_server.naegamaja.domain.session.state.State;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -58,11 +59,18 @@ public class RedisSessionRepository {
 
         return UserSession.of(
                 (String) sessionMap.get("nickname"),
-                (String) sessionMap.get("state"),
+                State.valueOf((String) sessionMap.get("state")),
                 (String) sessionMap.get("sessionId"),
                 (Long) sessionMap.get("roomNumber"),
                 sessionMap.get("isInGame") != null && Boolean.parseBoolean(sessionMap.get("isInGame").toString()),
                 sessionMap.get("isInRoom") != null && Boolean.parseBoolean(sessionMap.get("isInRoom").toString())
         );
+    }
+
+    public void setUserSession(String authorization, State state, Long roomNumber) {
+        stringRedisTemplate.opsForHash().put(SESSION_PREFIX + authorization, "state", state.toString());
+        stringRedisTemplate.opsForHash().put(SESSION_PREFIX + authorization, "roomNumber", roomNumber.toString());
+        stringRedisTemplate.opsForHash().put(SESSION_PREFIX + authorization, "isInRoom", "true");
+
     }
 }

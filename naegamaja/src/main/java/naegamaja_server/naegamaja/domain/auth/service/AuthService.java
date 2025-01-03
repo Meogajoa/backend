@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.auth.dto.AuthDto;
 import naegamaja_server.naegamaja.domain.session.entity.UserSession;
 import naegamaja_server.naegamaja.domain.session.service.SessionService;
+import naegamaja_server.naegamaja.domain.session.state.State;
 import naegamaja_server.naegamaja.domain.user.dto.UserDto;
 import naegamaja_server.naegamaja.domain.user.entity.User;
 import naegamaja_server.naegamaja.domain.user.repository.UserRepository;
@@ -37,7 +38,7 @@ public class AuthService {
 
         UserSession userSession = UserSession.builder()
                 .nickname(found.getNickname())
-                .state("LOBBY")
+                .state(State.LOBBY)
                 .sessionId(sessionId)
                 .roomNumber(-1L)
                 .isInGame(false)

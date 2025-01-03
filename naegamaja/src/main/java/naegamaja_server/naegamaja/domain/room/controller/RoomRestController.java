@@ -25,7 +25,7 @@ public class RoomRestController {
     }
 
     @PostMapping("/create")
-    public int createRoom(@RequestHeader String authorization, @RequestBody RoomRequest.CreateRoomRequest request) {
+    public Long createRoom(@RequestHeader String authorization, @RequestBody RoomRequest.CreateRoomRequest request) {
         System.out.println("request = " + request);
         return roomService.createRoom(request, authorization);
     }

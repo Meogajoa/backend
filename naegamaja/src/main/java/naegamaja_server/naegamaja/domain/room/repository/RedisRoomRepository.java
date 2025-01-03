@@ -68,7 +68,7 @@ public class RedisRoomRepository {
         return roomId != null && stringRedisTemplate.hasKey(ROOM_KEY_PREFIX + roomId);
     }
 
-    public int getAvailableRoomNumber() {
+    public Long getAvailableRoomNumber() {
         Set<String> result = stringRedisTemplate.opsForZSet().range(AVAILABLE_ROOM_LIST_KEY, 0, 0);
 
         assert result != null;
@@ -80,13 +80,13 @@ public class RedisRoomRepository {
 
         String roomNumberStr = result.iterator().next();
         try {
-            return Integer.parseInt(roomNumberStr);
+            return Long.parseLong(roomNumberStr);
         } catch (NumberFormatException e) {
             throw new RestException(ErrorCode.INVALID_ROOM_NUMBER);
         }
     }
 
-    public void createRoom(Room room, int roomNumber) {
+    public void createRoom(Room room, Long roomNumber) {
         String roomNumberStr = String.valueOf(roomNumber);
 
         // AVAILABLE ZSet에서 roomNumber 제거
