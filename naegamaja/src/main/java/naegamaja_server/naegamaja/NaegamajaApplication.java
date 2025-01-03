@@ -1,11 +1,9 @@
 package naegamaja_server.naegamaja;
 
 import lombok.RequiredArgsConstructor;
-import naegamaja_server.naegamaja.domain.room.repository.RedisRoomRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.EnableScheduling;

@@ -4,10 +4,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
 import naegamaja_server.naegamaja.domain.session.entity.UserSession;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 import java.io.Serializable;
 import java.util.List;
 
+@RedisHash
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -19,6 +22,7 @@ public class Room implements Serializable {
     @Id
     private String id;
 
+    @Indexed
     private String roomName;
 
     private String roomPassword;
