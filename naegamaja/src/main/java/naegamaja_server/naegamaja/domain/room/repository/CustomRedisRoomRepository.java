@@ -63,6 +63,18 @@ public class CustomRedisRoomRepository {
         return roomId != null && stringRedisTemplate.hasKey(ROOM_KEY_PREFIX + roomId);
     }
 
+    public boolean isUserInRoom(String authorization, Long roomNumber) {
+        String roomKey = ROOM_KEY_PREFIX + roomNumber + ":users";
+        return Boolean.TRUE.equals(stringRedisTemplate.opsForSet().isMember(roomKey, authorization));
+    }
+
+    public void removeUserFromRoom(String authorization, Room room) {
+        String userKey = ROOM_KEY_PREFIX + room.getId() + ":users";
+        String roomKey = ROOM_KEY_PREFIX + room.getId();
+        stringRedisTemplate.opsForSet().remove(userKey, authorization);
+        stringRedisTemplate.opsForHash().put(roomKey, "roomCurrentUser", String.valueOf(room.getRoomCurrentUser() - 1));
+    }
+
     public Long getAvailableRoomNumber() {
         Set<String> result = stringRedisTemplate.opsForZSet().range(AVAILABLE_ROOM_LIST_KEY, 0, 0);
 
@@ -133,11 +145,8 @@ public class CustomRedisRoomRepository {
             }
         }
 
-        // 전체 사용 중인 방 개수
         long total = stringRedisTemplate.opsForZSet().zCard(USING_ROOM_LIST_KEY);
 
-        // PageRequest를 만들어 PageImpl에 넘김
-        // PageImpl(List<T> content, Pageable pageable, long total)
         PageRequest pageRequest = PageRequest.of(page, size);
         return new PageImpl<>(roomResponses, pageRequest, total);
     }
@@ -154,4 +163,8 @@ public class CustomRedisRoomRepository {
         return room;
     }
 
+    public List<String> getUserSessionIdInRoom(Long roomNumber) {
+        String roomKey = ROOM_KEY_PREFIX + roomNumber + ":users";
+        return new ArrayList<>(stringRedisTemplate.opsForSet().members(roomKey));
+    }
 }

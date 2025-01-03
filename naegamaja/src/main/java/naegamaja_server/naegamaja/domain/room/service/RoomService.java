@@ -10,8 +10,12 @@ import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRe
 import naegamaja_server.naegamaja.domain.session.state.State;
 import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
 import naegamaja_server.naegamaja.system.exception.model.RestException;
+import naegamaja_server.naegamaja.system.websocket.dto.Message;
 import org.springframework.data.domain.Page;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -20,6 +24,7 @@ public class RoomService {
     private final CustomRedisRoomRepository customRedisRoomRepository;
     private final CustomRedisSessionRepository customRedisSessionRepository;
     private final RedisRoomRepository redisRoomRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
 
     public void joinRoom(RoomRequest.JoinRoomRequest request, String authorization) {
@@ -62,6 +67,16 @@ public class RoomService {
     }
 
 
+    public void chat(Long roomNumber, Message.Request message, String authorization) {
+        if(customRedisRoomRepository.isUserInRoom(authorization, roomNumber)) {
+            List<String> userSessionIds = customRedisRoomRepository.getUserSessionIdInRoom(roomNumber);
 
+            for(String userSessionId : userSessionIds) {
+                simpMessagingTemplate.convertAndSend("/topic/room/" + roomNumber + "/chat", message);
+            }
+        } else {
+            throw new RestException(ErrorCode.ROOM_NOT_FOUND);
+        }
 
+    }
 }
