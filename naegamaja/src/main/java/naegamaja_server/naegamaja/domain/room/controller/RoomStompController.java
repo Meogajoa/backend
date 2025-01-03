@@ -1,7 +1,7 @@
 package naegamaja_server.naegamaja.domain.room.controller;
 
 import lombok.RequiredArgsConstructor;
-import naegamaja_server.naegamaja.domain.room.dto.Message;
+import naegamaja_server.naegamaja.system.websocket.dto.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -16,7 +16,7 @@ public class RoomStompController {
 
 
     @MessageMapping("/room/{roomNumber}/chat")
-    public void chat(@DestinationVariable Long roomNumber, Message message) {
-        System.out.println("roomNumber = " + roomNumber);
+    public void chat(@DestinationVariable Long roomNumber, Message.Request message) {
+        System.out.println(message.getContent());
     }
 }

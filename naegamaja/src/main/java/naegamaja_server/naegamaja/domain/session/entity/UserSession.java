@@ -4,16 +4,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import naegamaja_server.naegamaja.domain.session.state.State;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 
+@RedisHash("session")
 @AllArgsConstructor
 @Getter
 @Builder
 public class UserSession implements Serializable {
+    @Id
+    private String sessionId;
     private String nickname;
     private State state;
-    private String sessionId;
     private Long roomNumber;
     private boolean isInGame;
     private boolean isInRoom;

@@ -6,7 +6,7 @@ import naegamaja_server.naegamaja.domain.room.dto.RoomRequest;
 import naegamaja_server.naegamaja.domain.room.dto.RoomResponse;
 import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
 import naegamaja_server.naegamaja.domain.room.repository.RedisRoomRepository;
-import naegamaja_server.naegamaja.domain.session.repository.RedisSessionRepository;
+import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
 import naegamaja_server.naegamaja.domain.session.state.State;
 import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
 import naegamaja_server.naegamaja.system.exception.model.RestException;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class RoomService {
 
     private final CustomRedisRoomRepository customRedisRoomRepository;
-    private final RedisSessionRepository redisSessionRepository;
+    private final CustomRedisSessionRepository customRedisSessionRepository;
     private final RedisRoomRepository redisRoomRepository;
 
 
@@ -29,6 +29,9 @@ public class RoomService {
         if(room.getRoomCurrentUser() == room.getRoomMaxUser()) {
             throw new RestException(ErrorCode.ROOM_FULL);
         }
+
+        Long roomNumber = Long.parseLong(request.getRoomId());
+        customRedisSessionRepository.setUserSessionState(authorization, State.valueOf("IN_ROOM"), roomNumber);
 
         customRedisRoomRepository.saveUserToRoom(authorization, room);
     }
@@ -46,10 +49,10 @@ public class RoomService {
                 .roomIsPlaying(false)
                 .build();
 
-        redisSessionRepository.setUserSession(authorization, State.valueOf("IN_ROOM"), roomNumber);
+        customRedisSessionRepository.setUserSessionState(authorization, State.valueOf("IN_ROOM"), roomNumber);
 
-        //customRedisRoomRepository.createRoom(room, roomNumber);
-        redisRoomRepository.save(room);
+        customRedisRoomRepository.createRoom(room, roomNumber);
+        //redisRoomRepository.save(room);
 
         return roomNumber;
     }

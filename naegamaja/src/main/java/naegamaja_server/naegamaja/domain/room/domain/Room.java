@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.index.Indexed;
 import java.io.Serializable;
 import java.util.List;
 
-@RedisHash
+@RedisHash("room")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
