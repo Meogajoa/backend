@@ -60,7 +60,7 @@ public class AuthService {
 
     @Transactional
     public AuthDto.SignUpResponse signUp(AuthDto.SignUpRequest request) {
-        Optional<User> found = userRepository.findById(request.getEmail());
+        Optional<User> found = userRepository.findByEmail(request.getEmail());
 
         if(found.isPresent()) throw new RestException(ErrorCode.GLOBAL_ALREADY_EXIST);
 

@@ -1,5 +1,6 @@
 package naegamaja_server.naegamaja.domain.auth.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.session.entity.UserSession;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RedisAuthService {
 
     private final CustomRedisSessionRepository customRedisSessionRepository;
