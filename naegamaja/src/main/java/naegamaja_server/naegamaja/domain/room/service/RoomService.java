@@ -75,11 +75,12 @@ public class RoomService {
 
 
     public void chat(Long roomNumber, Message.Request message, String authorization) {
-        if(customRedisRoomRepository.isUserInRoom(authorization, roomNumber)) {
+        String userNickname = customRedisSessionRepository.getUserNickname(authorization);
+        if(customRedisRoomRepository.isUserInRoom(userNickname, roomNumber)) {
             List<String> userSessionIds = customRedisRoomRepository.getUserSessionIdInRoom(roomNumber);
 
             for(String userSessionId : userSessionIds) {
-                simpMessagingTemplate.convertAndSend("/topic/room/" + roomNumber + "/chat", message);
+                simpMessagingTemplate.convertAndSendToUser(userSessionId, "/topic/room/1/chat", message);
             }
         } else {
             throw new RestException(ErrorCode.ROOM_NOT_FOUND);

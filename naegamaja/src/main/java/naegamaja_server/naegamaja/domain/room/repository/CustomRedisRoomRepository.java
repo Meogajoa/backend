@@ -163,8 +163,20 @@ public class CustomRedisRoomRepository {
         return room;
     }
 
-    public List<String> getUserSessionIdInRoom(Long roomNumber) {
+    public List<String> getUserNicknameInRoom(Long roomNumber) {
         String roomKey = ROOM_KEY_PREFIX + roomNumber + ":users";
         return new ArrayList<>(stringRedisTemplate.opsForSet().members(roomKey));
+    }
+
+    public List<String> getUserSessionIdInRoom(Long roomNumber) {
+        List<String> nicknames = getUserNicknameInRoom(roomNumber);
+        List<String> sessionIds = new ArrayList<>();
+        for (String nickname : nicknames) {
+            String sessionId = stringRedisTemplate.opsForValue().get("nicknameToSessionId:" + nickname);
+            if (sessionId != null) {
+                sessionIds.add(sessionId);
+            }
+        }
+        return sessionIds;
     }
 }
