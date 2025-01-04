@@ -1,6 +1,7 @@
 package naegamaja_server.naegamaja.domain.room.service;
 
 import lombok.RequiredArgsConstructor;
+import naegamaja_server.naegamaja.domain.chat.repository.CustomRedisChatLogRepository;
 import naegamaja_server.naegamaja.domain.room.domain.Room;
 import naegamaja_server.naegamaja.domain.room.dto.RoomRequest;
 import naegamaja_server.naegamaja.domain.room.dto.RoomResponse;
@@ -25,6 +26,7 @@ public class RoomService {
     private final CustomRedisSessionRepository customRedisSessionRepository;
     private final RedisRoomRepository redisRoomRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final CustomRedisChatLogRepository customRedisChatLogRepository;
 
 
     public void joinRoom(RoomRequest.JoinRoomRequest request, String authorization) {
@@ -76,6 +78,9 @@ public class RoomService {
 
     public void chat(Long roomNumber, Message.Request message, String authorization) {
         String userNickname = customRedisSessionRepository.getUserNickname(authorization);
+
+        customRedisChatLogRepository.saveChatLog(message.getContent(), roomNumber, userNickname);
+
         if(customRedisRoomRepository.isUserInRoom(userNickname, roomNumber)) {
             List<String> userSessionIds = customRedisRoomRepository.getUserSessionIdInRoom(roomNumber);
 

@@ -1,5 +1,8 @@
 package naegamaja_server.naegamaja.system.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,11 +35,19 @@ public class RedisConfig {
     public RedisTemplate<?, ?> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-        template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        objectMapper.registerModule(new JavaTimeModule()); // JavaTimeModule 등록
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // 타임스탬프로 쓰지 않도록 설정
+
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+
+        template.setKeySerializer(stringRedisSerializer);
+        template.setHashKeySerializer(stringRedisSerializer);
+        template.setValueSerializer(serializer);
+        template.setHashValueSerializer(serializer);
 
         template.afterPropertiesSet();
         return template;
