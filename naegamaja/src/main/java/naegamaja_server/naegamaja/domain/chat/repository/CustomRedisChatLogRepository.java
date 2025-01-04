@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class CustomRedisChatLogRepository {
     private final StringRedisTemplate stringRedisTemplate;
-    private final static String CHAT_LOG_KEY = "chat_log";
+    private final static String CHAT_LOG_KEY = "chat_log:";
     private final RedisTemplate<String, Object> redisTemplate;
 
     public void saveChatLog(String content, Long roomNumber, String sender) {
@@ -22,7 +22,7 @@ public class CustomRedisChatLogRepository {
                 .sendTime(LocalDateTime.now())
                 .build();
 
-        redisTemplate.opsForList().rightPush(CHAT_LOG_KEY + ":" + roomNumber, chatLog);
+        redisTemplate.opsForList().rightPush(CHAT_LOG_KEY + roomNumber, chatLog);
     }
 
 }
