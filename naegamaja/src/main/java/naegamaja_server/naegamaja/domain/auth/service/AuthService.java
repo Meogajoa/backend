@@ -77,8 +77,8 @@ public class AuthService {
                 .build();
     }
 
-    public void logout(AuthDto.LogoutRequest request) {
-        redisAuthService.deleteSessionId(request.getSessionId());
+    public void logout(String sessionId) {
+        redisAuthService.deleteSessionId(sessionId);
     }
 
 }

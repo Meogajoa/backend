@@ -28,8 +28,8 @@ public class AuthController {
     }
 
     @PostMapping("/sign-out")
-    public void signOut(@RequestBody AuthDto.LogoutRequest request) {
-        authService.logout(request);
+    public void signOut(@RequestHeader String authorization) {
+        authService.logout(authorization);
     }
 
 }

@@ -79,12 +79,4 @@ public class AuthDto {
         private UserDto.UserResponse user;
     }
 
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    @Builder
-    public static class LogoutRequest{
-        private String sessionId;
-    }
-
 }
