@@ -32,5 +32,6 @@ logging:
     org.springframework.web.socket: DEBUG
     org.springframework.web.socket.messaging: DEBUG
 
+
 custom:
   url: http://localhost:8080/ws

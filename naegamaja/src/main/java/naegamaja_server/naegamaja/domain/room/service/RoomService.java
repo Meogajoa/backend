@@ -88,24 +88,5 @@ public class RoomService {
     }
 
 
-    public void chat(Long roomNumber, Message.Request message, String authorization) {
-        String userNickname = customRedisSessionRepository.getUserNickname(authorization);
 
-        ChatLog ChatLog = customRedisChatLogRepository.saveChatLog(message.getContent(), roomNumber, userNickname);
-
-        if(customRedisRoomRepository.isUserInRoom(userNickname, roomNumber)) {
-            List<String> userSessionIds = customRedisRoomRepository.getUserSessionIdInRoom(roomNumber);
-
-            for(String userSessionId : userSessionIds) {
-                simpMessagingTemplate.convertAndSendToUser(userSessionId, "/topic/room/1/chat", ChatLog);
-            }
-        } else {
-            throw new RestException(ErrorCode.ROOM_NOT_FOUND);
-        }
-
-    }
-
-    public List<ChatLog> getRoomMessages(String roomId) {
-        return customRedisChatLogRepository.getRoomChatLogs(roomId);
-    }
 }

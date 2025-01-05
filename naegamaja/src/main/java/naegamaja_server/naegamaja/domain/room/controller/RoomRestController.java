@@ -2,6 +2,7 @@ package naegamaja_server.naegamaja.domain.room.controller;
 
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
+import naegamaja_server.naegamaja.domain.chat.service.ChatLogService;
 import naegamaja_server.naegamaja.domain.room.dto.RoomCreationDto;
 import naegamaja_server.naegamaja.domain.room.dto.RoomRequest;
 import naegamaja_server.naegamaja.domain.room.dto.RoomResponse;
@@ -20,11 +21,12 @@ import java.util.List;
 public class RoomRestController {
 
     private final RoomService roomService;
+    private final ChatLogService chatLogService;
 
     @PostMapping("/join")
     public List<ChatLog> joinRoom(@RequestHeader String authorization, @RequestBody RoomRequest.JoinRoomRequest request) {
         roomService.joinRoom(request, authorization);
-        return roomService.getRoomMessages(request.getRoomId());
+        return chatLogService.getRoomMessages(request.getRoomId());
     }
 
     @PostMapping("/create")
