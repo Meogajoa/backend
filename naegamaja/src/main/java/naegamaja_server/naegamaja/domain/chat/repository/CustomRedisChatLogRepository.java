@@ -13,10 +13,13 @@ import java.time.LocalDateTime;
 public class CustomRedisChatLogRepository {
     private final StringRedisTemplate stringRedisTemplate;
     private final static String CHAT_LOG_KEY = "chat_log:";
+    private final static String CHAT_LOG_ID_KEY = "chat_log:id";
     private final RedisTemplate<String, Object> redisTemplate;
 
     public void saveChatLog(String content, Long roomNumber, String sender) {
+        Long id = stringRedisTemplate.opsForValue().increment(CHAT_LOG_ID_KEY);
         ChatLog chatLog = ChatLog.builder()
+                .id(String.valueOf(id))
                 .content(content)
                 .sender(sender)
                 .sendTime(LocalDateTime.now())

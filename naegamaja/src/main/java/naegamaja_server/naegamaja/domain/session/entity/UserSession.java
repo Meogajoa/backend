@@ -6,6 +6,7 @@ import lombok.Getter;
 import naegamaja_server.naegamaja.domain.session.state.State;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 import java.io.Serializable;
 
@@ -16,6 +17,8 @@ import java.io.Serializable;
 public class UserSession implements Serializable {
     @Id
     private String sessionId;
+
+    @Indexed
     private String nickname;
     private State state;
     private Long roomNumber;

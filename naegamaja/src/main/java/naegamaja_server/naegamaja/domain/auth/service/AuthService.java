@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.auth.dto.AuthDto;
 import naegamaja_server.naegamaja.domain.session.entity.UserSession;
+import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
+import naegamaja_server.naegamaja.domain.session.repository.RedisSessionRepository;
 import naegamaja_server.naegamaja.domain.session.service.SessionService;
 import naegamaja_server.naegamaja.domain.session.state.State;
 import naegamaja_server.naegamaja.domain.user.dto.UserDto;
@@ -23,6 +25,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final SessionService sessionService;
     private final RedisAuthService redisAuthService;
+    private final CustomRedisSessionRepository customRedisSessionRepository;
+    private final RedisSessionRepository redisSessionRepository;
 
     @Transactional
     public AuthDto.SessionIdResponse signIn(AuthDto.SignInRequest request) {
@@ -36,8 +40,8 @@ public class AuthService {
 
         String sessionId = sessionService.createSessionId();
 
-        if(redisAuthService.isUserSessionActive(found.getNickname())) {
-            throw new RestException(ErrorCode.AUTH_ALREADY_LOGGED_IN);
+        if(customRedisSessionRepository.isUserSessionActive(found.getNickname())) {
+            sessionId = customRedisSessionRepository.getSessionIdByNickname(found.getNickname());
         }
 
         UserSession userSession = UserSession.builder()

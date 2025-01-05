@@ -7,7 +7,9 @@ import naegamaja_server.naegamaja.domain.room.dto.RoomRequest;
 import naegamaja_server.naegamaja.domain.room.dto.RoomResponse;
 import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
 import naegamaja_server.naegamaja.domain.room.repository.RedisRoomRepository;
+import naegamaja_server.naegamaja.domain.session.entity.UserSession;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
+import naegamaja_server.naegamaja.domain.session.repository.RedisSessionRepository;
 import naegamaja_server.naegamaja.domain.session.state.State;
 import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
 import naegamaja_server.naegamaja.system.exception.model.RestException;
@@ -27,6 +29,7 @@ public class RoomService {
     private final RedisRoomRepository redisRoomRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final CustomRedisChatLogRepository customRedisChatLogRepository;
+    private final RedisSessionRepository redisSessionRepository;
 
 
     public void joinRoom(RoomRequest.JoinRoomRequest request, String authorization) {
@@ -50,8 +53,16 @@ public class RoomService {
     }
 
     public Long createRoom(RoomRequest.CreateRoomRequest request, String authorization) {
-        Long roomNumber = customRedisRoomRepository.getAvailableRoomNumber();
         String userNickname = customRedisSessionRepository.getUserNickname(authorization);
+
+        UserSession userSession = redisSessionRepository.findByNickname(userNickname)
+                .orElseThrow(() -> new RestException(ErrorCode.USER_NOT_FOUND));
+
+        if(userSession.isInRoom()) {
+            throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
+        }
+
+        Long roomNumber = customRedisRoomRepository.getAvailableRoomNumber();
 
         Room room = Room.builder()
                 .id(String.valueOf(roomNumber))
