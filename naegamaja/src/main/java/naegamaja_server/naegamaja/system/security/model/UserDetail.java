@@ -15,6 +15,7 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 public class UserDetail implements AuthenticatedPrincipal {
     private User user;
 
+    private Long id;
     private String email;
     private String nickname;
 

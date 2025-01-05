@@ -27,5 +27,14 @@ public class ChatLog {
 
     LocalDateTime sendTime;
 
+    public static ChatLog of(String id, String content, String sender, LocalDateTime sendTime){
+        return ChatLog.builder()
+                .id(id)
+                .content(content)
+                .sender(sender)
+                .sendTime(sendTime)
+                .build();
+    }
+
 
 }
