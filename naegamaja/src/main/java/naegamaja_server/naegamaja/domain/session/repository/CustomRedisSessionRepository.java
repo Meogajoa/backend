@@ -75,4 +75,8 @@ public class CustomRedisSessionRepository {
     public boolean isUserSessionActive(String nickname) {
         return stringRedisTemplate.hasKey(NICKNAME_TO_SESSIONID_PREFIX + nickname);
     }
+
+    public String getSessionIdByNickname(String nickname) {
+        return stringRedisTemplate.opsForValue().get(NICKNAME_TO_SESSIONID_PREFIX + nickname);
+    }
 }
