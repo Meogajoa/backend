@@ -30,8 +30,10 @@ public class RoomRestController {
     }
 
     @PostMapping("/create")
-    public RoomResponse createRoom(@RequestHeader String authorization, @RequestBody RoomRequest.CreateRoomRequest request) {
-        return roomService.createRoom(request, authorization);
+    public ResponseEntity<?> createRoom(@RequestHeader String authorization, @RequestBody RoomRequest.CreateRoomRequest request) {
+        roomService.createRoom(request, authorization);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/pages/{pageNum}")
