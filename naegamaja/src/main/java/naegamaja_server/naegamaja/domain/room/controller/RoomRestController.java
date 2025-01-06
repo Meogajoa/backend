@@ -30,7 +30,7 @@ public class RoomRestController {
     }
 
     @PostMapping("/create")
-    public Long createRoom(@RequestHeader String authorization, @RequestBody RoomRequest.CreateRoomRequest request) {
+    public RoomResponse createRoom(@RequestHeader String authorization, @RequestBody RoomRequest.CreateRoomRequest request) {
         return roomService.createRoom(request, authorization);
     }
 

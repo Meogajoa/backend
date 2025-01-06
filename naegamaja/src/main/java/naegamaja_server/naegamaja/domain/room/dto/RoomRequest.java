@@ -21,6 +21,5 @@ public class RoomRequest {
     public static class CreateRoomRequest {
         private String roomName;
         private String roomPassword;
-        private int roomMaxUser;
     }
 }

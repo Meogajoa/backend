@@ -53,7 +53,7 @@ public class RoomService {
         customRedisRoomRepository.saveUserToRoom(userNickname, room);
     }
 
-    public Long createRoom(RoomRequest.CreateRoomRequest request, String authorization) {
+    public RoomResponse createRoom(RoomRequest.CreateRoomRequest request, String authorization) {
         String userNickname = customRedisSessionRepository.getUserNickname(authorization);
 
         UserSession userSession = redisSessionRepository.findByNickname(userNickname)
@@ -70,7 +70,7 @@ public class RoomService {
                 .roomOwner(userNickname)
                 .roomName(request.getRoomName())
                 .roomPassword(request.getRoomPassword())
-                .roomMaxUser(request.getRoomMaxUser())
+                .roomMaxUser(8)
                 .roomCurrentUser(1)
                 .roomIsPlaying(false)
                 .build();
@@ -80,7 +80,7 @@ public class RoomService {
         customRedisRoomRepository.createRoom(room, roomNumber);
         //redisRoomRepository.save(room);
 
-        return roomNumber;
+        return RoomResponse.of(roomNumber);
     }
 
     public Page<RoomResponse> getRooms(int pageNum) {
