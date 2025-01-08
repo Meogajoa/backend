@@ -40,14 +40,13 @@ public class RoomService {
 
 
     public void joinRoom(RoomRequest.JoinRoomRequest request, String authorization) {
-        String lockKey = "roomLock:" + request.getRoomId();
+        String lockKey = "lock:joinRoom:" + request.getRoomId();
         RLock lock = redissonClient.getLock(lockKey);
         boolean isLocked = false;
 
         if (lock.isLocked()) {
             log.warn("Lock with key {} is already held by another process.", lockKey);
         }
-
 
         try{
             isLocked = lock.tryLock(10, 10, TimeUnit.SECONDS);
