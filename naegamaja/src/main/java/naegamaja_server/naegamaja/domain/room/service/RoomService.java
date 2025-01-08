@@ -1,6 +1,7 @@
 package naegamaja_server.naegamaja.domain.room.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
 import naegamaja_server.naegamaja.domain.chat.repository.CustomRedisChatLogRepository;
 import naegamaja_server.naegamaja.domain.room.domain.Room;
@@ -26,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class RoomService {
 
     private final CustomRedisRoomRepository customRedisRoomRepository;
@@ -38,12 +40,17 @@ public class RoomService {
 
 
     public void joinRoom(RoomRequest.JoinRoomRequest request, String authorization) {
-        String lockKey = "room:" + request.getRoomId();
+        String lockKey = "roomLock:" + request.getRoomId();
         RLock lock = redissonClient.getLock(lockKey);
         boolean isLocked = false;
 
+        if (lock.isLocked()) {
+            log.warn("Lock with key {} is already held by another process.", lockKey);
+        }
+
+
         try{
-            isLocked = lock.tryLock(10, 5, TimeUnit.SECONDS);
+            isLocked = lock.tryLock(10, 10, TimeUnit.SECONDS);
 
             if(isLocked) {
                 Room room = redisRoomRepository.findById(request.getRoomId())
@@ -87,7 +94,7 @@ public class RoomService {
 
         try {
 
-            isLocked = lock.tryLock(10, 5, TimeUnit.SECONDS);
+            isLocked = lock.tryLock(10, 10, TimeUnit.SECONDS);
             if (isLocked) {
                 String userNickname = customRedisSessionRepository.getUserNickname(authorization);
 
