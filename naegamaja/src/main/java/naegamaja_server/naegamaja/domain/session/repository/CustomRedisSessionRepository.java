@@ -3,6 +3,8 @@ package naegamaja_server.naegamaja.domain.session.repository;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.session.entity.UserSession;
 import naegamaja_server.naegamaja.domain.session.state.State;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +14,7 @@ import java.util.Map;
 @Repository
 public class CustomRedisSessionRepository {
     private final StringRedisTemplate stringRedisTemplate;
+    private final RedissonClient redissonClient;
 
     private final String SESSION_PREFIX = "session:";
     private final String NICKNAME_TO_SESSIONID_PREFIX = "nicknameToSessionId:";

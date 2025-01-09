@@ -26,6 +26,9 @@ public enum ErrorCode {
     NO_ROOMS(400, "방이 존재하지 않습니다."),
     ROOM_ALREADY_JOINED(400, "이미 참여중인 방입니다."),
     AUTH_ALREADY_LOGGED_IN(400, "이미 로그인 되어있습니다."),
+    LOCK_INTERRUPTED(500, "Lock이 중단되었습니다."),
+    LOCK_ACQUIRE_FAILED(500, "Lock을 얻는데 실패했습니다."),
+
     USER_ALREADY_EXIST(400, "이미 존재하는 사용자입니다.");
 
 

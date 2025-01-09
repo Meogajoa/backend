@@ -3,6 +3,7 @@ package naegamaja_server.naegamaja.system.websocket.interceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import naegamaja_server.naegamaja.domain.auth.service.RedisAuthService;
+import naegamaja_server.naegamaja.system.exception.model.StompException;
 import naegamaja_server.naegamaja.system.websocket.model.StompPrincipal;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -76,7 +77,7 @@ public class StompChannelInterceptor implements ChannelInterceptor {
 
     private void handleConnect(StompHeaderAccessor accessor, String sessionId) {
         if (!redisAuthService.isValidSessionId(sessionId)) {
-//            throw new RestException(ErrorCode.AUTH_SESSION_EXPIRED);
+            //throw new StompException(ErrorCode.AUTH_SESSION_INVALID);
         }
 
         accessor.setUser(new StompPrincipal(sessionId));

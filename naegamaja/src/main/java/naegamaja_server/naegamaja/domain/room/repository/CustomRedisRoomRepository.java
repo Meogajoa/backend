@@ -50,6 +50,7 @@ public class CustomRedisRoomRepository {
                 .roomCurrentUser(roomCurrentUser)
                 .roomIsPlaying(roomIsPlaying)
                 .build();
+
     }
 
     public void saveUserToRoom(String nickname, Room room) {
