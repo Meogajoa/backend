@@ -2,7 +2,6 @@ package naegamaja_server.naegamaja.domain.room.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
 import naegamaja_server.naegamaja.domain.chat.repository.CustomRedisChatLogRepository;
 import naegamaja_server.naegamaja.domain.room.domain.Room;
 import naegamaja_server.naegamaja.domain.room.dto.RoomRequest;
@@ -22,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
@@ -39,7 +37,6 @@ public class RoomService {
     private final RedissonClient redissonClient;
     private final String userSessionLockKey = "lock:userSession:";
 
-
     public void joinRoom(RoomRequest.JoinRoomRequest request, String authorization) {
         String roomJoinLockKey = "lock:joinRoom:" + request.getRoomId();
         RLock roomJoinLock = redissonClient.getLock(roomJoinLockKey);
@@ -48,56 +45,47 @@ public class RoomService {
         boolean isUserSessionLocked = false;
         Long roomNumber = Long.parseLong(request.getRoomId());
 
-        if (roomJoinLock.isLocked()) {
-            log.warn("Lock with key {} is already held by another process.", roomJoinLockKey);
-        }
-
-        try{
+        try {
             isJoinRoomLocked = roomJoinLock.tryLock(10, 10, TimeUnit.SECONDS);
+            isUserSessionLocked = userSessionLock.tryLock(10, 10, TimeUnit.SECONDS);
 
-            if(isJoinRoomLocked) {
+            if (isJoinRoomLocked && isUserSessionLocked) {
                 Room room = redisRoomRepository.findById(request.getRoomId())
                         .orElseThrow(() -> new RestException(ErrorCode.ROOM_NOT_FOUND));
 
-                if(room.getRoomCurrentUser() >= room.getRoomMaxUser()) {
+                if (room.getRoomCurrentUser() >= room.getRoomMaxUser()) {
                     throw new RestException(ErrorCode.ROOM_FULL);
                 }
 
-                try{
-                    isUserSessionLocked = userSessionLock.tryLock(10, 10, TimeUnit.SECONDS);
+                String userNickname = customRedisSessionRepository.getUserNickname(authorization);
 
-                    if(isUserSessionLocked){
-                        String userNickname = customRedisSessionRepository.getUserNickname(authorization);
-
-                        if(customRedisRoomRepository.isUserInRoom(userNickname, Long.parseLong(request.getRoomId()))) {
-                            throw new RestException(ErrorCode.ROOM_ALREADY_JOINED);
-                        }
-
-
-                        customRedisSessionRepository.setUserSessionState(authorization, State.valueOf("IN_ROOM"), roomNumber);
-                        customRedisRoomRepository.saveUserToRoom(userNickname, room);
-
-                    }else{
-                        throw new RestException(ErrorCode.LOCK_ACQUIRE_FAILED);
-                    }
-
-                } catch(Exception e) {
-                    throw new RestException(ErrorCode.LOCK_INTERRUPTED);
-                } finally {
-                    if(isUserSessionLocked) {
-                        userSessionLock.unlock();
-                    }
+                if (customRedisRoomRepository.isUserInRoom(userNickname, Long.parseLong(request.getRoomId()))) {
+                    throw new RestException(ErrorCode.ROOM_ALREADY_JOINED);
                 }
 
-            } else{
+                customRedisSessionRepository.setUserSessionState(authorization, State.valueOf("IN_ROOM"), roomNumber);
+                customRedisRoomRepository.saveUserToRoom(userNickname, room);
+
+            } else {
+                if (!isJoinRoomLocked) {
+                    log.warn("Failed to acquire lock with key {}", roomJoinLockKey);
+                }
+                if (!isUserSessionLocked) {
+                    log.warn("Failed to acquire lock with key {}", userSessionLockKey + authorization);
+                }
                 throw new RestException(ErrorCode.LOCK_ACQUIRE_FAILED);
             }
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RestException(ErrorCode.LOCK_INTERRUPTED);
+        } catch (Exception e) {
+            throw new RestException(ErrorCode.LOCK_INTERRUPTED);
         } finally {
-            if(isJoinRoomLocked) {
+            if (isUserSessionLocked) {
+                userSessionLock.unlock();
+            }
+            if (isJoinRoomLocked) {
                 roomJoinLock.unlock();
             }
         }
@@ -111,31 +99,21 @@ public class RoomService {
         boolean isUserSessionLocked = false;
         Long roomNumber = 0L;
         String userNickname = customRedisSessionRepository.getUserNickname(authorization);
+
         try {
-
             isCreateRoomLocked = roomCreateLock.tryLock(10, 10, TimeUnit.SECONDS);
-            if (isCreateRoomLocked) {
+            isUserSessionLocked = userSessionLock.tryLock(10, 10, TimeUnit.SECONDS);
 
-                try{
-                    isUserSessionLocked = userSessionLock.tryLock(10, 10, TimeUnit.SECONDS);
+            if (isCreateRoomLocked && isUserSessionLocked) {
+                UserSession userSession = redisSessionRepository.findByNickname(userNickname)
+                        .orElseThrow(() -> new RestException(ErrorCode.USER_NOT_FOUND));
 
-                    UserSession userSession = redisSessionRepository.findByNickname(userNickname)
-                            .orElseThrow(() -> new RestException(ErrorCode.USER_NOT_FOUND));
-
-                    if(userSession.isInRoom()) {
-                        throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
-                    }
-
-                    roomNumber = customRedisRoomRepository.getAvailableRoomNumber();
-
-                    customRedisSessionRepository.setUserSessionState(authorization, State.IN_ROOM, roomNumber);
-                } catch(Exception e) {
-                    throw new RestException(ErrorCode.LOCK_ACQUIRE_FAILED);
-                } finally {
-                    if(isUserSessionLocked) {
-                        userSessionLock.unlock();
-                    }
+                if (userSession.isInRoom()) {
+                    throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
                 }
+
+                roomNumber = customRedisRoomRepository.getAvailableRoomNumber();
+                customRedisSessionRepository.setUserSessionState(authorization, State.IN_ROOM, roomNumber);
 
                 Room room = Room.builder()
                         .id(String.valueOf(roomNumber))
@@ -148,25 +126,33 @@ public class RoomService {
                         .build();
 
                 customRedisRoomRepository.createRoom(room, roomNumber);
-                // redisRoomRepository.save(room);
+
             } else {
+                if (!isCreateRoomLocked) {
+                    log.warn("Failed to acquire lock with key {}", roomCreateLockKey);
+                }
+                if (!isUserSessionLocked) {
+                    log.warn("Failed to acquire lock with key {}", userSessionLockKey + authorization);
+                }
                 throw new RestException(ErrorCode.LOCK_ACQUIRE_FAILED);
             }
+
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RestException(ErrorCode.LOCK_INTERRUPTED);
+        } catch (Exception e) {
+            throw new RestException(ErrorCode.LOCK_INTERRUPTED);
         } finally {
+            if (isUserSessionLocked) {
+                userSessionLock.unlock();
+            }
             if (isCreateRoomLocked) {
                 roomCreateLock.unlock();
             }
         }
     }
 
-
     public Page<RoomResponse> getRooms(int pageNum) {
         return customRedisRoomRepository.getRooms(pageNum);
     }
-
-
-
 }
