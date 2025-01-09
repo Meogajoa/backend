@@ -26,6 +26,11 @@ spring:
 #          - localhost:6380
 #          - localhost:6381
 
+app:
+  redis:
+    stream:
+      name: my-stream
+
 redisson:
   single-server:
     address: "redis://localhost:6379"
