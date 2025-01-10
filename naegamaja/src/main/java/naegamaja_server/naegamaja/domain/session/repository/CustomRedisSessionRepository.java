@@ -3,7 +3,6 @@ package naegamaja_server.naegamaja.domain.session.repository;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.session.entity.UserSession;
 import naegamaja_server.naegamaja.domain.session.state.State;
-import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -63,7 +62,7 @@ public class CustomRedisSessionRepository {
 
     }
 
-    public String getUserNickname(String authorization) {
+    public String getNicknameBySessionId(String authorization) {
         return (String) stringRedisTemplate.opsForHash().get(SESSION_PREFIX + authorization, "nickname");
     }
 
@@ -72,7 +71,7 @@ public class CustomRedisSessionRepository {
     }
 
     public String getNicknameToSessionId(String nickname) {
-        return (String) stringRedisTemplate.opsForValue().get(NICKNAME_TO_SESSIONID_PREFIX + nickname);
+        return stringRedisTemplate.opsForValue().get(NICKNAME_TO_SESSIONID_PREFIX + nickname);
     }
 
     public boolean isUserSessionActive(String nickname) {

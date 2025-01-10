@@ -14,7 +14,6 @@ import naegamaja_server.naegamaja.domain.session.repository.RedisSessionReposito
 import naegamaja_server.naegamaja.domain.session.state.State;
 import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
 import naegamaja_server.naegamaja.system.exception.model.RestException;
-import naegamaja_server.naegamaja.system.websocket.dto.Message;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.domain.Page;
@@ -57,7 +56,7 @@ public class RoomService {
                     throw new RestException(ErrorCode.ROOM_FULL);
                 }
 
-                String userNickname = customRedisSessionRepository.getUserNickname(authorization);
+                String userNickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
 
                 if (customRedisRoomRepository.isUserInRoom(userNickname, Long.parseLong(request.getRoomId()))) {
                     throw new RestException(ErrorCode.ROOM_ALREADY_JOINED);
@@ -98,7 +97,7 @@ public class RoomService {
         boolean isCreateRoomLocked = false;
         boolean isUserSessionLocked = false;
         Long roomNumber = 0L;
-        String userNickname = customRedisSessionRepository.getUserNickname(authorization);
+        String userNickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
 
         try {
             isCreateRoomLocked = roomCreateLock.tryLock(10, 10, TimeUnit.SECONDS);

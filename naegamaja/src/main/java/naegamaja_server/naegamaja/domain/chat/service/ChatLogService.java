@@ -24,7 +24,7 @@ public class ChatLogService {
 
 
     public void roomChat(Long roomNumber, Message.Request message, String authorization) {
-        String userNickname = customRedisSessionRepository.getUserNickname(authorization);
+        String userNickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
 
         ChatLog ChatLog = customRedisChatLogRepository.saveChatLog(message.getContent(), roomNumber, userNickname);
 

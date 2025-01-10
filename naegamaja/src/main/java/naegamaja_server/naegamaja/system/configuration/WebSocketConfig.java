@@ -2,6 +2,7 @@ package naegamaja_server.naegamaja.system.configuration;
 
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.system.websocket.interceptor.StompChannelInterceptor;
+import naegamaja_server.naegamaja.system.websocket.manager.WebSocketConnectionManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.SimpleMessageConverter;

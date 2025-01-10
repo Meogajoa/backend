@@ -20,12 +20,12 @@ public class ChatLog {
     @Id
     private String id;
 
-    String content;
+    private String content;
 
     @Indexed
-    String sender;
+    private String sender;
 
-    LocalDateTime sendTime;
+    private LocalDateTime sendTime;
 
     public static ChatLog of(String id, String content, String sender, LocalDateTime sendTime){
         return ChatLog.builder()

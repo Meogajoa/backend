@@ -3,7 +3,9 @@ package naegamaja_server.naegamaja.system.websocket.interceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import naegamaja_server.naegamaja.domain.auth.service.RedisAuthService;
+import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
 import naegamaja_server.naegamaja.system.exception.model.StompException;
+import naegamaja_server.naegamaja.system.websocket.manager.WebSocketConnectionManager;
 import naegamaja_server.naegamaja.system.websocket.model.StompPrincipal;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Component;
 public class StompChannelInterceptor implements ChannelInterceptor {
 
     private final RedisAuthService redisAuthService;
+    private final WebSocketConnectionManager webSocketConnectionManager;
+    private final CustomRedisSessionRepository customRedisSessionRepository;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -81,6 +85,7 @@ public class StompChannelInterceptor implements ChannelInterceptor {
         }
 
         accessor.setUser(new StompPrincipal(sessionId));
+        webSocketConnectionManager.addSession(customRedisSessionRepository.getNicknameBySessionId(sessionId), sessionId);
     }
 
 
