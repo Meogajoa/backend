@@ -16,6 +16,9 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.data.redis.stream.StreamMessageListenerContainer;
+
+import java.time.Duration;
 
 @Configuration
 @RequiredArgsConstructor
@@ -56,4 +59,5 @@ public class RedisConfig {
         template.afterPropertiesSet();
         return template;
     }
+
 }
