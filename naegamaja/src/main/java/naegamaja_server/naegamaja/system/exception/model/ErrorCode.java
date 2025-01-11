@@ -14,6 +14,7 @@ public enum ErrorCode {
     FAILED_TO_REMOVE_AVAILABLE_ROOM(500, "사용 가능한 방을 제거하는데 실패했습니다."),
     USER_NOT_FOUND(400, "사용자를 찾을 수 없습니다."),
     USER_ALREADY_IN_ROOM(400, "이미 방에 참여중인 사용자입니다."),
+    USER_NOT_IN_ROOM(400, "사용자가 방에 참여중이 아닙니다."),
 
     INTERNAL_SERVER_ERROR(500, "서버 내부 오류입니다."),
     AUTH_USER_NOT_FOUND(400, "사용자를 찾을 수 없습니다."),

@@ -121,7 +121,7 @@ public class CustomRedisRoomRepository {
     }
 
 
-    public Page<RoomResponse> getRooms(int pageNum) {
+    public List<RoomResponse> getRooms(int pageNum) {
 
         int page = (pageNum <= 0) ? 0 : pageNum - 1;
         int size = 10;
@@ -146,10 +146,8 @@ public class CustomRedisRoomRepository {
             }
         }
 
-        long total = stringRedisTemplate.opsForZSet().zCard(USING_ROOM_LIST_KEY);
-
         PageRequest pageRequest = PageRequest.of(page, size);
-        return new PageImpl<>(roomResponses, pageRequest, total);
+        return roomResponses;
     }
 
     private Room mapToRoom(Map<Object, Object> roomData) {

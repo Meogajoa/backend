@@ -37,12 +37,12 @@ public class RoomRestController {
     }
 
     @GetMapping("/pages/{pageNum}")
-    public Page<RoomResponse> getRooms(@PathVariable int pageNum) {
+    public List<RoomResponse> getRooms(@PathVariable int pageNum) {
         return roomService.getRooms(pageNum);
     }
 
     @GetMapping("/lobby")
-    public Page<RoomResponse> getLobby(){
+    public List<RoomResponse> getLobby(){
         return roomService.getRooms(1);
     }
 

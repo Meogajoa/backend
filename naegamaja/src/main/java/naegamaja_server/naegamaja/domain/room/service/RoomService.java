@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
@@ -75,11 +76,8 @@ public class RoomService {
                 throw new RestException(ErrorCode.LOCK_ACQUIRE_FAILED);
             }
 
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RestException(ErrorCode.LOCK_INTERRUPTED);
         } catch (Exception e) {
-            throw new RestException(ErrorCode.LOCK_INTERRUPTED);
+            throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
         } finally {
             if (isUserSessionLocked) {
                 userSessionLock.unlock();
@@ -136,11 +134,8 @@ public class RoomService {
                 throw new RestException(ErrorCode.LOCK_ACQUIRE_FAILED);
             }
 
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RestException(ErrorCode.LOCK_INTERRUPTED);
         } catch (Exception e) {
-            throw new RestException(ErrorCode.LOCK_INTERRUPTED);
+            throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
         } finally {
             if (isUserSessionLocked) {
                 userSessionLock.unlock();
@@ -151,7 +146,7 @@ public class RoomService {
         }
     }
 
-    public Page<RoomResponse> getRooms(int pageNum) {
+    public List<RoomResponse> getRooms(int pageNum) {
         return customRedisRoomRepository.getRooms(pageNum);
     }
 }
