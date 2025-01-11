@@ -38,56 +38,72 @@ public class RoomService {
     private final String userSessionLockKey = "lock:userSession:";
 
     public void joinRoom(RoomRequest.JoinRoomRequest request, String authorization) {
-        String roomJoinLockKey = "lock:joinRoom:" + request.getRoomId();
+        final String roomId = request.getRoomId();
+        final Long roomNumber = Long.parseLong(roomId);
+
+        String userNickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+        if (userNickname == null) {
+            throw new RestException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        if (customRedisRoomRepository.isUserInRoom(userNickname, roomNumber)) {
+            throw new RestException(ErrorCode.ROOM_ALREADY_JOINED);
+        }
+
+        Room room = redisRoomRepository.findById(roomId)
+                .orElseThrow(() -> new RestException(ErrorCode.ROOM_NOT_FOUND));
+
+        if (room.getRoomCurrentUser() >= room.getRoomMaxUser()) {
+            throw new RestException(ErrorCode.ROOM_FULL);
+        }
+
+        String joinRoomLockKey = "lock:joinRoom:";
+        String roomJoinLockKey = joinRoomLockKey + roomId;
         RLock roomJoinLock = redissonClient.getLock(roomJoinLockKey);
         RLock userSessionLock = redissonClient.getLock(userSessionLockKey + authorization);
+
         boolean isJoinRoomLocked = false;
         boolean isUserSessionLocked = false;
-        Long roomNumber = Long.parseLong(request.getRoomId());
 
         try {
             isJoinRoomLocked = roomJoinLock.tryLock(10, 10, TimeUnit.SECONDS);
             isUserSessionLocked = userSessionLock.tryLock(10, 10, TimeUnit.SECONDS);
 
             if (isJoinRoomLocked && isUserSessionLocked) {
-                Room room = redisRoomRepository.findById(request.getRoomId())
+                Room currentRoom = redisRoomRepository.findById(roomId)
                         .orElseThrow(() -> new RestException(ErrorCode.ROOM_NOT_FOUND));
 
-                if (room.getRoomCurrentUser() >= room.getRoomMaxUser()) {
+                if (currentRoom.getRoomCurrentUser() >= currentRoom.getRoomMaxUser()) {
                     throw new RestException(ErrorCode.ROOM_FULL);
                 }
-
-                String userNickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
-
-                if (customRedisRoomRepository.isUserInRoom(userNickname, Long.parseLong(request.getRoomId()))) {
+                if (customRedisRoomRepository.isUserInRoom(userNickname, roomNumber)) {
                     throw new RestException(ErrorCode.ROOM_ALREADY_JOINED);
                 }
 
-                customRedisSessionRepository.setUserSessionState(authorization, State.valueOf("IN_ROOM"), roomNumber);
-                customRedisRoomRepository.saveUserToRoom(userNickname, room);
+                customRedisSessionRepository.setUserSessionState(authorization, State.IN_ROOM, roomNumber);
+                customRedisRoomRepository.saveUserToRoom(userNickname, currentRoom);
 
             } else {
                 if (!isJoinRoomLocked) {
-                    log.warn("Failed to acquire lock with key {}", roomJoinLockKey);
+                    log.warn("Failed to acquire lock: {}", roomJoinLockKey);
                 }
                 if (!isUserSessionLocked) {
-                    log.warn("Failed to acquire lock with key {}", userSessionLockKey + authorization);
+                    log.warn("Failed to acquire lock: {}", userSessionLockKey + authorization);
                 }
                 throw new RestException(ErrorCode.LOCK_ACQUIRE_FAILED);
             }
-
-        } catch (RestException e) {
+        } catch(RestException e){
             switch(e.getErrorCode()) {
-                case ROOM_NOT_FOUND:
-                    throw new RestException(ErrorCode.ROOM_NOT_FOUND);
                 case ROOM_FULL:
                     throw new RestException(ErrorCode.ROOM_FULL);
                 case ROOM_ALREADY_JOINED:
                     throw new RestException(ErrorCode.ROOM_ALREADY_JOINED);
                 default:
-                    throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
+                    throw new RestException(ErrorCode.INTERNAL_SERVER_ERROR);
             }
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         } finally {
             if (isUserSessionLocked) {
@@ -100,27 +116,38 @@ public class RoomService {
     }
 
     public void createRoom(RoomRequest.CreateRoomRequest request, String authorization) {
+        String userNickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+        if (userNickname == null) {
+            throw new RestException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        UserSession userSession = redisSessionRepository.findByNickname(userNickname)
+                .orElseThrow(() -> new RestException(ErrorCode.USER_NOT_FOUND));
+        if (userSession.isInRoom()) {
+            throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
+        }
+
         String roomCreateLockKey = "lock:createRoom";
         RLock roomCreateLock = redissonClient.getLock(roomCreateLockKey);
         RLock userSessionLock = redissonClient.getLock(userSessionLockKey + authorization);
+
         boolean isCreateRoomLocked = false;
         boolean isUserSessionLocked = false;
         Long roomNumber = 0L;
-        String userNickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
 
         try {
             isCreateRoomLocked = roomCreateLock.tryLock(10, 10, TimeUnit.SECONDS);
             isUserSessionLocked = userSessionLock.tryLock(10, 10, TimeUnit.SECONDS);
 
             if (isCreateRoomLocked && isUserSessionLocked) {
-                UserSession userSession = redisSessionRepository.findByNickname(userNickname)
-                        .orElseThrow(() -> new RestException(ErrorCode.USER_NOT_FOUND));
+                roomNumber = customRedisRoomRepository.getAvailableRoomNumber();
 
-                if (userSession.isInRoom()) {
+                UserSession checkSession = redisSessionRepository.findByNickname(userNickname)
+                        .orElseThrow(() -> new RestException(ErrorCode.USER_NOT_FOUND));
+                if (checkSession.isInRoom()) {
                     throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
                 }
 
-                roomNumber = customRedisRoomRepository.getAvailableRoomNumber();
                 customRedisSessionRepository.setUserSessionState(authorization, State.IN_ROOM, roomNumber);
 
                 Room room = Room.builder()
@@ -137,28 +164,27 @@ public class RoomService {
 
             } else {
                 if (!isCreateRoomLocked) {
-                    log.warn("Failed to acquire lock with key {}", roomCreateLockKey);
+                    log.warn("Failed to acquire lock: {}", roomCreateLockKey);
                 }
                 if (!isUserSessionLocked) {
-                    log.warn("Failed to acquire lock with key {}", userSessionLockKey + authorization);
+                    log.warn("Failed to acquire lock: {}", userSessionLockKey + authorization);
                 }
                 throw new RestException(ErrorCode.LOCK_ACQUIRE_FAILED);
             }
-
-        } catch (RestException e) {
+        } catch(RestException e) {
             switch(e.getErrorCode()) {
-                case USER_NOT_FOUND:
-                    throw new RestException(ErrorCode.USER_NOT_FOUND);
-                case USER_ALREADY_IN_ROOM:
-                    throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
-                default:
+                case NO_AVAILABLE_ROOM:
                     throw new RestException(ErrorCode.NO_AVAILABLE_ROOM);
+                case INVALID_ROOM_NUMBER:
+                    throw new RestException(ErrorCode.INVALID_ROOM_NUMBER);
+                default:
+                    throw new RestException(ErrorCode.INTERNAL_SERVER_ERROR);
             }
-        } catch(InterruptedException e) {
-            throw new RuntimeException(e);
 
-        }
-        finally {
+        } catch(InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } finally{
             if (isUserSessionLocked) {
                 userSessionLock.unlock();
             }
@@ -167,6 +193,7 @@ public class RoomService {
             }
         }
     }
+
 
     public List<RoomResponse> getRooms(int pageNum) {
         return customRedisRoomRepository.getRooms(pageNum);
