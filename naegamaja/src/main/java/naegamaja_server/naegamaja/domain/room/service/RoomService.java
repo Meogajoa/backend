@@ -76,8 +76,17 @@ public class RoomService {
                 throw new RestException(ErrorCode.LOCK_ACQUIRE_FAILED);
             }
 
-        } catch (Exception e) {
-            throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
+        } catch (RestException e) {
+            switch(e.getErrorCode()) {
+                case ROOM_NOT_FOUND:
+                    throw new RestException(ErrorCode.ROOM_NOT_FOUND);
+                case ROOM_FULL:
+                    throw new RestException(ErrorCode.ROOM_FULL);
+                case ROOM_ALREADY_JOINED:
+                    throw new RestException(ErrorCode.ROOM_ALREADY_JOINED);
+                default:
+                    throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
+            }
         } finally {
             if (isUserSessionLocked) {
                 userSessionLock.unlock();
@@ -134,8 +143,15 @@ public class RoomService {
                 throw new RestException(ErrorCode.LOCK_ACQUIRE_FAILED);
             }
 
-        } catch (Exception e) {
-            throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
+        } catch (RestException e) {
+            switch(e.getErrorCode()) {
+                case USER_NOT_FOUND:
+                    throw new RestException(ErrorCode.USER_NOT_FOUND);
+                case USER_ALREADY_IN_ROOM:
+                    throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
+                default:
+                    throw new RestException(ErrorCode.NO_AVAILABLE_ROOM);
+            }
         } finally {
             if (isUserSessionLocked) {
                 userSessionLock.unlock();
