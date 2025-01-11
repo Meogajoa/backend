@@ -87,6 +87,8 @@ public class RoomService {
                 default:
                     throw new RestException(ErrorCode.USER_ALREADY_IN_ROOM);
             }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         } finally {
             if (isUserSessionLocked) {
                 userSessionLock.unlock();
@@ -152,7 +154,11 @@ public class RoomService {
                 default:
                     throw new RestException(ErrorCode.NO_AVAILABLE_ROOM);
             }
-        } finally {
+        } catch(InterruptedException e) {
+            throw new RuntimeException(e);
+
+        }
+        finally {
             if (isUserSessionLocked) {
                 userSessionLock.unlock();
             }
