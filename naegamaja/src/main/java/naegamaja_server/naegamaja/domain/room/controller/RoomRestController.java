@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
 import naegamaja_server.naegamaja.domain.chat.service.ChatLogService;
 import naegamaja_server.naegamaja.domain.room.dto.RoomCreationDto;
+import naegamaja_server.naegamaja.domain.room.dto.RoomPageResponse;
 import naegamaja_server.naegamaja.domain.room.dto.RoomRequest;
 import naegamaja_server.naegamaja.domain.room.dto.RoomResponse;
 import naegamaja_server.naegamaja.domain.room.service.RoomService;
@@ -37,12 +38,12 @@ public class RoomRestController {
     }
 
     @GetMapping("/pages/{pageNum}")
-    public List<RoomResponse> getRooms(@PathVariable int pageNum) {
+    public RoomPageResponse getRooms(@PathVariable int pageNum) {
         return roomService.getRooms(pageNum);
     }
 
     @GetMapping("/lobby")
-    public List<RoomResponse> getLobby(){
+    public RoomPageResponse getLobby(){
         return roomService.getRooms(1);
     }
 

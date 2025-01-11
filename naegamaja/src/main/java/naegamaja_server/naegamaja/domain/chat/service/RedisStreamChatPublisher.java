@@ -23,7 +23,8 @@ public class RedisStreamChatPublisher {
     public void publishChatMessage(String roomId, Message.Request message) {
         try {
             if(!message.getType().equals(MessageType.CHAT)) return;
-            Map<String, Object> messageMap = objectMapper.convertValue(message, new TypeReference<Map<String, Object>>() {});
+            Map<String, Object> messageMap = objectMapper.convertValue(message, new TypeReference<>() {
+            });
             redisTemplate.opsForStream().add(ROOM_CHAT_STREAM_KEY + roomId, messageMap);
         } catch (Exception e) {
             e.printStackTrace();

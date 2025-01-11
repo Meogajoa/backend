@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import naegamaja_server.naegamaja.domain.chat.repository.CustomRedisChatLogRepository;
 import naegamaja_server.naegamaja.domain.room.domain.Room;
+import naegamaja_server.naegamaja.domain.room.dto.RoomPageResponse;
 import naegamaja_server.naegamaja.domain.room.dto.RoomRequest;
 import naegamaja_server.naegamaja.domain.room.dto.RoomResponse;
 import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
@@ -195,7 +196,7 @@ public class RoomService {
     }
 
 
-    public List<RoomResponse> getRooms(int pageNum) {
+    public RoomPageResponse getRooms(int pageNum) {
         return customRedisRoomRepository.getRooms(pageNum);
     }
 }

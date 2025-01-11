@@ -19,12 +19,11 @@ public class RoomStompController {
 
 
     @MessageMapping("/room/{roomNumber}")
-    @SendTo("/topic/room/{roomNumber}")
-    public ChatLog chat(@DestinationVariable Long roomNumber, @Header("Authorization") String authorization, @Payload Message.Request message) {
+    public void chat(@DestinationVariable Long roomNumber, @Header("Authorization") String authorization, @Payload Message.Request message) {
         System.out.println(message.getContent());
 
-        return chatLogService.roomChat(roomNumber, message, authorization);
-        //redisStreamChatPublisher.publishChatMessage(roomNumber.toString(), message);
+        //chatLogService.roomChat(roomNumber, message, authorization);
+        redisStreamChatPublisher.publishChatMessage(roomNumber.toString(), message);
 
         //todo
     }

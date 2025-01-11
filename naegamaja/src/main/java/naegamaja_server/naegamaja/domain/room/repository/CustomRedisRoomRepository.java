@@ -2,6 +2,7 @@ package naegamaja_server.naegamaja.domain.room.repository;
 
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.room.domain.Room;
+import naegamaja_server.naegamaja.domain.room.dto.RoomPageResponse;
 import naegamaja_server.naegamaja.domain.room.dto.RoomResponse;
 import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
 import naegamaja_server.naegamaja.system.exception.model.RestException;
@@ -121,7 +122,7 @@ public class CustomRedisRoomRepository {
     }
 
 
-    public List<RoomResponse> getRooms(int pageNum) {
+    public RoomPageResponse getRooms(int pageNum) {
 
         int page = (pageNum <= 0) ? 0 : pageNum - 1;
         int size = 10;
@@ -146,8 +147,15 @@ public class CustomRedisRoomRepository {
             }
         }
 
+        Long total = stringRedisTemplate.opsForZSet().size(USING_ROOM_LIST_KEY);
+        if(total == null) {
+            total = 0L;
+        }
+
+        boolean isLast = (start + size) >= total;
+
         PageRequest pageRequest = PageRequest.of(page, size);
-        return roomResponses;
+        return new RoomPageResponse(roomResponses, isLast);
     }
 
     private Room mapToRoom(Map<Object, Object> roomData) {

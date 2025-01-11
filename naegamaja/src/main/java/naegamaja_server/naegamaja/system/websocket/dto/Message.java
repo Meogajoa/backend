@@ -14,15 +14,7 @@ public class Message {
     @Builder
     public static class Request {
         private MessageType type;
-        private String content;
-    }
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    @Builder
-    public static class Response{
-        private MessageType type;
+        private String roomId;
         private String content;
     }
 
