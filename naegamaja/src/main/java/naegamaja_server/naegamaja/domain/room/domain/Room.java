@@ -1,9 +1,7 @@
 package naegamaja_server.naegamaja.domain.room.domain;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
-import naegamaja_server.naegamaja.domain.session.entity.UserSession;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
@@ -23,17 +21,19 @@ public class Room implements Serializable {
     private String id;
 
     @Indexed
-    private String roomName;
+    private String name;
 
-    private String roomPassword;
+    private String password;
 
-    private String roomOwner;
+    private String owner;
 
-    private int roomMaxUser;
+    private int maxUser;
 
-    private int roomCurrentUser;
+    private int currentUser;
 
-    private boolean roomIsPlaying;
+    private boolean isLocked;
+
+    private boolean isPlaying;
 
     List<String> userSessions;
 

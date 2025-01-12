@@ -6,7 +6,6 @@ import naegamaja_server.naegamaja.domain.chat.repository.CustomRedisChatLogRepos
 import naegamaja_server.naegamaja.domain.room.domain.Room;
 import naegamaja_server.naegamaja.domain.room.dto.RoomPageResponse;
 import naegamaja_server.naegamaja.domain.room.dto.RoomRequest;
-import naegamaja_server.naegamaja.domain.room.dto.RoomResponse;
 import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
 import naegamaja_server.naegamaja.domain.room.repository.RedisRoomRepository;
 import naegamaja_server.naegamaja.domain.session.entity.UserSession;
@@ -17,11 +16,9 @@ import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
 import naegamaja_server.naegamaja.system.exception.model.RestException;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.data.domain.Page;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
@@ -32,34 +29,32 @@ public class RoomService {
     private final CustomRedisRoomRepository customRedisRoomRepository;
     private final CustomRedisSessionRepository customRedisSessionRepository;
     private final RedisRoomRepository redisRoomRepository;
-    private final SimpMessagingTemplate simpMessagingTemplate;
-    private final CustomRedisChatLogRepository customRedisChatLogRepository;
     private final RedisSessionRepository redisSessionRepository;
     private final RedissonClient redissonClient;
     private final String userSessionLockKey = "lock:userSession:";
 
     public void joinRoom(RoomRequest.JoinRoomRequest request, String authorization) {
-        final String roomId = request.getRoomId();
-        final Long roomNumber = Long.parseLong(roomId);
+        final String id = request.getId();
+        final Long number = Long.parseLong(id);
 
         String userNickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
         if (userNickname == null) {
             throw new RestException(ErrorCode.USER_NOT_FOUND);
         }
 
-        if (customRedisRoomRepository.isUserInRoom(userNickname, roomNumber)) {
+        if (customRedisRoomRepository.isUserInRoom(userNickname, number)) {
             throw new RestException(ErrorCode.ROOM_ALREADY_JOINED);
         }
 
-        Room room = redisRoomRepository.findById(roomId)
+        Room room = redisRoomRepository.findById(id)
                 .orElseThrow(() -> new RestException(ErrorCode.ROOM_NOT_FOUND));
 
-        if (room.getRoomCurrentUser() >= room.getRoomMaxUser()) {
+        if (room.getCurrentUser() >= room.getMaxUser()) {
             throw new RestException(ErrorCode.ROOM_FULL);
         }
 
         String joinRoomLockKey = "lock:joinRoom:";
-        String roomJoinLockKey = joinRoomLockKey + roomId;
+        String roomJoinLockKey = joinRoomLockKey + id;
         RLock roomJoinLock = redissonClient.getLock(roomJoinLockKey);
         RLock userSessionLock = redissonClient.getLock(userSessionLockKey + authorization);
 
@@ -71,17 +66,17 @@ public class RoomService {
             isUserSessionLocked = userSessionLock.tryLock(10, 10, TimeUnit.SECONDS);
 
             if (isJoinRoomLocked && isUserSessionLocked) {
-                Room currentRoom = redisRoomRepository.findById(roomId)
+                Room currentRoom = redisRoomRepository.findById(id)
                         .orElseThrow(() -> new RestException(ErrorCode.ROOM_NOT_FOUND));
 
-                if (currentRoom.getRoomCurrentUser() >= currentRoom.getRoomMaxUser()) {
+                if (currentRoom.getCurrentUser() >= currentRoom.getMaxUser()) {
                     throw new RestException(ErrorCode.ROOM_FULL);
                 }
-                if (customRedisRoomRepository.isUserInRoom(userNickname, roomNumber)) {
+                if (customRedisRoomRepository.isUserInRoom(userNickname, number)) {
                     throw new RestException(ErrorCode.ROOM_ALREADY_JOINED);
                 }
 
-                customRedisSessionRepository.setUserSessionState(authorization, State.IN_ROOM, roomNumber);
+                customRedisSessionRepository.setUserSessionState(authorization, State.IN_ROOM, number);
                 customRedisRoomRepository.saveUserToRoom(userNickname, currentRoom);
 
             } else {
@@ -153,12 +148,12 @@ public class RoomService {
 
                 Room room = Room.builder()
                         .id(String.valueOf(roomNumber))
-                        .roomOwner(userNickname)
-                        .roomName(request.getRoomName())
-                        .roomPassword(request.getRoomPassword())
-                        .roomMaxUser(8)
-                        .roomCurrentUser(1)
-                        .roomIsPlaying(false)
+                        .owner(userNickname)
+                        .name(request.getName())
+                        .password(request.getPassword())
+                        .maxUser(8)
+                        .currentUser(1)
+                        .isPlaying(false)
                         .build();
 
                 customRedisRoomRepository.createRoom(room, roomNumber);

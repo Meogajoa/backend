@@ -6,8 +6,6 @@ import naegamaja_server.naegamaja.domain.room.dto.RoomPageResponse;
 import naegamaja_server.naegamaja.domain.room.dto.RoomResponse;
 import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
 import naegamaja_server.naegamaja.system.exception.model.RestException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -24,41 +22,11 @@ public class CustomRedisRoomRepository {
 
     private static final String USING_ROOM_LIST_KEY = "usingRoomList:";
 
-    public Room findById(String roomId) {
-        String roomKey = ROOM_KEY_PREFIX + roomId;
-        String id = (String) stringRedisTemplate.opsForHash().get(roomKey, "id");
-        String roomName = (String) stringRedisTemplate.opsForHash().get(roomKey, "roomName");
-        String roomPassword = (String) stringRedisTemplate.opsForHash().get(roomKey, "roomPassword");
-        String roomOwner = (String) stringRedisTemplate.opsForHash().get(roomKey, "roomOwner");
-        String roomMaxUserStr = (String) stringRedisTemplate.opsForHash().get(roomKey, "roomMaxUser");
-        String roomCurrentUserStr = (String) stringRedisTemplate.opsForHash().get(roomKey, "roomCurrentUser");
-        String roomIsPlayingStr = (String) stringRedisTemplate.opsForHash().get(roomKey, "roomIsPlaying");
-
-        if(id == null) {
-            throw new RestException(ErrorCode.ROOM_NOT_FOUND);
-        }
-
-        int roomMaxUser = Integer.parseInt(roomMaxUserStr);
-        int roomCurrentUser = Integer.parseInt(roomCurrentUserStr);
-        boolean roomIsPlaying = Boolean.parseBoolean(roomIsPlayingStr);
-
-        return Room.builder()
-                .id(id)
-                .roomName(roomName)
-                .roomPassword(roomPassword)
-                .roomOwner(roomOwner)
-                .roomMaxUser(roomMaxUser)
-                .roomCurrentUser(roomCurrentUser)
-                .roomIsPlaying(roomIsPlaying)
-                .build();
-
-    }
-
     public void saveUserToRoom(String nickname, Room room) {
         String userKey = ROOM_KEY_PREFIX + room.getId() + ":users";
         String roomKey = ROOM_KEY_PREFIX + room.getId();
         stringRedisTemplate.opsForSet().add(userKey, nickname);
-        stringRedisTemplate.opsForHash().put(roomKey, "roomCurrentUser", String.valueOf(room.getRoomCurrentUser() + 1));
+        stringRedisTemplate.opsForHash().put(roomKey, "currentUser", String.valueOf(room.getCurrentUser() + 1));
     }
 
     public boolean isAlreadyExistRoom(String roomId) {
@@ -68,13 +36,6 @@ public class CustomRedisRoomRepository {
     public boolean isUserInRoom(String nickname, Long roomNumber) {
         String roomKey = ROOM_KEY_PREFIX + roomNumber + ":users";
         return Boolean.TRUE.equals(stringRedisTemplate.opsForSet().isMember(roomKey, nickname));
-    }
-
-    public void removeUserFromRoom(String authorization, Room room) {
-        String userKey = ROOM_KEY_PREFIX + room.getId() + ":users";
-        String roomKey = ROOM_KEY_PREFIX + room.getId();
-        stringRedisTemplate.opsForSet().remove(userKey, authorization);
-        stringRedisTemplate.opsForHash().put(roomKey, "roomCurrentUser", String.valueOf(room.getRoomCurrentUser() - 1));
     }
 
     public Long getAvailableRoomNumber() {
@@ -107,16 +68,17 @@ public class CustomRedisRoomRepository {
         //차후 동시성 문제 고려 필요
         stringRedisTemplate.opsForZSet().add(USING_ROOM_LIST_KEY, roomNumberStr, roomNumber);
 
-        // Room 정보 저장
         String roomKey = ROOM_KEY_PREFIX + room.getId();
+        boolean isLocked = room.getPassword() != null && !room.getPassword().isEmpty();
         stringRedisTemplate.opsForHash().put(roomKey, "id", room.getId());
-        stringRedisTemplate.opsForHash().put(roomKey, "roomName", room.getRoomName());
-        stringRedisTemplate.opsForHash().put(roomKey, "roomPassword", room.getRoomPassword());
-        stringRedisTemplate.opsForHash().put(roomKey, "roomOwner", room.getRoomOwner());
-        stringRedisTemplate.opsForHash().put(roomKey, "roomMaxUser", String.valueOf(room.getRoomMaxUser()));
-        stringRedisTemplate.opsForHash().put(roomKey, "roomCurrentUser", String.valueOf(room.getRoomCurrentUser()));
-        stringRedisTemplate.opsForHash().put(roomKey, "roomIsPlaying", String.valueOf(room.isRoomIsPlaying()));
-        stringRedisTemplate.opsForSet().add(roomKey + ":users", room.getRoomOwner());
+        stringRedisTemplate.opsForHash().put(roomKey, "name", room.getName());
+        stringRedisTemplate.opsForHash().put(roomKey, "password", room.getPassword());
+        stringRedisTemplate.opsForHash().put(roomKey, "owner", room.getOwner());
+        stringRedisTemplate.opsForHash().put(roomKey, "maxUser", String.valueOf(room.getMaxUser()));
+        stringRedisTemplate.opsForHash().put(roomKey, "currentUser", String.valueOf(room.getCurrentUser()));
+        stringRedisTemplate.opsForHash().put(roomKey, "isLocked", String.valueOf(room.isLocked()));
+        stringRedisTemplate.opsForHash().put(roomKey, "isPlaying", String.valueOf(room.isPlaying()));
+        stringRedisTemplate.opsForSet().add(roomKey + ":users", room.getOwner());
 
         System.out.println("Room created and roomNumber removed from AVAILABLE: " + room);
     }
@@ -161,12 +123,13 @@ public class CustomRedisRoomRepository {
     private Room mapToRoom(Map<Object, Object> roomData) {
         Room room = new Room();
         room.setId((String) roomData.get("id"));
-        room.setRoomName((String) roomData.get("roomName"));
-        room.setRoomPassword((String) roomData.get("roomPassword"));
-        room.setRoomOwner((String) roomData.get("roomOwner"));
-        room.setRoomMaxUser(Integer.parseInt((String) roomData.get("roomMaxUser")));
-        room.setRoomCurrentUser(Integer.parseInt((String) roomData.get("roomCurrentUser")));
-        room.setRoomIsPlaying(Boolean.parseBoolean((String) roomData.get("roomIsPlaying")));
+        room.setName((String) roomData.get("name"));
+        room.setPassword((String) roomData.get("password"));
+        room.setOwner((String) roomData.get("owner"));
+        room.setMaxUser(Integer.parseInt((String) roomData.get("maxUser")));
+        room.setCurrentUser(Integer.parseInt((String) roomData.get("currentUser")));
+        room.setPlaying(Boolean.parseBoolean((String) roomData.get("isPlaying")));
+        room.setLocked(Boolean.parseBoolean((String) roomData.get("isLocked")));
         return room;
     }
 

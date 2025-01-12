@@ -9,37 +9,29 @@ import naegamaja_server.naegamaja.domain.room.domain.Room;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomResponse {
-    private String roomId;
+    private String id;
 
-    private String roomName;
+    private String name;
 
-    private String roomOwner;
+    private String owner;
 
-    private int roomMaxUser;
+    private int maxUser;
 
-    private int roomCurrentUser;
+    private int currentUser;
 
-    private boolean roomIsPlaying;
+    private boolean isPlaying;
+
+    private boolean isLocked;
 
     public static RoomResponse from(Room room){
         return RoomResponse.builder()
-                .roomId(room.getId())
-                .roomName(room.getRoomName())
-                .roomOwner(room.getRoomOwner())
-                .roomMaxUser(room.getRoomMaxUser())
-                .roomCurrentUser(room.getRoomCurrentUser())
-                .roomIsPlaying(room.isRoomIsPlaying())
-                .build();
-    }
-
-    public static RoomResponse of(String roomId, String roomName, String roomOwner, int roomMaxUser, int roomCurrentUser, boolean roomIsPlaying){
-        return RoomResponse.builder()
-                .roomId(roomId)
-                .roomName(roomName)
-                .roomOwner(roomOwner)
-                .roomMaxUser(roomMaxUser)
-                .roomCurrentUser(roomCurrentUser)
-                .roomIsPlaying(roomIsPlaying)
+                .id(room.getId())
+                .name(room.getName())
+                .owner(room.getOwner())
+                .maxUser(room.getMaxUser())
+                .currentUser(room.getCurrentUser())
+                .isPlaying(room.isPlaying())
+                .isLocked(room.isLocked())
                 .build();
     }
 }

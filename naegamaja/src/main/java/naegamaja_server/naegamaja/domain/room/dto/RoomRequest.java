@@ -10,8 +10,8 @@ public class RoomRequest {
     @Data
     @Builder
     public static class JoinRoomRequest {
-        private String roomId;
-        private String roomPassword;
+        private String id;
+        private String password;
     }
 
     @AllArgsConstructor
@@ -19,7 +19,7 @@ public class RoomRequest {
     @Data
     @Builder
     public static class CreateRoomRequest {
-        private String roomName;
-        private String roomPassword;
+        private String name;
+        private String password;
     }
 }
