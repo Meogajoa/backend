@@ -5,10 +5,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.system.websocket.dto.Message;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
-import org.springframework.data.redis.connection.stream.Consumer;
-import org.springframework.data.redis.connection.stream.MapRecord;
-import org.springframework.data.redis.connection.stream.ReadOffset;
-import org.springframework.data.redis.connection.stream.StreamOffset;
+import org.springframework.data.redis.connection.stream.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
@@ -25,6 +22,7 @@ public class RedisStreamChatSubscriber {
     private final ObjectMapper objectMapper;
     private final String ROOM_CHAT_STREAM_KEY = "stream:room:";
     private final String GROUP_NAME = "chat-group";
+    private final StringRedisTemplate stringRedisTemplate;
 
     @PostConstruct
     public void startListening() {
@@ -61,6 +59,10 @@ public class RedisStreamChatSubscriber {
         if (!MessageType.CHAT.equals(request.getType())) return;
 
         chatLogService.roomChat(request);
+
+        stringRedisTemplate.opsForStream().acknowledge(ROOM_CHAT_STREAM_KEY + request.getRoomId(), GROUP_NAME, record.getId());
+        stringRedisTemplate.opsForStream().delete(ROOM_CHAT_STREAM_KEY + request.getRoomId(), record.getId());
+
 
         System.out.println("1월 12일 테스트");
         System.out.println(request);

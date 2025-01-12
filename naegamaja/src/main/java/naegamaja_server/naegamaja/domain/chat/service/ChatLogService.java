@@ -26,7 +26,8 @@ public class ChatLogService {
     public void roomChat(Message.MQRequest message) {
         ChatLog chatLog = customRedisChatLogRepository.saveChatLog(message.getContent(), message.getRoomId(), message.getSender());
 
-        simpMessagingTemplate.convertAndSend("/topic/room/" + message.getRoomId(), message);
+        simpMessagingTemplate.convertAndSend("/topic/room/" + message.getRoomId(), chatLog);
+        System.out.println("chatLog 보냈음");
     }
 
     public List<ChatLog> getRoomMessages(String roomId) {
