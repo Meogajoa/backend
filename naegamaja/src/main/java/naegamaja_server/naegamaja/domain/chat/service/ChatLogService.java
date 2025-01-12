@@ -23,15 +23,10 @@ public class ChatLogService {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
 
-    public ChatLog roomChat(Long roomNumber, Message.Request message, String authorization) {
-        String userNickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+    public void roomChat(Message.MQRequest message) {
+        ChatLog chatLog = customRedisChatLogRepository.saveChatLog(message.getContent(), message.getRoomId(), message.getSender());
 
-        if(customRedisRoomRepository.isUserInRoom(userNickname, roomNumber)) {
-            return customRedisChatLogRepository.saveChatLog(message.getContent(), roomNumber, userNickname);
-        } else {
-            System.out.println("user is not in room");
-            throw new RestException(ErrorCode.USER_NOT_IN_ROOM);
-        }
+        simpMessagingTemplate.convertAndSend("/topic/room/" + message.getRoomId(), message);
     }
 
     public List<ChatLog> getRoomMessages(String roomId) {

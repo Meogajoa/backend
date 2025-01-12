@@ -3,9 +3,12 @@ package naegamaja_server.naegamaja.domain.chat.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
+import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
 import naegamaja_server.naegamaja.system.websocket.dto.Message;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -14,14 +17,19 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RedisStreamChatPublisher {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
     private final String ROOM_CHAT_STREAM_KEY = "stream:room:";
+    private final CustomRedisSessionRepository customRedisSessionRepository;
 
-    public void publishChatMessage(String roomId, Message.Request message) {
+    public void publishChatMessage(Long roomId, Message.Request message, String authorization) {
         try {
             if (!MessageType.CHAT.equals(message.getType())) return;
-            Map<String, Object> messageMap = objectMapper.convertValue(message, new TypeReference<>() {});
+            String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+            Message.MQRequest mqRequest = Message.MQRequest.of(message, nickname);
+
+            Map<String, String> messageMap = objectMapper.convertValue(mqRequest, new TypeReference<Map<String, String>>() {
+            });
             redisTemplate.opsForStream().add(ROOM_CHAT_STREAM_KEY + roomId, messageMap);
         } catch (Exception e) {
             e.printStackTrace();

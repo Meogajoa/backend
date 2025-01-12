@@ -23,7 +23,7 @@ public class RoomStompController {
         System.out.println(message.getContent());
 
         //chatLogService.roomChat(roomNumber, message, authorization);
-        redisStreamChatPublisher.publishChatMessage(roomNumber.toString(), message);
+        redisStreamChatPublisher.publishChatMessage(roomNumber, message, authorization);
 
         //todo
     }
