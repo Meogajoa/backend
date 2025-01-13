@@ -11,7 +11,6 @@ public class Message {
     @Builder
     public static class Request {
         private MessageType type;
-        private Long roomId;
         private String content;
     }
 
