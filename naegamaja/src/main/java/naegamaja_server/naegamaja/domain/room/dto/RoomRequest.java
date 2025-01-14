@@ -11,7 +11,9 @@ public class RoomRequest {
     @Builder
     public static class JoinRoomRequest {
         private String id;
-        private String password;
+
+        @Builder.Default
+        private String password = "";
     }
 
     @AllArgsConstructor
@@ -20,6 +22,8 @@ public class RoomRequest {
     @Builder
     public static class CreateRoomRequest {
         private String name;
-        private String password;
+
+        @Builder.Default
+        private String password = "";
     }
 }

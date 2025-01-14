@@ -34,19 +34,18 @@ public class RoomService {
     private final String userSessionLockKey = "lock:userSession:";
 
     public void joinRoom(RoomRequest.JoinRoomRequest request, String authorization) {
-        final String id = request.getId();
-        final Long number = Long.parseLong(id);
+        final String roomId = request.getId();
 
         String userNickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
         if (userNickname == null) {
             throw new RestException(ErrorCode.USER_NOT_FOUND);
         }
 
-        if (customRedisRoomRepository.isUserInRoom(userNickname, number)) {
+        if (customRedisRoomRepository.isUserInRoom(userNickname, roomId)) {
             throw new RestException(ErrorCode.ROOM_ALREADY_JOINED);
         }
 
-        Room room = redisRoomRepository.findById(id)
+        Room room = redisRoomRepository.findById(roomId)
                 .orElseThrow(() -> new RestException(ErrorCode.ROOM_NOT_FOUND));
 
         if (room.getCurrentUser() >= room.getMaxUser()) {
@@ -54,7 +53,7 @@ public class RoomService {
         }
 
         String joinRoomLockKey = "lock:joinRoom:";
-        String roomJoinLockKey = joinRoomLockKey + id;
+        String roomJoinLockKey = joinRoomLockKey + roomId;
         RLock roomJoinLock = redissonClient.getLock(roomJoinLockKey);
         RLock userSessionLock = redissonClient.getLock(userSessionLockKey + authorization);
 
@@ -66,17 +65,17 @@ public class RoomService {
             isUserSessionLocked = userSessionLock.tryLock(10, 10, TimeUnit.SECONDS);
 
             if (isJoinRoomLocked && isUserSessionLocked) {
-                Room currentRoom = redisRoomRepository.findById(id)
+                Room currentRoom = redisRoomRepository.findById(roomId)
                         .orElseThrow(() -> new RestException(ErrorCode.ROOM_NOT_FOUND));
 
                 if (currentRoom.getCurrentUser() >= currentRoom.getMaxUser()) {
                     throw new RestException(ErrorCode.ROOM_FULL);
                 }
-                if (customRedisRoomRepository.isUserInRoom(userNickname, number)) {
+                if (customRedisRoomRepository.isUserInRoom(userNickname, roomId)) {
                     throw new RestException(ErrorCode.ROOM_ALREADY_JOINED);
                 }
 
-                customRedisSessionRepository.setUserSessionState(authorization, State.IN_ROOM, number);
+                customRedisSessionRepository.setUserSessionState(authorization, State.IN_ROOM, roomId);
                 customRedisRoomRepository.saveUserToRoom(userNickname, currentRoom);
 
             } else {
@@ -129,7 +128,7 @@ public class RoomService {
 
         boolean isCreateRoomLocked = false;
         boolean isUserSessionLocked = false;
-        Long roomNumber = 0L;
+        String roomNumber = "0";
 
         try {
             isCreateRoomLocked = roomCreateLock.tryLock(10, 10, TimeUnit.SECONDS);
@@ -154,6 +153,7 @@ public class RoomService {
                         .maxUser(8)
                         .currentUser(1)
                         .isPlaying(false)
+                        .isLocked(request.getPassword() != null && !request.getPassword().isEmpty())
                         .build();
 
                 customRedisRoomRepository.createRoom(room, roomNumber);

@@ -64,7 +64,7 @@ public class RedisStreamChatSubscriber {
         stringRedisTemplate.opsForStream().delete(ROOM_CHAT_STREAM_KEY + request.getRoomId(), record.getId());
 
 
-        System.out.println("1월 12일 테스트");
+        System.out.println("1월 14일 테스트");
         System.out.println(request);
 
     }

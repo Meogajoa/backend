@@ -21,7 +21,7 @@ public class CustomRedisChatLogRepository {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
 
-    public ChatLog saveChatLog(String content, Long roomNumber, String sender) {
+    public ChatLog saveChatLog(String content, String roomId, String sender) {
         Long id = stringRedisTemplate.opsForValue().increment(CHAT_LOG_ID_KEY);
         ChatLog chatLog = ChatLog.builder()
                 .id(String.valueOf(id))
@@ -30,7 +30,7 @@ public class CustomRedisChatLogRepository {
                 .sendTime(LocalDateTime.now())
                 .build();
 
-        redisTemplate.opsForList().rightPush(CHAT_LOG_KEY + roomNumber, chatLog);
+        redisTemplate.opsForList().rightPush(CHAT_LOG_KEY + roomId, chatLog);
 
         return chatLog;
     }

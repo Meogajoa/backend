@@ -20,14 +20,14 @@ public class Message {
     @Builder
     public static class MQRequest {
         private MessageType type;
-        private Long roomId;
+        private String roomId;
         private String content;
         private String sender;
 
-        public static MQRequest of(Message.Request request, String sender) {
+        public static MQRequest of(Message.Request request, String roomId, String sender) {
             return MQRequest.builder()
                     .type(request.getType())
-                    .roomId(request.getRoomId())
+                    .roomId(roomId)
                     .content(request.getContent())
                     .sender(sender)
                     .build();

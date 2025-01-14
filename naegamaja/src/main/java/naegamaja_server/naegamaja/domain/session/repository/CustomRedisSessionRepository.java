@@ -49,15 +49,15 @@ public class CustomRedisSessionRepository {
                 (String) sessionMap.get("nickname"),
                 State.valueOf((String) sessionMap.get("state")),
                 (String) sessionMap.get("sessionId"),
-                (Long) sessionMap.get("roomNumber"),
+                (String) sessionMap.get("roomId"),
                 sessionMap.get("isInGame") != null && Boolean.parseBoolean(sessionMap.get("isInGame").toString()),
                 sessionMap.get("isInRoom") != null && Boolean.parseBoolean(sessionMap.get("isInRoom").toString())
         );
     }
 
-    public void setUserSessionState(String authorization, State state, Long roomNumber) {
+    public void setUserSessionState(String authorization, State state, String roomId) {
         stringRedisTemplate.opsForHash().put(SESSION_PREFIX + authorization, "state", state.toString());
-        stringRedisTemplate.opsForHash().put(SESSION_PREFIX + authorization, "roomNumber", roomNumber.toString());
+        stringRedisTemplate.opsForHash().put(SESSION_PREFIX + authorization, "roomId", roomId);
         stringRedisTemplate.opsForHash().put(SESSION_PREFIX + authorization, "isInRoom", "true");
 
     }
@@ -80,5 +80,9 @@ public class CustomRedisSessionRepository {
 
     public String getSessionIdByNickname(String nickname) {
         return stringRedisTemplate.opsForValue().get(NICKNAME_TO_SESSIONID_PREFIX + nickname);
+    }
+
+    public String getRoomIdBySessionId(String authorization) {
+        return stringRedisTemplate.opsForHash().get(SESSION_PREFIX + authorization, "roomId").toString();
     }
 }

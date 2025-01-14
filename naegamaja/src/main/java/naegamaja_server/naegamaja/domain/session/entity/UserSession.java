@@ -21,16 +21,16 @@ public class UserSession implements Serializable {
     @Indexed
     private String nickname;
     private State state;
-    private Long roomNumber;
+    private String roomId;
     private boolean isInGame;
     private boolean isInRoom;
 
-    public static UserSession of(String nickname, State state, String sessionId, Long roomNumber, boolean isInGame, boolean isInRoom){
+    public static UserSession of(String nickname, State state, String sessionId, String roomId, boolean isInGame, boolean isInRoom){
         return UserSession.builder()
                 .nickname(nickname)
                 .state(state)
                 .sessionId(sessionId)
-                .roomNumber(roomNumber)
+                .roomId(roomId)
                 .isInGame(isInGame)
                 .isInRoom(isInRoom)
                 .build();

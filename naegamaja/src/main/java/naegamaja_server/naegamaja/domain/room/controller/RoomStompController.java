@@ -19,7 +19,7 @@ public class RoomStompController {
 
 
     @MessageMapping("/room/{roomNumber}")
-    public void chat(@DestinationVariable Long roomNumber, @Header("Authorization") String authorization, @Payload Message.Request message) {
+    public void chat(@DestinationVariable String roomNumber, @Header("Authorization") String authorization, @Payload Message.Request message) {
         System.out.println(message.getContent());
 
         //chatLogService.roomChat(roomNumber, message, authorization);

@@ -22,11 +22,15 @@ public class RedisStreamChatPublisher {
     private final String ROOM_CHAT_STREAM_KEY = "stream:room:";
     private final CustomRedisSessionRepository customRedisSessionRepository;
 
-    public void publishChatMessage(Long roomId, Message.Request message, String authorization) {
+    public void publishChatMessage(String roomId, Message.Request message, String authorization) {
         try {
             if (!MessageType.CHAT.equals(message.getType())) return;
             String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
-            Message.MQRequest mqRequest = Message.MQRequest.of(message, nickname);
+            String userRoomId = customRedisSessionRepository.getRoomIdBySessionId(authorization);
+
+            if(userRoomId.isEmpty()) return;
+
+            Message.MQRequest mqRequest = Message.MQRequest.of(message, userRoomId, nickname);
 
             Map<String, String> messageMap = objectMapper.convertValue(mqRequest, new TypeReference<Map<String, String>>() {
             });

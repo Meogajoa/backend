@@ -33,12 +33,12 @@ public class CustomRedisRoomRepository {
         return roomId != null && stringRedisTemplate.hasKey(ROOM_KEY_PREFIX + roomId);
     }
 
-    public boolean isUserInRoom(String nickname, Long roomNumber) {
-        String roomKey = ROOM_KEY_PREFIX + roomNumber + ":users";
+    public boolean isUserInRoom(String nickname, String roomId) {
+        String roomKey = ROOM_KEY_PREFIX + roomId + ":users";
         return Boolean.TRUE.equals(stringRedisTemplate.opsForSet().isMember(roomKey, nickname));
     }
 
-    public Long getAvailableRoomNumber() {
+    public String getAvailableRoomNumber() {
         Set<String> result = stringRedisTemplate.opsForZSet().range(AVAILABLE_ROOM_LIST_KEY, 0, 0);
 
         assert result != null;
@@ -48,25 +48,22 @@ public class CustomRedisRoomRepository {
 
 
 
-        String roomNumberStr = result.iterator().next();
+        String roomId = result.iterator().next();
         try {
-            return Long.parseLong(roomNumberStr);
+            return roomId;
         } catch (NumberFormatException e) {
             throw new RestException(ErrorCode.INVALID_ROOM_NUMBER);
         }
     }
 
-    public void createRoom(Room room, Long roomNumber) {
-        String roomNumberStr = String.valueOf(roomNumber);
+    public void createRoom(Room room, String roomId) {
 
-        // AVAILABLE ZSet에서 roomNumber 제거
-        Long removed = stringRedisTemplate.opsForZSet().remove(AVAILABLE_ROOM_LIST_KEY, roomNumberStr);
+        Long removed = stringRedisTemplate.opsForZSet().remove(AVAILABLE_ROOM_LIST_KEY, roomId);
         if (removed == null || removed == 0) {
             throw new RestException(ErrorCode.FAILED_TO_REMOVE_AVAILABLE_ROOM);
         }
 
-        //차후 동시성 문제 고려 필요
-        stringRedisTemplate.opsForZSet().add(USING_ROOM_LIST_KEY, roomNumberStr, roomNumber);
+        stringRedisTemplate.opsForZSet().add(USING_ROOM_LIST_KEY, roomId, Long.parseLong(roomId));
 
         String roomKey = ROOM_KEY_PREFIX + room.getId();
         boolean isLocked = room.getPassword() != null && !room.getPassword().isEmpty();
@@ -80,7 +77,7 @@ public class CustomRedisRoomRepository {
         stringRedisTemplate.opsForHash().put(roomKey, "isPlaying", String.valueOf(room.isPlaying()));
         stringRedisTemplate.opsForSet().add(roomKey + ":users", room.getOwner());
 
-        System.out.println("Room created and roomNumber removed from AVAILABLE: " + room);
+        System.out.println("Room created and roomId removed from AVAILABLE: " + room);
     }
 
 

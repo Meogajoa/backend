@@ -48,7 +48,7 @@ public class AuthService {
                 .nickname(found.getNickname())
                 .state(State.LOBBY)
                 .sessionId(sessionId)
-                .roomNumber(-1L)
+                .roomId("")
                 .isInGame(false)
                 .isInRoom(false)
                 .build();
