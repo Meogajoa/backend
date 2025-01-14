@@ -3,6 +3,7 @@ package naegamaja_server.naegamaja.domain.auth.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.auth.dto.AuthDto;
+import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
 import naegamaja_server.naegamaja.domain.session.entity.UserSession;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
 import naegamaja_server.naegamaja.domain.session.repository.RedisSessionRepository;
@@ -41,7 +42,10 @@ public class AuthService {
         String sessionId = sessionService.createSessionId();
 
         if(customRedisSessionRepository.isUserSessionActive(found.getNickname())) {
-            sessionId = customRedisSessionRepository.getSessionIdByNickname(found.getNickname());
+            return AuthDto.SessionIdResponse.builder()
+                    .user(userResponse)
+                    .sessionId(customRedisSessionRepository.getSessionIdByNickname(found.getNickname()))
+                    .build();
         }
 
         UserSession userSession = UserSession.builder()
