@@ -6,10 +6,8 @@ import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.system.websocket.dto.Message;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 import org.springframework.data.redis.connection.stream.*;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
-import org.springframework.data.redis.stream.StreamListener;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,11 +16,10 @@ public class RedisStreamChatSubscriber {
 
     private final StreamMessageListenerContainer<String, MapRecord<String, String, String>> listenerContainer;
     private final ChatLogService chatLogService;
-    private final StringRedisTemplate redisTemplate;
-    private final ObjectMapper objectMapper;
-    private final String ROOM_CHAT_STREAM_KEY = "stream:room:";
-    private final String GROUP_NAME = "chat-group";
     private final StringRedisTemplate stringRedisTemplate;
+    private final ObjectMapper objectMapper;
+    private final String ROOM_CHAT_STREAM_KEY = "stream:room:chat:";
+    private final String GROUP_NAME = "chat-group";
 
     @PostConstruct
     public void startListening() {
@@ -30,14 +27,14 @@ public class RedisStreamChatSubscriber {
             String streamKey = ROOM_CHAT_STREAM_KEY + i;
 
             try {
-                redisTemplate.opsForStream().createGroup(streamKey, GROUP_NAME);
+                stringRedisTemplate.opsForStream().createGroup(streamKey, GROUP_NAME);
             } catch (Exception e) {
                 if (!e.getMessage().contains("BUSYGROUP")) {
                     throw e;
                 }
             }
 
-            String consumerName = "consumer-" + i;
+            String consumerName = "roomChatConsumer-" + i;
 
             Consumer consumer = Consumer.from(GROUP_NAME, consumerName);
 
@@ -49,8 +46,6 @@ public class RedisStreamChatSubscriber {
                     this::handleMessage
             );
         }
-
-        listenerContainer.start();
     }
 
     private void handleMessage(MapRecord<String, String, String> record) {

@@ -1,11 +1,8 @@
 package naegamaja_server.naegamaja.system.configuration;
 
 import lombok.RequiredArgsConstructor;
-import naegamaja_server.naegamaja.system.websocket.interceptor.StompChannelInterceptor;
-import naegamaja_server.naegamaja.system.websocket.manager.WebSocketConnectionManager;
-import org.springframework.context.annotation.Bean;
+import naegamaja_server.naegamaja.system.websocket.interceptor.StompInboundChannelInterceptor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.converter.SimpleMessageConverter;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -17,7 +14,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final StompChannelInterceptor stompChannelInterceptor;
+    private final StompInboundChannelInterceptor stompInboundChannelInterceptor;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -27,7 +24,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(stompChannelInterceptor);
+        registration.interceptors(stompInboundChannelInterceptor);
     }
 
     @Override
@@ -37,7 +34,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientOutboundChannel(ChannelRegistration registration) {
-        registration.interceptors(stompChannelInterceptor);
+        registration.interceptors(stompInboundChannelInterceptor);
     }
 
 }

@@ -146,4 +146,9 @@ public class CustomRedisRoomRepository {
         }
         return sessionIds;
     }
+
+    public List<String> getUsersInRoom(String roomId) {
+        String roomKey = ROOM_KEY_PREFIX + roomId + ":users";
+        return new ArrayList<>(stringRedisTemplate.opsForSet().members(roomKey));
+    }
 }

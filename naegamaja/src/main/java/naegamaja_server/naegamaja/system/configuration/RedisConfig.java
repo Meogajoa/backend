@@ -78,7 +78,9 @@ public class RedisConfig {
                         .build();
 
 
-        return StreamMessageListenerContainer.create(connectionFactory, options);
+        StreamMessageListenerContainer<String, MapRecord<String, String, String>> container = StreamMessageListenerContainer.create(connectionFactory, options);
+        container.start();
+        return container;
     }
 
 

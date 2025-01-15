@@ -3,11 +3,9 @@ package naegamaja_server.naegamaja.domain.chat.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
 import naegamaja_server.naegamaja.system.websocket.dto.Message;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +15,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RedisStreamChatPublisher {
 
-    private final StringRedisTemplate redisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
     private final ObjectMapper objectMapper;
-    private final String ROOM_CHAT_STREAM_KEY = "stream:room:";
+    private final String ROOM_CHAT_STREAM_KEY = "stream:room:chat:";
     private final CustomRedisSessionRepository customRedisSessionRepository;
 
     public void publishChatMessage(String roomId, Message.Request message, String authorization) {
@@ -34,7 +32,7 @@ public class RedisStreamChatPublisher {
 
             Map<String, String> messageMap = objectMapper.convertValue(mqRequest, new TypeReference<Map<String, String>>() {
             });
-            redisTemplate.opsForStream().add(ROOM_CHAT_STREAM_KEY + roomId, messageMap);
+            stringRedisTemplate.opsForStream().add(ROOM_CHAT_STREAM_KEY + roomId, messageMap);
         } catch (Exception e) {
             e.printStackTrace();
         }

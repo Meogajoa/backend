@@ -3,8 +3,10 @@ package naegamaja_server.naegamaja.system.websocket.interceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import naegamaja_server.naegamaja.domain.auth.service.RedisAuthService;
+import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
+import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
+import naegamaja_server.naegamaja.domain.room.service.RedisRoomInfoPublisher;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
-import naegamaja_server.naegamaja.system.exception.model.StompException;
 import naegamaja_server.naegamaja.system.websocket.manager.WebSocketConnectionManager;
 import naegamaja_server.naegamaja.system.websocket.model.StompPrincipal;
 import org.springframework.messaging.Message;
@@ -17,11 +19,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class StompChannelInterceptor implements ChannelInterceptor {
+public class StompInboundChannelInterceptor implements ChannelInterceptor {
 
     private final RedisAuthService redisAuthService;
     private final WebSocketConnectionManager webSocketConnectionManager;
     private final CustomRedisSessionRepository customRedisSessionRepository;
+    private final CustomRedisRoomRepository customRedisRoomRepository;
+    private final RedisRoomInfoPublisher redisRoomInfoPublisher;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -68,7 +72,37 @@ public class StompChannelInterceptor implements ChannelInterceptor {
     }
 
     private void handleSubscribe(StompHeaderAccessor accessor, String sessionId) {
-        System.out.println("최종구독");
+        //System.out.println("최종구독");
+
+        String destination = accessor.getDestination();
+        System.out.println("destination: " + destination);
+
+        String[] parts = destination.split("/");
+        for(int i = 0; i < parts.length; i++){
+            System.out.println("parts[" + i + "]: " + parts[i]);
+        }
+
+        if(parts.length >= 4){
+            String type = parts[2];
+            String id = parts[3];
+
+            log.info("{}의 {}에 구독하였습니다.", sessionId, destination);
+
+            processSubscription(type, id, sessionId);
+        }
+    }
+
+    private void processSubscription(String type, String id, String sessionId){
+        switch(type){
+            case "room":
+                RoomUserInfo roomUserInfo = RoomUserInfo.from(customRedisRoomRepository.getUsersInRoom(id));
+                log.info("여기까진 들어왔어요 ㅎㅎ");
+                redisRoomInfoPublisher.publishRoomInfo(id, roomUserInfo);
+
+                break;
+            case "game":
+                break;
+        }
     }
 
     private void handleUnsubscribe(StompHeaderAccessor accessor, String sessionId) {
