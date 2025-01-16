@@ -35,6 +35,14 @@ public class RedisConfig {
     private int port;
 
     @Bean
+    public Executor virtualThreadExecutor() {
+        return Executors.newThreadPerTaskExecutor(
+                Thread.ofVirtual().name("redis-listener-%d").factory()
+        );
+    }
+
+
+    @Bean
     @Primary
     public LettuceConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(new RedisStandaloneConfiguration(host, port));
@@ -67,12 +75,12 @@ public class RedisConfig {
 
         StringRedisSerializer serializer = new StringRedisSerializer();
 
-        Executor executor = Executors.newFixedThreadPool(10);
+        //Executor executor = Executors.newFixedThreadPool(10);
 
         StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
                 StreamMessageListenerContainer.StreamMessageListenerContainerOptions
                         .builder()
-                        .executor(executor)
+                        .executor(virtualThreadExecutor())
                         .pollTimeout(Duration.ofSeconds(1))
                         .serializer(serializer)
                         .build();
