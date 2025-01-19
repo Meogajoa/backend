@@ -6,6 +6,7 @@ import naegamaja_server.naegamaja.domain.auth.service.AuthService;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
 import naegamaja_server.naegamaja.domain.session.repository.RedisSessionRepository;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,8 +37,12 @@ public class AuthController {
     }
 
     @PostMapping("/test")
-    public boolean test(@RequestHeader String authorization) {
-        return customRedisSessionRepository.isValidSessionId(authorization);
+    public ResponseEntity<?> test(@RequestHeader String authorization) {
+        if(customRedisSessionRepository.isValidSessionId(authorization)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 }
