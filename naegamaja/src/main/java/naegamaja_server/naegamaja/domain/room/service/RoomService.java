@@ -42,7 +42,7 @@ public class RoomService {
         }
 
         if (customRedisRoomRepository.isUserInRoom(userNickname, roomId)) {
-            throw new RestException(ErrorCode.ROOM_ALREADY_JOINED);
+            return;
         }
 
         Room room = redisRoomRepository.findById(roomId)

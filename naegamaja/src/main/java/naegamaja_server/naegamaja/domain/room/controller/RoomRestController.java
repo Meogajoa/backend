@@ -25,9 +25,9 @@ public class RoomRestController {
     private final ChatLogService chatLogService;
 
     @PostMapping("/join")
-    public List<ChatLog> joinRoom(@RequestHeader String authorization, @RequestBody RoomRequest.JoinRoomRequest request) {
+    public ResponseEntity<List<ChatLog>> joinRoom(@RequestHeader String authorization, @RequestBody RoomRequest.JoinRoomRequest request) {
         roomService.joinRoom(request, authorization);
-        return chatLogService.getRoomMessages(request.getId());
+        return ResponseEntity.ok(chatLogService.getRoomMessages(request.getId()));
     }
 
     @PostMapping("/create")
