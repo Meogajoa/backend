@@ -1,9 +1,8 @@
 package naegamaja_server.naegamaja.domain.room.controller;
 
 import lombok.RequiredArgsConstructor;
-import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
 import naegamaja_server.naegamaja.domain.chat.service.ChatLogService;
-import naegamaja_server.naegamaja.domain.chat.service.RedisStreamChatPublisher;
+import naegamaja_server.naegamaja.domain.chat.service.RedisStreamRoomChatPublisher;
 import naegamaja_server.naegamaja.domain.room.service.RoomService;
 import naegamaja_server.naegamaja.system.websocket.dto.Message;
 import org.springframework.messaging.handler.annotation.*;
@@ -15,7 +14,7 @@ public class RoomStompController {
 
     private final RoomService roomService;
     private final ChatLogService chatLogService;
-    private final RedisStreamChatPublisher redisStreamChatPublisher;
+    private final RedisStreamRoomChatPublisher redisStreamRoomChatPublisher;
 
 
     @MessageMapping("/room/{roomNumber}")
@@ -23,7 +22,7 @@ public class RoomStompController {
         System.out.println(message.getContent());
 
         //chatLogService.roomChat(roomNumber, message, authorization);
-        redisStreamChatPublisher.publishChatMessage(roomNumber, message, authorization);
+        redisStreamRoomChatPublisher.publishRoomChatMessage(roomNumber, message, authorization);
 
         //todo
     }

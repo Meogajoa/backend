@@ -16,20 +16,19 @@ public class RedisRoomInfoPublisher {
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
 
-    private final String ROOM_INFO_STREAM_KEY = "stream:room:info:";
+    private final String ASYNC_STREAM_KEY = "stream:async:";
 
     public void publishRoomInfo(String roomId, RoomUserInfo roomUserInfo) {
         try {
-            String json = objectMapper.writeValueAsString(roomUserInfo.getUsers());
+            String users = objectMapper.writeValueAsString(roomUserInfo.getUsers());
 
             Map<String, String> messageMap = Map.of(
+                    "type", "ROOM_INFO",
                     "roomId", roomId,
-                    "users", json
+                    "users", users
             );
 
-            redisTemplate.opsForStream().add(ROOM_INFO_STREAM_KEY + roomId, messageMap);
-            
-            log.info("레전드 pub 상황 발생!!");
+            redisTemplate.opsForStream().add(ASYNC_STREAM_KEY, messageMap);
 
         } catch (Exception e) {
             e.printStackTrace();

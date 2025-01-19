@@ -31,29 +31,27 @@ public class RedisRoomInfoSubscriber {
 
     @PostConstruct
     public void startListening() {
-        for(int i = 1; i <= 10; i++) {
-            String streamKey = ROOM_INFO_STREAM_KEY + i;
+        String streamKey = ROOM_INFO_STREAM_KEY;
 
-            try {
-                stringRedisTemplate.opsForStream().createGroup(streamKey, GROUP_NAME);
-            } catch (Exception e) {
-                if (!e.getMessage().contains("BUSYGROUP")) {
-                    throw e;
-                }
+        try {
+            stringRedisTemplate.opsForStream().createGroup(streamKey, GROUP_NAME);
+        } catch (Exception e) {
+            if (!e.getMessage().contains("BUSYGROUP")) {
+                throw e;
             }
-
-            String consumerName = "roomInfoConsumer-" + i;
-
-            Consumer consumer = Consumer.from(GROUP_NAME, consumerName);
-
-            StreamOffset<String> streamOffset = StreamOffset.create(streamKey, ReadOffset.lastConsumed());
-
-            listenerContainer.receive(
-                    consumer,
-                    streamOffset,
-                    this::handleMessage
-            );
         }
+
+        String consumerName = "Consumer";
+
+        Consumer consumer = Consumer.from(GROUP_NAME, consumerName);
+
+        StreamOffset<String> streamOffset = StreamOffset.create(streamKey, ReadOffset.lastConsumed());
+
+        listenerContainer.receive(
+                consumer,
+                streamOffset,
+                this::handleMessage
+        );
     }
 
     public void handleMessage(MapRecord<String, String, String> record) {
@@ -69,8 +67,6 @@ public class RedisRoomInfoSubscriber {
             System.out.println("1월 15일 테스트 : ");
             System.out.println(roomUserInfo);
 
-            sleep(1000);
-
             stompRoomService.sendRoomInfo(roomUserInfo.getRoomId(), roomUserInfo);
 
             stringRedisTemplate.opsForStream().acknowledge(record.getStream(), GROUP_NAME, record.getId());
@@ -82,5 +78,6 @@ public class RedisRoomInfoSubscriber {
         }
 
     }
+
 
 }

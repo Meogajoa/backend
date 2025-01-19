@@ -21,11 +21,10 @@ public class ChatLogService {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
 
-    public void roomChat(Message.RoomMQRequest message) {
-        ChatLog chatLog = customRedisChatLogRepository.saveChatLog(message.getContent(), message.getRoomId(), message.getSender());
+    public void roomChat(ChatLog chatLog, String roomId) {
+        //ChatLog chatLog = customRedisChatLogRepository.saveChatLog(message.getContent(), message.getRoomId(), message.getSender());
 
-        simpMessagingTemplate.convertAndSend("/topic/room/" + message.getRoomId(), chatLog);
-        System.out.println("chatLog 보냈음");
+        simpMessagingTemplate.convertAndSend("/topic/room/" + roomId, chatLog);
     }
 
     public List<ChatLog> getRoomMessages(String roomId) {

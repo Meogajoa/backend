@@ -1,0 +1,45 @@
+package naegamaja_server.naegamaja.domain.redis.service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
+import naegamaja_server.naegamaja.system.websocket.dto.Message;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class RedisPubSubSubscriber {
+
+    private final ObjectMapper objectMapper;
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
+
+    public void roomChat(String message, String channel){
+        try{
+            Message.RoomChatPubSubResponse roomChatPubSubResponse = objectMapper.readValue(message, Message.RoomChatPubSubResponse.class);
+
+            ChatLog chatlog = roomChatPubSubResponse.getChatLog();
+
+            System.out.println("/topic/room/" + roomChatPubSubResponse.getId() + "로 보냈어");
+
+            simpMessagingTemplate.convertAndSend("/topic/room/" + roomChatPubSubResponse.getId(), chatlog);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void roomInfo(String message, String channel){
+        try{
+            Message.RoomInfoPubSubResponse roomInfoPubSubResponse = objectMapper.readValue(message, Message.RoomInfoPubSubResponse.class);
+
+            simpMessagingTemplate.convertAndSend("/topic/room/" + roomInfoPubSubResponse.getId(), roomInfoPubSubResponse);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+}

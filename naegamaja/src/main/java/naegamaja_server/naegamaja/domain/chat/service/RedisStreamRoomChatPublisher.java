@@ -13,14 +13,14 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class RedisStreamChatPublisher {
+public class RedisStreamRoomChatPublisher {
 
     private final StringRedisTemplate stringRedisTemplate;
     private final ObjectMapper objectMapper;
-    private final String ROOM_CHAT_STREAM_KEY = "stream:room:chat:";
+    private final String ASYNC_STREAM_KEY = "stream:async:";
     private final CustomRedisSessionRepository customRedisSessionRepository;
 
-    public void publishChatMessage(String roomId, Message.Request message, String authorization) {
+    public void publishRoomChatMessage(String roomId, Message.Request message, String authorization) {
         try {
             if (!MessageType.CHAT.equals(message.getType())) return;
             String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
@@ -28,11 +28,14 @@ public class RedisStreamChatPublisher {
 
             if(userRoomId.isEmpty()) return;
 
-            Message.RoomMQRequest roomMqRequest = Message.RoomMQRequest.of(message, userRoomId, nickname);
+            Message.RoomChatMQRequest roomChatMqRequest = Message.RoomChatMQRequest.of(message, userRoomId, nickname);
 
-            Map<String, String> messageMap = objectMapper.convertValue(roomMqRequest, new TypeReference<Map<String, String>>() {
+            Map<String, String> messageMap = objectMapper.convertValue(roomChatMqRequest, new TypeReference<Map<String, String>>() {
             });
-            stringRedisTemplate.opsForStream().add(ROOM_CHAT_STREAM_KEY + roomId, messageMap);
+
+            messageMap.put("type", "ROOM_CHAT");
+
+            stringRedisTemplate.opsForStream().add(ASYNC_STREAM_KEY, messageMap);
         } catch (Exception e) {
             e.printStackTrace();
         }

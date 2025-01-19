@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
+import naegamaja_server.naegamaja.domain.redis.service.RedisPubSubSubscriber;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,9 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.*;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 
@@ -92,6 +96,34 @@ public class RedisConfig {
         container.start();
         return container;
     }
+
+    @Bean
+    public RedisMessageListenerContainer redisMessageListenerContainer(
+            RedisConnectionFactory connectionFactory,
+            MessageListenerAdapter RoomChatListenerAdapter,
+            MessageListenerAdapter RoomInfoListenerAdaptor
+    ) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+
+        container.addMessageListener(RoomChatListenerAdapter, new ChannelTopic("pubsub:roomChat"));
+        container.addMessageListener(RoomInfoListenerAdaptor, new ChannelTopic("pubsub:roomInfo"));
+
+        return container;
+    }
+
+    @Bean
+    public MessageListenerAdapter RoomChatListenerAdapter(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "roomChat");
+    }
+
+    @Bean
+    public MessageListenerAdapter RoomInfoListenerAdaptor(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "roomInfo");
+    }
+
+
+
 
 
 
