@@ -28,9 +28,9 @@ public class RedisStreamChatPublisher {
 
             if(userRoomId.isEmpty()) return;
 
-            Message.MQRequest mqRequest = Message.MQRequest.of(message, userRoomId, nickname);
+            Message.RoomMQRequest roomMqRequest = Message.RoomMQRequest.of(message, userRoomId, nickname);
 
-            Map<String, String> messageMap = objectMapper.convertValue(mqRequest, new TypeReference<Map<String, String>>() {
+            Map<String, String> messageMap = objectMapper.convertValue(roomMqRequest, new TypeReference<Map<String, String>>() {
             });
             stringRedisTemplate.opsForStream().add(ROOM_CHAT_STREAM_KEY + roomId, messageMap);
         } catch (Exception e) {

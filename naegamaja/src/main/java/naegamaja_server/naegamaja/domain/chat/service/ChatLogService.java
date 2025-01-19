@@ -5,8 +5,6 @@ import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
 import naegamaja_server.naegamaja.domain.chat.repository.CustomRedisChatLogRepository;
 import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
-import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
-import naegamaja_server.naegamaja.system.exception.model.RestException;
 import naegamaja_server.naegamaja.system.websocket.dto.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,7 @@ public class ChatLogService {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
 
-    public void roomChat(Message.MQRequest message) {
+    public void roomChat(Message.RoomMQRequest message) {
         ChatLog chatLog = customRedisChatLogRepository.saveChatLog(message.getContent(), message.getRoomId(), message.getSender());
 
         simpMessagingTemplate.convertAndSend("/topic/room/" + message.getRoomId(), chatLog);

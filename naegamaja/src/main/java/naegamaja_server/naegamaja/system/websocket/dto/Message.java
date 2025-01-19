@@ -18,14 +18,14 @@ public class Message {
     @NoArgsConstructor
     @Data
     @Builder
-    public static class MQRequest {
+    public static class RoomMQRequest {
         private MessageType type;
         private String roomId;
         private String content;
         private String sender;
 
-        public static MQRequest of(Message.Request request, String roomId, String sender) {
-            return MQRequest.builder()
+        public static RoomMQRequest of(Message.Request request, String roomId, String sender) {
+            return RoomMQRequest.builder()
                     .type(request.getType())
                     .roomId(roomId)
                     .content(request.getContent())

@@ -20,7 +20,9 @@ import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 @RequiredArgsConstructor
@@ -75,13 +77,13 @@ public class RedisConfig {
 
         StringRedisSerializer serializer = new StringRedisSerializer();
 
-        //Executor executor = Executors.newFixedThreadPool(10);
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
 
         StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
                 StreamMessageListenerContainer.StreamMessageListenerContainerOptions
                         .builder()
                         .executor(virtualThreadExecutor())
-                        .pollTimeout(Duration.ofSeconds(1))
+                        .pollTimeout(Duration.ofSeconds(2))
                         .serializer(serializer)
                         .build();
 

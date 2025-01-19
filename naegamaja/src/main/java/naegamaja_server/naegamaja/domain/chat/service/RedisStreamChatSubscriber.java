@@ -49,7 +49,7 @@ public class RedisStreamChatSubscriber {
     }
 
     private void handleMessage(MapRecord<String, String, String> record) {
-        Message.MQRequest request = objectMapper.convertValue(record.getValue(), Message.MQRequest.class);
+        Message.RoomMQRequest request = objectMapper.convertValue(record.getValue(), Message.RoomMQRequest.class);
 
         if (!MessageType.CHAT.equals(request.getType())) return;
 
