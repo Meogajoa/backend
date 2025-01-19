@@ -39,10 +39,10 @@ public class AuthController {
     @PostMapping("/test")
     public ResponseEntity<?> test(@RequestHeader String authorization) {
         if(customRedisSessionRepository.isValidSessionId(authorization)) {
-            return ResponseEntity.ok().build();
+            String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+            return ResponseEntity.ok(AuthDto.ValidSessionTestResponse.builder().nickname(nickname).build());
         } else {
             return ResponseEntity.badRequest().build();
         }
     }
-
 }

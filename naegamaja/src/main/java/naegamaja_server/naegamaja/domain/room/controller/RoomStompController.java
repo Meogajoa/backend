@@ -17,7 +17,7 @@ public class RoomStompController {
     private final RedisStreamRoomChatPublisher redisStreamRoomChatPublisher;
 
 
-    @MessageMapping("/room/{roomNumber}")
+    @MessageMapping("/room/{roomNumber}/chat")
     public void chat(@DestinationVariable String roomNumber, @Header("Authorization") String authorization, @Payload Message.Request message) {
         System.out.println(message.getContent());
 
