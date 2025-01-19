@@ -36,8 +36,8 @@ public class AuthController {
     }
 
     @PostMapping("/test")
-    public boolean test(@RequestHeader String authroization) {
-        return customRedisSessionRepository.isValidSessionId(authroization);
+    public boolean test(@RequestHeader String authorization) {
+        return customRedisSessionRepository.isValidSessionId(authorization);
     }
 
 }
