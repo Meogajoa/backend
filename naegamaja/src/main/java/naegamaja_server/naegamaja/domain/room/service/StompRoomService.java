@@ -13,7 +13,7 @@ public class StompRoomService {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     public void sendRoomInfo(String roomId, RoomUserInfo roomUserInfo) {
-        simpMessagingTemplate.convertAndSend("/topic/room/" + roomId, roomUserInfo.getUsers());
+        simpMessagingTemplate.convertAndSend("/topic/room/" + roomId + "/notice/users", roomUserInfo.getUsers());
         System.out.println("유저 정보 보내기 완료슝!!");
     }
 }

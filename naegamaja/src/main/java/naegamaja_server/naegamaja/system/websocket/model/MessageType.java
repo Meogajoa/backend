@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum MessageType {
-    CHAT("CHAT"),
+    ROOM_CHAT("CHAT"),
+    GAME_CHAT("GAME_CHAT"),
     SYSTEM("SYSTEM"),
+    USER_JOIN("USER_JOIN"),
     GAME_START("GAME_START"),
     GAME_END("GAME_END");
 

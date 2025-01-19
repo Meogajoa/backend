@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import naegamaja_server.naegamaja.domain.auth.service.RedisAuthService;
 import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
 import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
-import naegamaja_server.naegamaja.domain.room.service.RedisRoomInfoPublisher;
+import naegamaja_server.naegamaja.domain.room.service.RedisPubSubRoomInfoPublisher;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
 import naegamaja_server.naegamaja.system.websocket.manager.WebSocketConnectionManager;
 import naegamaja_server.naegamaja.system.websocket.model.StompPrincipal;
@@ -25,7 +25,7 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
     private final WebSocketConnectionManager webSocketConnectionManager;
     private final CustomRedisSessionRepository customRedisSessionRepository;
     private final CustomRedisRoomRepository customRedisRoomRepository;
-    private final RedisRoomInfoPublisher redisRoomInfoPublisher;
+    private final RedisPubSubRoomInfoPublisher redisPubSubRoomInfoPublisher;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -96,7 +96,7 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
         switch(type){
             case "room":
                 RoomUserInfo roomUserInfo = RoomUserInfo.from(customRedisRoomRepository.getUsersInRoom(id), id);
-                redisRoomInfoPublisher.publishRoomInfo(roomUserInfo);
+                redisPubSubRoomInfoPublisher.publishRoomInfo(roomUserInfo);
 
                 break;
             case "game":

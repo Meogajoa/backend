@@ -22,7 +22,7 @@ public class RedisStreamRoomChatPublisher {
 
     public void publishRoomChatMessage(String roomId, Message.Request message, String authorization) {
         try {
-            if (!MessageType.CHAT.equals(message.getType())) return;
+            if (!MessageType.ROOM_CHAT.equals(message.getType())) return;
             String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
             String userRoomId = customRedisSessionRepository.getRoomIdBySessionId(authorization);
 

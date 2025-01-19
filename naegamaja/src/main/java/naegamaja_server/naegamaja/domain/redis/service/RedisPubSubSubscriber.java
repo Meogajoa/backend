@@ -28,7 +28,7 @@ public class RedisPubSubSubscriber {
 
             System.out.println("/topic/room/" + roomChatPubSubResponse.getId() + "로 보냈어");
 
-            simpMessagingTemplate.convertAndSend("/topic/room/" + roomChatPubSubResponse.getId(), chatlog);
+            simpMessagingTemplate.convertAndSend("/topic/room/" + roomChatPubSubResponse.getId() + "/chat", chatlog);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -38,8 +38,12 @@ public class RedisPubSubSubscriber {
         try{
             RoomUserInfo roomUserInfo = objectMapper.readValue(message, RoomUserInfo.class);
 
-            simpMessagingTemplate.convertAndSend("/topic/room/" + roomUserInfo.getRoomId(), roomUserInfo.getUsers());
+            Thread.sleep(500);
+
+            simpMessagingTemplate.convertAndSend("/topic/room/" + roomUserInfo.getRoomId() + "/notice/users", roomUserInfo.getUsers());
         } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

@@ -20,7 +20,7 @@ import static java.lang.Thread.sleep;
 
 @Service
 @RequiredArgsConstructor
-public class RedisRoomInfoSubscriber {
+public class RedisPubSubRoomInfoSubscriber {
 
     private final StreamMessageListenerContainer<String, MapRecord<String, String, String>> listenerContainer;
     private final StompRoomService stompRoomService;
