@@ -5,9 +5,12 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
+import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
 import naegamaja_server.naegamaja.system.websocket.dto.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import static java.lang.Thread.sleep;
 
 @Service
 @RequiredArgsConstructor
@@ -33,9 +36,9 @@ public class RedisPubSubSubscriber {
 
     public void roomInfo(String message, String channel){
         try{
-            Message.RoomInfoPubSubResponse roomInfoPubSubResponse = objectMapper.readValue(message, Message.RoomInfoPubSubResponse.class);
+            RoomUserInfo roomUserInfo = objectMapper.readValue(message, RoomUserInfo.class);
 
-            simpMessagingTemplate.convertAndSend("/topic/room/" + roomInfoPubSubResponse.getId(), roomInfoPubSubResponse);
+            simpMessagingTemplate.convertAndSend("/topic/room/" + roomUserInfo.getRoomId(), roomUserInfo.getUsers());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

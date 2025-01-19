@@ -56,7 +56,7 @@ public class CustomRedisRoomRepository {
         }
     }
 
-    public void createRoom(Room room, String roomId) {
+    public String createRoom(Room room, String roomId) {
 
         Long removed = stringRedisTemplate.opsForZSet().remove(AVAILABLE_ROOM_LIST_KEY, roomId);
         if (removed == null || removed == 0) {
@@ -76,8 +76,9 @@ public class CustomRedisRoomRepository {
         stringRedisTemplate.opsForHash().put(roomKey, "isLocked", String.valueOf(room.isLocked()));
         stringRedisTemplate.opsForHash().put(roomKey, "isPlaying", String.valueOf(room.isPlaying()));
         stringRedisTemplate.opsForSet().add(roomKey + ":users", room.getOwner());
-
         System.out.println("Room created and roomId removed from AVAILABLE: " + room);
+
+        return room.getId();
     }
 
 

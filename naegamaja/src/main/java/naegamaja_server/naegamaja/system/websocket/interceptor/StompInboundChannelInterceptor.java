@@ -95,9 +95,8 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
     private void processSubscription(String type, String id, String sessionId){
         switch(type){
             case "room":
-                RoomUserInfo roomUserInfo = RoomUserInfo.from(customRedisRoomRepository.getUsersInRoom(id));
-                log.info("여기까진 들어왔어요 ㅎㅎ");
-                redisRoomInfoPublisher.publishRoomInfo(id, roomUserInfo);
+                RoomUserInfo roomUserInfo = RoomUserInfo.from(customRedisRoomRepository.getUsersInRoom(id), id);
+                redisRoomInfoPublisher.publishRoomInfo(roomUserInfo);
 
                 break;
             case "game":

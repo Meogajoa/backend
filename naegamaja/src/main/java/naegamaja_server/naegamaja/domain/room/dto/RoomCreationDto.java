@@ -17,4 +17,12 @@ public class RoomCreationDto {
         private String roomPassword;
         private int roomMaxUser;
     }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class RoomCreationResponse {
+        private String id;
+    }
 }

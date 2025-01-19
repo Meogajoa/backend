@@ -31,10 +31,12 @@ public class RoomRestController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createRoom(@RequestHeader String authorization, @RequestBody RoomRequest.CreateRoomRequest request) {
-        roomService.createRoom(request, authorization);
+    public RoomCreationDto.RoomCreationResponse createRoom(@RequestHeader String authorization, @RequestBody RoomRequest.CreateRoomRequest request) {
+        String id = roomService.createRoom(request, authorization);
 
-        return ResponseEntity.ok().build();
+        return RoomCreationDto.RoomCreationResponse.builder()
+                .id(id)
+                .build();
     }
 
     @GetMapping("/pages/{pageNum}")

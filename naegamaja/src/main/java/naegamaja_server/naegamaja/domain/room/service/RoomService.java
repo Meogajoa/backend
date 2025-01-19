@@ -110,7 +110,7 @@ public class RoomService {
         }
     }
 
-    public void createRoom(RoomRequest.CreateRoomRequest request, String authorization) {
+    public String createRoom(RoomRequest.CreateRoomRequest request, String authorization) {
         String userNickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
         if (userNickname == null) {
             throw new RestException(ErrorCode.USER_NOT_FOUND);
@@ -156,7 +156,7 @@ public class RoomService {
                         .isLocked(request.getPassword() != null && !request.getPassword().isEmpty())
                         .build();
 
-                customRedisRoomRepository.createRoom(room, roomNumber);
+                return customRedisRoomRepository.createRoom(room, roomNumber);
 
             } else {
                 if (!isCreateRoomLocked) {
