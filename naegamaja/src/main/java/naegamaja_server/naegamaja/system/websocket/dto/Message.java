@@ -11,7 +11,17 @@ public class Message {
     @NoArgsConstructor
     @Data
     @Builder
-    public static class SyncMQRequest {
+    public static class GameMQRequest {
+        private MessageType type;
+        private String gameId;
+        private String content;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class GameSystemResponse {
         private MessageType type;
         private String content;
     }

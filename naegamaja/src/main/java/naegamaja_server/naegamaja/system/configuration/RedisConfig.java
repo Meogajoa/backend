@@ -101,13 +101,15 @@ public class RedisConfig {
     public RedisMessageListenerContainer redisMessageListenerContainer(
             RedisConnectionFactory connectionFactory,
             MessageListenerAdapter RoomChatListenerAdapter,
-            MessageListenerAdapter RoomInfoListenerAdaptor
+            MessageListenerAdapter RoomInfoListenerAdaptor,
+            MessageListenerAdapter GameStartListenerAdapter
     ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
 
         container.addMessageListener(RoomChatListenerAdapter, new ChannelTopic("pubsub:roomChat"));
         container.addMessageListener(RoomInfoListenerAdaptor, new ChannelTopic("pubsub:roomInfo"));
+        container.addMessageListener(GameStartListenerAdapter, new ChannelTopic("pubsub:gameStart"));
 
         return container;
     }
@@ -120,6 +122,11 @@ public class RedisConfig {
     @Bean
     public MessageListenerAdapter RoomInfoListenerAdaptor(RedisPubSubSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "roomInfo");
+    }
+
+    @Bean
+    public MessageListenerAdapter GameStartListenerAdapter(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "gameStart");
     }
 
 
