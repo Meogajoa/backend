@@ -2,8 +2,7 @@ package naegamaja_server.naegamaja.domain.room.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import naegamaja_server.naegamaja.domain.chat.repository.CustomRedisChatLogRepository;
-import naegamaja_server.naegamaja.domain.room.domain.Room;
+import naegamaja_server.naegamaja.domain.room.entity.Room;
 import naegamaja_server.naegamaja.domain.room.dto.RoomPageResponse;
 import naegamaja_server.naegamaja.domain.room.dto.RoomRequest;
 import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
@@ -16,7 +15,6 @@ import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
 import naegamaja_server.naegamaja.system.exception.model.RestException;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -108,6 +106,10 @@ public class RoomService {
                 roomJoinLock.unlock();
             }
         }
+    }
+
+    public String getRoomOwner(String roomId) {
+        return customRedisRoomRepository.getRoomOwner(roomId);
     }
 
     public String createRoom(RoomRequest.CreateRoomRequest request, String authorization) {

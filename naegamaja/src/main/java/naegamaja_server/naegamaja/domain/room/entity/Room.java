@@ -1,4 +1,4 @@
-package naegamaja_server.naegamaja.domain.room.domain;
+package naegamaja_server.naegamaja.domain.room.entity;
 
 import jakarta.persistence.Id;
 import lombok.*;

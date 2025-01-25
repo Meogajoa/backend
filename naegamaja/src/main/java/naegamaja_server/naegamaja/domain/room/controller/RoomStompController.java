@@ -12,14 +12,11 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 public class RoomStompController {
 
-    private final RoomService roomService;
-    private final ChatLogService chatLogService;
     private final RedisStreamRoomChatPublisher redisStreamRoomChatPublisher;
 
 
     @MessageMapping("/room/{roomNumber}/chat")
     public void chat(@DestinationVariable String roomNumber, @Header("Authorization") String authorization, @Payload Message.Request message) {
-        System.out.println(message.getContent());
 
         //chatLogService.roomChat(roomNumber, message, authorization);
         redisStreamRoomChatPublisher.publishRoomChatMessage(roomNumber, message, authorization);

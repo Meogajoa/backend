@@ -1,7 +1,7 @@
 package naegamaja_server.naegamaja.domain.room.repository;
 
 import lombok.RequiredArgsConstructor;
-import naegamaja_server.naegamaja.domain.room.domain.Room;
+import naegamaja_server.naegamaja.domain.room.entity.Room;
 import naegamaja_server.naegamaja.domain.room.dto.RoomPageResponse;
 import naegamaja_server.naegamaja.domain.room.dto.RoomResponse;
 import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
@@ -31,6 +31,11 @@ public class CustomRedisRoomRepository {
 
     public boolean isAlreadyExistRoom(String roomId) {
         return roomId != null && stringRedisTemplate.hasKey(ROOM_KEY_PREFIX + roomId);
+    }
+
+    public String getRoomOwner(String roomId) {
+        String roomKey = ROOM_KEY_PREFIX + roomId;
+        return (String) stringRedisTemplate.opsForHash().get(roomKey, "owner");
     }
 
     public boolean isUserInRoom(String nickname, String roomId) {

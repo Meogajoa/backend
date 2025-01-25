@@ -11,6 +11,15 @@ public class Message {
     @NoArgsConstructor
     @Data
     @Builder
+    public static class SyncMQRequest {
+        private MessageType type;
+        private String content;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
     public static class Request {
         private MessageType type;
         private String content;

@@ -1,7 +1,7 @@
 package naegamaja_server.naegamaja.domain.room.dto;
 
 import lombok.*;
-import naegamaja_server.naegamaja.domain.room.domain.Room;
+import naegamaja_server.naegamaja.domain.room.entity.Room;
 
 @Builder
 @Getter
