@@ -9,6 +9,7 @@ public enum MessageType {
     SYSTEM("SYSTEM"),
     USER_JOIN("USER_JOIN"),
     GAME_START("GAME_START"),
+    TEST("TEST"),
     GAME_END("GAME_END");
 
     private final String value;
