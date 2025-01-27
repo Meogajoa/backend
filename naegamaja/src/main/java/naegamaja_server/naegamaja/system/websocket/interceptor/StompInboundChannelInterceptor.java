@@ -1,3 +1,4 @@
+
 package naegamaja_server.naegamaja.system.websocket.interceptor;
 
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,9 @@ import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
 import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
 import naegamaja_server.naegamaja.domain.room.service.RedisPubSubRoomInfoPublisher;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
+import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
+import naegamaja_server.naegamaja.system.exception.model.RestException;
+import naegamaja_server.naegamaja.system.exception.model.StompException;
 import naegamaja_server.naegamaja.system.websocket.manager.WebSocketConnectionManager;
 import naegamaja_server.naegamaja.system.websocket.model.StompPrincipal;
 import org.springframework.messaging.Message;
@@ -101,6 +105,12 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
                 break;
             case "game":
                 break;
+            case "user":
+                if(!id.equals(customRedisSessionRepository.getNicknameBySessionId(sessionId))){
+                    System.out.println("여기서 걸렸음 1월 27일");
+                    //throw new RestException(ErrorCode.GLOBAL_BAD_REQUEST);
+                }
+                break;
         }
     }
 
@@ -120,6 +130,5 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
         accessor.setUser(new StompPrincipal(sessionId));
         webSocketConnectionManager.addSession(customRedisSessionRepository.getNicknameBySessionId(sessionId), sessionId);
     }
-
 
 }

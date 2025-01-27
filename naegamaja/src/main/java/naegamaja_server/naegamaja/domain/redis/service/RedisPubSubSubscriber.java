@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
 import naegamaja_server.naegamaja.domain.game.entity.Player;
 import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
+import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
 import naegamaja_server.naegamaja.system.websocket.dto.Message;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -20,6 +21,7 @@ public class RedisPubSubSubscriber {
 
     private final ObjectMapper objectMapper;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final CustomRedisSessionRepository customRedisSessionRepository;
 
 
     public void roomChat(String message, String channel){
@@ -69,6 +71,10 @@ public class RedisPubSubSubscriber {
     public void UserInfo(String message, String channel){
         try{
             List<Player> playerList = objectMapper.readValue(message, objectMapper.getTypeFactory().constructCollectionType(List.class, Player.class));
+
+            for(Player player : playerList){
+                simpMessagingTemplate.convertAndSend("/topic/user/" + player.getNickname() + "/gameInfo", player);
+            }
 
             System.out.println("유저 개인 정보 출력");
             System.out.println(playerList);
