@@ -10,6 +10,7 @@ public enum MessageType {
     USER_JOIN("USER_JOIN"),
     GAME_START("GAME_START"),
     TEST("TEST"),
+    GAME_DAY_OR_NIGHT("GAME_DAY_OR_NIGHT"),
     GAME_END("GAME_END");
 
     private final String value;

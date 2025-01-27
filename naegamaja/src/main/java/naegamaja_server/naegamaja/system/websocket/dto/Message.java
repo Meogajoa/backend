@@ -5,6 +5,8 @@ import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
 import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 
+import java.time.LocalDateTime;
+
 public class Message {
 
     @AllArgsConstructor
@@ -23,9 +25,25 @@ public class Message {
     @Data
     @Builder
     public static class GameSystemResponse {
+        private String sender;
         private MessageType type;
         private String content;
+        private LocalDateTime sendTime;
     }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class GameDayOrNightResponse {
+        private String gameId;
+        private String sender;
+        private MessageType type;
+        private int day;
+        private String dayOrNight;
+        private LocalDateTime sendTime;
+    }
+
 
     @AllArgsConstructor
     @NoArgsConstructor

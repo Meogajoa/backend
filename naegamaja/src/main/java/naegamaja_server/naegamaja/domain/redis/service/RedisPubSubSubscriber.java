@@ -13,6 +13,7 @@ import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -56,13 +57,15 @@ public class RedisPubSubSubscriber {
         try{
             String gameId = objectMapper.readValue(message, String.class);
             Message.GameSystemResponse gameSystemResponse = Message.GameSystemResponse.builder()
+                    .sendTime(LocalDateTime.now())
                     .type(MessageType.GAME_START)
                     .content(gameId)
+                    .sender("SYSTEM")
                     .build();
 
             System.out.println("/topic/room/" + gameId + "로 보냈어");
 
-            simpMessagingTemplate.convertAndSend("/topic/room/" + gameId, gameSystemResponse);
+            simpMessagingTemplate.convertAndSend("/topic/room/" + gameId + "/notice/system", gameSystemResponse);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -78,6 +81,16 @@ public class RedisPubSubSubscriber {
 
             System.out.println("유저 개인 정보 출력");
             System.out.println(playerList);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void GameDayOrNight(String message, String channel){
+        try{
+            Message.GameDayOrNightResponse gameDayOrNightResponse = objectMapper.readValue(message, Message.GameDayOrNightResponse.class);
+
+            simpMessagingTemplate.convertAndSend("/topic/room/" + gameDayOrNightResponse.getGameId() + "/notice/system", gameDayOrNightResponse);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
