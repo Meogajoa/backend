@@ -15,4 +15,5 @@ import java.util.List;
 public class RoomJoinResponse {
     List<ChatLog> chatLogs;
     String name;
+    String owner;
 }
