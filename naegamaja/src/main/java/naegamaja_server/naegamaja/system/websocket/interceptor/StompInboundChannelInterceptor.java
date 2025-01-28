@@ -9,9 +9,6 @@ import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
 import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
 import naegamaja_server.naegamaja.domain.room.service.RedisPubSubRoomInfoPublisher;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
-import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
-import naegamaja_server.naegamaja.system.exception.model.RestException;
-import naegamaja_server.naegamaja.system.exception.model.StompException;
 import naegamaja_server.naegamaja.system.websocket.dto.NaegamajaMessage;
 import naegamaja_server.naegamaja.system.websocket.manager.WebSocketConnectionManager;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
@@ -111,7 +108,7 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
                         .content("")
                         .build();
 
-                redisStreamGameMessagePublisher.publish(gameMQRequest);
+                redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
             }
         }
     }
@@ -126,10 +123,27 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
             case "game":
                 break;
             case "user":
-                if(!id.equals(customRedisSessionRepository.getNicknameBySessionId(sessionId))){
+//                if(!id.equals(customRedisSessionRepository.getNicknameBySessionId(sessionId))){
+//                    System.out.println("여기서 걸렸음 1월 27일");
+//                    //throw new RestException(ErrorCode.GLOBAL_BAD_REQUEST);
+//                }
+
+                //sub 시 sessionId가 안 담겨서 잠시 쓰는 용도
+                String tempSessionId = customRedisSessionRepository.getSessionIdByNickname(id);
+
+                String roomId = customRedisSessionRepository.getRoomIdBySessionId(tempSessionId);
+                if(roomId.equals("-1")){
                     System.out.println("여기서 걸렸음 1월 27일");
                     //throw new RestException(ErrorCode.GLOBAL_BAD_REQUEST);
                 }
+
+                NaegamajaMessage.GameMQRequest gameMQRequest = NaegamajaMessage.GameMQRequest.builder()
+                        .type(MessageType.GAME_MY_INFO)
+                        .gameId(roomId)
+                        .sender(id)
+                        .content("")
+                        .build();
+                redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
                 break;
         }
     }

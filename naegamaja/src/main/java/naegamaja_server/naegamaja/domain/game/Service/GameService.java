@@ -34,7 +34,7 @@ public class GameService {
 
         System.out.println("로직 서버로 메시지 날렸음");
 
-        redisStreamGameMessagePublisher.publish(gameMQRequest);
+        redisStreamGameMessagePublisher.syncPublish(gameMQRequest);
     }
 
     public void test(String gameId, String sessionId, NaegamajaMessage.Request message) {
@@ -50,7 +50,7 @@ public class GameService {
                 .content(message.getContent())
                 .build();
 
-        redisStreamGameMessagePublisher.publish(gameMQRequest);
+        redisStreamGameMessagePublisher.syncPublish(gameMQRequest);
 
     }
 }

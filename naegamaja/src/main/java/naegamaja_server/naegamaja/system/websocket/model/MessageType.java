@@ -11,7 +11,8 @@ public enum MessageType {
     GAME_START("GAME_START"),
     TEST("TEST"),
     GAME_DAY_OR_NIGHT("GAME_DAY_OR_NIGHT"),
-    GAME_END("GAME_END");
+    GAME_END("GAME_END"),
+    GAME_MY_INFO("GAME_MY_INFO");
 
     private final String value;
 

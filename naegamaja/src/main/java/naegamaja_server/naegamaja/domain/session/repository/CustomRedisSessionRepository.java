@@ -85,4 +85,8 @@ public class CustomRedisSessionRepository {
     public String getRoomIdBySessionId(String authorization) {
         return stringRedisTemplate.opsForHash().get(SESSION_PREFIX + authorization, "roomId").toString();
     }
+
+    public String getRoomIdNickname(String nickname) {
+        return stringRedisTemplate.opsForHash().get(NICKNAME_TO_SESSIONID_PREFIX + nickname, "roomId").toString();
+    }
 }
