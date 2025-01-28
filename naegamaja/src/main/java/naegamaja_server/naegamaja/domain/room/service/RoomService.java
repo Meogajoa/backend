@@ -108,6 +108,10 @@ public class RoomService {
         }
     }
 
+    public String getRoomName(String id){
+        return customRedisRoomRepository.getRoomName(id);
+    }
+
     public String getRoomOwner(String roomId) {
         return customRedisRoomRepository.getRoomOwner(roomId);
     }

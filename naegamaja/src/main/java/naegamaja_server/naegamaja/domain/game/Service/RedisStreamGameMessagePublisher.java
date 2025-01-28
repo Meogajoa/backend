@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
-import naegamaja_server.naegamaja.system.websocket.dto.Message;
+import naegamaja_server.naegamaja.system.websocket.dto.NaegamajaMessage;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class RedisStreamGameMessagePublisher {
     private final String SYNC_STREAM_KEY = "stream:sync:";
     private final CustomRedisSessionRepository customRedisSessionRepository;
 
-    public void publish(Message.GameMQRequest gameMQRequest) {
+    public void publish(NaegamajaMessage.GameMQRequest gameMQRequest) {
         try {
 //            String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
 //            String userRoomId = customRedisSessionRepository.getRoomIdBySessionId(authorization);

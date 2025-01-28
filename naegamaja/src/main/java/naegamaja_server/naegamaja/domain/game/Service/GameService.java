@@ -7,10 +7,8 @@ import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRe
 import naegamaja_server.naegamaja.domain.session.service.SessionService;
 import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
 import naegamaja_server.naegamaja.system.exception.model.RestException;
-import naegamaja_server.naegamaja.system.websocket.dto.Message;
+import naegamaja_server.naegamaja.system.websocket.dto.NaegamajaMessage;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,7 +26,7 @@ public class GameService {
             throw new RestException(ErrorCode.NOT_ROOM_OWNER);
         }
 
-        Message.GameMQRequest gameMQRequest = Message.GameMQRequest.builder()
+        NaegamajaMessage.GameMQRequest gameMQRequest = NaegamajaMessage.GameMQRequest.builder()
                 .type(MessageType.GAME_START)
                 .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
                 .gameId(gameId)
@@ -39,13 +37,13 @@ public class GameService {
         redisStreamGameMessagePublisher.publish(gameMQRequest);
     }
 
-    public void test(String gameId, String sessionId, Message.Request message) {
+    public void test(String gameId, String sessionId, NaegamajaMessage.Request message) {
         String nickname = customRedisSessionRepository.getNicknameBySessionId(sessionId);
         if(!customRedisRoomRepository.isUserInRoom(nickname, gameId)){
             return;
         }
 
-        Message.GameMQRequest gameMQRequest = Message.GameMQRequest.builder()
+        NaegamajaMessage.GameMQRequest gameMQRequest = NaegamajaMessage.GameMQRequest.builder()
                 .type(message.getType())
                 .sender(nickname)
                 .gameId(gameId)

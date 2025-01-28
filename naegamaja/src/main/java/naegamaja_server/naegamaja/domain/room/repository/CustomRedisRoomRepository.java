@@ -29,6 +29,11 @@ public class CustomRedisRoomRepository {
         stringRedisTemplate.opsForHash().put(roomKey, "currentUser", String.valueOf(room.getCurrentUser() + 1));
     }
 
+    public String getRoomName(String roomId) {
+        String roomKey = ROOM_KEY_PREFIX + roomId;
+        return (String) stringRedisTemplate.opsForHash().get(roomKey, "name");
+    }
+
     public boolean isAlreadyExistRoom(String roomId) {
         return roomId != null && stringRedisTemplate.hasKey(ROOM_KEY_PREFIX + roomId);
     }

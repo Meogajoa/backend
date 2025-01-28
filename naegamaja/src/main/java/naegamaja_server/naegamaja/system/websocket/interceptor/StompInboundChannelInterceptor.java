@@ -4,6 +4,7 @@ package naegamaja_server.naegamaja.system.websocket.interceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import naegamaja_server.naegamaja.domain.auth.service.RedisAuthService;
+import naegamaja_server.naegamaja.domain.game.Service.RedisStreamGameMessagePublisher;
 import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
 import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
 import naegamaja_server.naegamaja.domain.room.service.RedisPubSubRoomInfoPublisher;
@@ -11,7 +12,9 @@ import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRe
 import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
 import naegamaja_server.naegamaja.system.exception.model.RestException;
 import naegamaja_server.naegamaja.system.exception.model.StompException;
+import naegamaja_server.naegamaja.system.websocket.dto.NaegamajaMessage;
 import naegamaja_server.naegamaja.system.websocket.manager.WebSocketConnectionManager;
+import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 import naegamaja_server.naegamaja.system.websocket.model.StompPrincipal;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -30,6 +33,7 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
     private final CustomRedisSessionRepository customRedisSessionRepository;
     private final CustomRedisRoomRepository customRedisRoomRepository;
     private final RedisPubSubRoomInfoPublisher redisPubSubRoomInfoPublisher;
+    private final RedisStreamGameMessagePublisher redisStreamGameMessagePublisher;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -50,9 +54,7 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
         if(command == null) return message;
 
         if(!redisAuthService.isValidSessionId(sessionId)) {
-            System.out.println("세션아이디가 유효하지 않다");
         }else{
-            System.out.println("세션아이디가 유효하다");
         }
 
         switch (command) {
@@ -93,6 +95,24 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
             log.info("{}의 {}에 구독하였습니다.", sessionId, destination);
 
             processSubscription(type, id, sessionId);
+        }
+
+        if(parts.length >= 6){
+            String type = parts[2];
+            String id = parts[3];
+            String get4 = parts[4];
+            String get5 = parts[5];
+
+            if(type.equals("room") && get4.equals("notice") && get5.equals("system")){
+                NaegamajaMessage.GameMQRequest gameMQRequest = NaegamajaMessage.GameMQRequest.builder()
+                        .type(MessageType.GAME_DAY_OR_NIGHT)
+                        .gameId(id)
+                        .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
+                        .content("")
+                        .build();
+
+                redisStreamGameMessagePublisher.publish(gameMQRequest);
+            }
         }
     }
 

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
-import naegamaja_server.naegamaja.system.websocket.dto.Message;
+import naegamaja_server.naegamaja.system.websocket.dto.NaegamajaMessage;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class RedisStreamRoomChatPublisher {
     private final String ASYNC_STREAM_KEY = "stream:async:";
     private final CustomRedisSessionRepository customRedisSessionRepository;
 
-    public void publishRoomChatMessage(String roomId, Message.Request message, String authorization) {
+    public void publishRoomChatMessage(String roomId, NaegamajaMessage.Request message, String authorization) {
         try {
             if (!MessageType.ROOM_CHAT.equals(message.getType())) return;
             String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
@@ -28,7 +28,7 @@ public class RedisStreamRoomChatPublisher {
 
             if(userRoomId.isEmpty()) return;
 
-            Message.RoomChatMQRequest roomChatMqRequest = Message.RoomChatMQRequest.of(message, userRoomId, nickname);
+            NaegamajaMessage.RoomChatMQRequest roomChatMqRequest = NaegamajaMessage.RoomChatMQRequest.of(message, userRoomId, nickname);
 
             Map<String, String> messageMap = objectMapper.convertValue(roomChatMqRequest, new TypeReference<Map<String, String>>() {
             });

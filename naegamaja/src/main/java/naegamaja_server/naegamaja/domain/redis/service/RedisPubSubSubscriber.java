@@ -1,14 +1,13 @@
 package naegamaja_server.naegamaja.domain.redis.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
 import naegamaja_server.naegamaja.domain.game.entity.Player;
 import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
-import naegamaja_server.naegamaja.system.websocket.dto.Message;
+import naegamaja_server.naegamaja.system.websocket.dto.NaegamajaMessage;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class RedisPubSubSubscriber {
 
     public void roomChat(String message, String channel){
         try{
-            Message.RoomChatPubSubResponse roomChatPubSubResponse = objectMapper.readValue(message, Message.RoomChatPubSubResponse.class);
+            NaegamajaMessage.RoomChatPubSubResponse roomChatPubSubResponse = objectMapper.readValue(message, NaegamajaMessage.RoomChatPubSubResponse.class);
 
             ChatLog chatlog = roomChatPubSubResponse.getChatLog();
 
@@ -56,7 +55,7 @@ public class RedisPubSubSubscriber {
     public void gameStart(String message, String channel){
         try{
             String gameId = objectMapper.readValue(message, String.class);
-            Message.GameSystemResponse gameSystemResponse = Message.GameSystemResponse.builder()
+            NaegamajaMessage.GameSystemResponse gameSystemResponse = NaegamajaMessage.GameSystemResponse.builder()
                     .sendTime(LocalDateTime.now())
                     .type(MessageType.GAME_START)
                     .content(gameId)
@@ -88,9 +87,8 @@ public class RedisPubSubSubscriber {
 
     public void GameDayOrNight(String message, String channel){
         try{
-            Message.GameDayOrNightResponse gameDayOrNightResponse = objectMapper.readValue(message, Message.GameDayOrNightResponse.class);
-
-            simpMessagingTemplate.convertAndSend("/topic/room/" + gameDayOrNightResponse.getGameId() + "/notice/system", gameDayOrNightResponse);
+            NaegamajaMessage.GameDayOrNightResponse gameDayOrNightResponse = objectMapper.readValue(message, NaegamajaMessage.GameDayOrNightResponse.class);
+            simpMessagingTemplate.convertAndSend("/topic/game/" + gameDayOrNightResponse.getGameId() + "/notice/system", gameDayOrNightResponse);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

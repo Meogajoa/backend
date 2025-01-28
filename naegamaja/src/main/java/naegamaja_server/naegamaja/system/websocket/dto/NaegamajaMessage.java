@@ -7,7 +7,7 @@ import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 
 import java.time.LocalDateTime;
 
-public class Message {
+public class NaegamajaMessage {
 
     @AllArgsConstructor
     @NoArgsConstructor
@@ -64,7 +64,7 @@ public class Message {
         private String content;
         private String sender;
 
-        public static RoomChatMQRequest of(Message.Request request, String roomId, String sender) {
+        public static RoomChatMQRequest of(NaegamajaMessage.Request request, String roomId, String sender) {
             return RoomChatMQRequest.builder()
                     .type(request.getType())
                     .roomId(roomId)
