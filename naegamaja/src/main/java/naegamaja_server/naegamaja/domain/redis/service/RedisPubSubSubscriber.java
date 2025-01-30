@@ -26,13 +26,27 @@ public class RedisPubSubSubscriber {
 
     public void roomChat(String message, String channel){
         try{
-            NaegamajaMessage.RoomChatPubSubResponse roomChatPubSubResponse = objectMapper.readValue(message, NaegamajaMessage.RoomChatPubSubResponse.class);
+            NaegamajaMessage.ChatPubSubResponse chatPubSubResponse = objectMapper.readValue(message, NaegamajaMessage.ChatPubSubResponse.class);
 
-            ChatLog chatlog = roomChatPubSubResponse.getChatLog();
+            ChatLog chatlog = chatPubSubResponse.getChatLog();
 
-            System.out.println("/topic/room/" + roomChatPubSubResponse.getId() + "로 보냈어");
+            System.out.println("/topic/room/" + chatPubSubResponse.getId() + "로 보냈어");
 
-            simpMessagingTemplate.convertAndSend("/topic/room/" + roomChatPubSubResponse.getId() + "/chat", chatlog);
+            simpMessagingTemplate.convertAndSend("/topic/room/" + chatPubSubResponse.getId() + "/chat", chatlog);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void gameChat(String message, String channel){
+        try{
+            NaegamajaMessage.ChatPubSubResponse chatPubSubResponse = objectMapper.readValue(message, NaegamajaMessage.ChatPubSubResponse.class);
+
+            ChatLog chatlog = chatPubSubResponse.getChatLog();
+
+            System.out.println("/topic/game/" + chatPubSubResponse.getId() + "로 보냈어");
+
+            simpMessagingTemplate.convertAndSend("/topic/game/" + chatPubSubResponse.getId() + "/chat", chatlog);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

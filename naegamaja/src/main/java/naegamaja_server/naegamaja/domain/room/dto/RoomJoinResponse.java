@@ -16,4 +16,5 @@ public class RoomJoinResponse {
     List<ChatLog> chatLogs;
     String name;
     String owner;
+    boolean isPlaying;
 }

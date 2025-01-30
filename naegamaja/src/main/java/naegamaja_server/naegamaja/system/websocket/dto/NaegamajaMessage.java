@@ -58,16 +58,16 @@ public class NaegamajaMessage {
     @NoArgsConstructor
     @Data
     @Builder
-    public static class RoomChatMQRequest {
+    public static class ChatMQRequest {
         private MessageType type;
-        private String roomId;
+        private String id;
         private String content;
         private String sender;
 
-        public static RoomChatMQRequest of(NaegamajaMessage.Request request, String roomId, String sender) {
-            return RoomChatMQRequest.builder()
+        public static ChatMQRequest of(NaegamajaMessage.Request request, String id, String sender) {
+            return ChatMQRequest.builder()
                     .type(request.getType())
-                    .roomId(roomId)
+                    .id(id)
                     .content(request.getContent())
                     .sender(sender)
                     .build();
@@ -78,12 +78,32 @@ public class NaegamajaMessage {
     @NoArgsConstructor
     @Data
     @Builder
-    public static class RoomChatPubSubResponse {
+    public static class GameChatMQRequest {
+        private MessageType type;
+        private String gameId;
+        private String content;
+        private String sender;
+
+        public static GameChatMQRequest of(NaegamajaMessage.Request request, String gameId, String sender) {
+            return GameChatMQRequest.builder()
+                    .type(request.getType())
+                    .gameId(gameId)
+                    .content(request.getContent())
+                    .sender(sender)
+                    .build();
+        }
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class ChatPubSubResponse {
         String id;
         ChatLog chatLog;
 
-        public static RoomChatPubSubResponse of(String id, ChatLog chatLog) {
-            return RoomChatPubSubResponse.builder()
+        public static ChatPubSubResponse of(String id, ChatLog chatLog) {
+            return ChatPubSubResponse.builder()
                     .id(id)
                     .chatLog(chatLog)
                     .build();

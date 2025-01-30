@@ -18,7 +18,7 @@ public class RoomRestController {
     @PostMapping("/join")
     public ResponseEntity<RoomJoinResponse> joinRoom(@RequestHeader String authorization, @RequestBody RoomRequest.JoinRoomRequest request) {
         roomService.joinRoom(request, authorization);
-        RoomJoinResponse response = RoomJoinResponse.builder().chatLogs(chatLogService.getRoomMessages(request.getId())).name(roomService.getRoomName(request.getId())).owner(roomService.getRoomOwner(request.getId())).build();
+        RoomJoinResponse response = RoomJoinResponse.builder().chatLogs(chatLogService.getRoomMessages(request.getId())).name(roomService.getRoomName(request.getId())).owner(roomService.getRoomOwner(request.getId())).isPlaying(roomService.isPlaying(request.getId())).build();
         return ResponseEntity.ok(response);
     }
 

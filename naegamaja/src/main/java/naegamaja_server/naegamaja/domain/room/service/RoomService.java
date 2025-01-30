@@ -200,4 +200,8 @@ public class RoomService {
     public RoomPageResponse getRooms(int pageNum) {
         return customRedisRoomRepository.getRooms(pageNum);
     }
+
+    public boolean isPlaying(String id) {
+        return customRedisRoomRepository.isPlaying(id);
+    }
 }

@@ -162,4 +162,9 @@ public class CustomRedisRoomRepository {
         String roomKey = ROOM_KEY_PREFIX + roomId + ":users";
         return new ArrayList<>(stringRedisTemplate.opsForSet().members(roomKey));
     }
+
+    public boolean isPlaying(String id) {
+        String roomKey = ROOM_KEY_PREFIX + id;
+        return Boolean.parseBoolean((String) stringRedisTemplate.opsForHash().get(roomKey, "isPlaying"));
+    }
 }

@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class RedisStreamRoomChatPublisher {
+public class RedisStreamChatPublisher {
 
     private final StringRedisTemplate stringRedisTemplate;
     private final ObjectMapper objectMapper;
@@ -22,18 +22,39 @@ public class RedisStreamRoomChatPublisher {
 
     public void publishRoomChatMessage(String roomId, NaegamajaMessage.Request message, String authorization) {
         try {
-            if (!MessageType.ROOM_CHAT.equals(message.getType())) return;
+            if (!MessageType.CHAT.equals(message.getType())) return;
             String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
             String userRoomId = customRedisSessionRepository.getRoomIdBySessionId(authorization);
 
             if(userRoomId.isEmpty()) return;
 
-            NaegamajaMessage.RoomChatMQRequest roomChatMqRequest = NaegamajaMessage.RoomChatMQRequest.of(message, userRoomId, nickname);
+            NaegamajaMessage.ChatMQRequest chatMqRequest = NaegamajaMessage.ChatMQRequest.of(message, userRoomId, nickname);
 
-            Map<String, String> messageMap = objectMapper.convertValue(roomChatMqRequest, new TypeReference<Map<String, String>>() {
+            Map<String, String> messageMap = objectMapper.convertValue(chatMqRequest, new TypeReference<Map<String, String>>() {
             });
 
             messageMap.put("type", "ROOM_CHAT");
+
+            stringRedisTemplate.opsForStream().add(ASYNC_STREAM_KEY, messageMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void publishGameChatMessage(String gameId, NaegamajaMessage.Request message, String authorization) {
+        try {
+            if (!MessageType.CHAT.equals(message.getType())) return;
+            String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+            String userRoomId = customRedisSessionRepository.getRoomIdBySessionId(authorization);
+
+            if(userRoomId.isEmpty()) return;
+
+            NaegamajaMessage.ChatMQRequest chatMqRequest = NaegamajaMessage.ChatMQRequest.of(message, userRoomId, nickname);
+
+            Map<String, String> messageMap = objectMapper.convertValue(chatMqRequest, new TypeReference<Map<String, String>>() {
+            });
+
+            messageMap.put("type", "GAME_CHAT");
 
             stringRedisTemplate.opsForStream().add(ASYNC_STREAM_KEY, messageMap);
         } catch (Exception e) {

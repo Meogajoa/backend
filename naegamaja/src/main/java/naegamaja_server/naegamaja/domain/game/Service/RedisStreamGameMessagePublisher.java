@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
 import naegamaja_server.naegamaja.system.websocket.dto.NaegamajaMessage;
+import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
