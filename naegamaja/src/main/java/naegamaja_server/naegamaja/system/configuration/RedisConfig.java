@@ -106,7 +106,8 @@ public class RedisConfig {
             MessageListenerAdapter GameStartListenerAdapter,
             MessageListenerAdapter UserInfoListenerAdapter,
             MessageListenerAdapter GameDayOrNightListenerAdapter,
-            MessageListenerAdapter MiniGameNoticeListenerAdapter
+            MessageListenerAdapter MiniGameNoticeListenerAdapter,
+            MessageListenerAdapter ButtonGameStatusListenerAdapter
     ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
@@ -118,6 +119,7 @@ public class RedisConfig {
         container.addMessageListener(UserInfoListenerAdapter, new ChannelTopic("pubsub:userInfo"));
         container.addMessageListener(GameDayOrNightListenerAdapter, new ChannelTopic("pubsub:gameDayOrNight"));
         container.addMessageListener(MiniGameNoticeListenerAdapter, new ChannelTopic("pubsub:miniGameNotice"));
+        container.addMessageListener(ButtonGameStatusListenerAdapter, new ChannelTopic("pubsub:buttonGameStatus"));
 
         return container;
     }
@@ -144,17 +146,22 @@ public class RedisConfig {
 
     @Bean
     public MessageListenerAdapter UserInfoListenerAdapter(RedisPubSubSubscriber subscriber) {
-        return new MessageListenerAdapter(subscriber, "UserInfo");
+        return new MessageListenerAdapter(subscriber, "userInfo");
     }
 
     @Bean
     public MessageListenerAdapter GameDayOrNightListenerAdapter(RedisPubSubSubscriber subscriber) {
-        return new MessageListenerAdapter(subscriber, "GameDayOrNight");
+        return new MessageListenerAdapter(subscriber, "gameDayOrNight");
     }
 
     @Bean
     public MessageListenerAdapter MiniGameNoticeListenerAdapter(RedisPubSubSubscriber subscriber) {
-        return new MessageListenerAdapter(subscriber, "MiniGameNotice");
+        return new MessageListenerAdapter(subscriber, "miniGameNotice");
+    }
+
+    @Bean
+    public MessageListenerAdapter ButtonGameStatusListenerAdapter(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "buttonGameStatus");
     }
 
 

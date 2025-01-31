@@ -68,23 +68,17 @@ public class RedisPubSubSubscriber {
 
     public void gameStart(String message, String channel){
         try{
-            String gameId = objectMapper.readValue(message, String.class);
-            NaegamajaMessage.GameSystemResponse gameSystemResponse = NaegamajaMessage.GameSystemResponse.builder()
-                    .sendTime(LocalDateTime.now())
-                    .type(MessageType.GAME_START)
-                    .content(gameId)
-                    .sender("SYSTEM")
-                    .build();
+            NaegamajaMessage.GameSystemResponse gameSystemResponse = objectMapper.readValue(message, NaegamajaMessage.GameSystemResponse.class);
 
-            System.out.println("/topic/room/" + gameId + "로 보냈어");
+            System.out.println("/topic/room/" + gameSystemResponse.getId() + "로 보냈어");
 
-            simpMessagingTemplate.convertAndSend("/topic/room/" + gameId + "/notice/system", gameSystemResponse);
+            simpMessagingTemplate.convertAndSend("/topic/room/" + gameSystemResponse.getId() + "/notice/system", gameSystemResponse);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void UserInfo(String message, String channel){
+    public void userInfo(String message, String channel){
         try{
             List<Player> playerList = objectMapper.readValue(message, objectMapper.getTypeFactory().constructCollectionType(List.class, Player.class));
 
@@ -99,7 +93,7 @@ public class RedisPubSubSubscriber {
         }
     }
 
-    public void GameDayOrNight(String message, String channel){
+    public void gameDayOrNight(String message, String channel){
         try{
             NaegamajaMessage.GameDayOrNightResponse gameDayOrNightResponse = objectMapper.readValue(message, NaegamajaMessage.GameDayOrNightResponse.class);
             simpMessagingTemplate.convertAndSend("/topic/game/" + gameDayOrNightResponse.getGameId() + "/notice/system", gameDayOrNightResponse);
@@ -108,7 +102,7 @@ public class RedisPubSubSubscriber {
         }
     }
 
-    public void MiniGameNotice(String message, String channel){
+    public void miniGameNotice(String message, String channel){
         try{
             NaegamajaMessage.MiniGameNoticeResponse gameMiniGameNoticeResponse = objectMapper.readValue(message, NaegamajaMessage.MiniGameNoticeResponse.class);
             simpMessagingTemplate.convertAndSend("/topic/game/" + gameMiniGameNoticeResponse.getId() + "/notice/system", gameMiniGameNoticeResponse);
@@ -116,6 +110,23 @@ public class RedisPubSubSubscriber {
             throw new RuntimeException(e);
         }
     }
+
+    public void buttonGameStatus(String message, String channel){
+        try{
+            NaegamajaMessage.ButtonGameStatusResponse buttonGameStatusResponse = objectMapper.readValue(message, NaegamajaMessage.ButtonGameStatusResponse.class);
+            simpMessagingTemplate.convertAndSend("/topic/game/" + buttonGameStatusResponse.getId() + "/notice/system", buttonGameStatusResponse);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+//    public void gameUserList(String message, String channel){
+//        try{
+//            NaegamajaMessage.GameUserListResponse gameUserListResponse = objectMapper.readValue(message, NaegamajaMessage.GameUserListResponse.class);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
 }

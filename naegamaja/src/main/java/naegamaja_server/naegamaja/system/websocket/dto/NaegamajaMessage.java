@@ -6,6 +6,7 @@ import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class NaegamajaMessage {
 
@@ -26,6 +27,7 @@ public class NaegamajaMessage {
     @Builder
     public static class GameSystemResponse {
         private String sender;
+        private String id;
         private MessageType type;
         private String content;
         private LocalDateTime sendTime;
@@ -137,5 +139,18 @@ public class NaegamajaMessage {
         private String scheduledTime;
         private String sender;
         private LocalDateTime sendTime;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class ButtonGameStatusResponse {
+        private MessageType type;
+        private String id;
+        private String sender;
+        private List<Long> twentyButtons;
+        private List<Long> fiftyButtons;
+        private List<Long> hundredButtons;
     }
 }
