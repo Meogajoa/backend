@@ -80,14 +80,14 @@ public class NaegamajaMessage {
     @Builder
     public static class GameChatMQRequest {
         private MessageType type;
-        private String gameId;
+        private String id;
         private String content;
         private String sender;
 
-        public static GameChatMQRequest of(NaegamajaMessage.Request request, String gameId, String sender) {
+        public static GameChatMQRequest of(NaegamajaMessage.Request request, String id, String sender) {
             return GameChatMQRequest.builder()
                     .type(request.getType())
-                    .gameId(gameId)
+                    .id(id)
                     .content(request.getContent())
                     .sender(sender)
                     .build();
@@ -124,5 +124,18 @@ public class NaegamajaMessage {
                     .roomUserInfo(roomUserInfo)
                     .build();
         }
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class MiniGameNoticeResponse {
+        private MessageType type;
+        private String id;
+        private String miniGameType;
+        private String scheduledTime;
+        private String sender;
+        private LocalDateTime sendTime;
     }
 }

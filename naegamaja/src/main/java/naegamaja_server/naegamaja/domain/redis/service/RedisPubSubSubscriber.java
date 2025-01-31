@@ -108,5 +108,14 @@ public class RedisPubSubSubscriber {
         }
     }
 
+    public void MiniGameNotice(String message, String channel){
+        try{
+            NaegamajaMessage.MiniGameNoticeResponse gameMiniGameNoticeResponse = objectMapper.readValue(message, NaegamajaMessage.MiniGameNoticeResponse.class);
+            simpMessagingTemplate.convertAndSend("/topic/game/" + gameMiniGameNoticeResponse.getId() + "/notice/system", gameMiniGameNoticeResponse);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }
