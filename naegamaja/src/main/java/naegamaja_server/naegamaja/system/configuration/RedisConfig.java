@@ -40,12 +40,7 @@ public class RedisConfig {
     @Value("${spring.data.redis.port}")
     private int port;
 
-    @Bean
-    public Executor virtualThreadExecutor() {
-        return Executors.newThreadPerTaskExecutor(
-                Thread.ofVirtual().name("redis-listener-%d").factory()
-        );
-    }
+
 
 
     @Bean
@@ -73,28 +68,6 @@ public class RedisConfig {
 
         template.afterPropertiesSet();
         return template;
-    }
-
-    @Bean
-    public StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamMessageListenerContainer(
-            RedisConnectionFactory connectionFactory) {
-
-        StringRedisSerializer serializer = new StringRedisSerializer();
-
-        ExecutorService executorService = Executors.newFixedThreadPool(4);
-
-        StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
-                StreamMessageListenerContainer.StreamMessageListenerContainerOptions
-                        .builder()
-                        .executor(virtualThreadExecutor())
-                        .pollTimeout(Duration.ofSeconds(2))
-                        .serializer(serializer)
-                        .build();
-
-
-        StreamMessageListenerContainer<String, MapRecord<String, String, String>> container = StreamMessageListenerContainer.create(connectionFactory, options);
-        container.start();
-        return container;
     }
 
     @Bean

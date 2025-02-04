@@ -53,4 +53,20 @@ public class GameService {
         redisStreamGameMessagePublisher.syncPublish(gameMQRequest);
 
     }
+
+    public void buttonClick(String gameId, String authorization, NaegamajaMessage.Request message) {
+        String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+        if(!customRedisRoomRepository.isUserInRoom(nickname, gameId)){
+            return;
+        }
+
+        NaegamajaMessage.GameMQRequest gameMQRequest = NaegamajaMessage.GameMQRequest.builder()
+                .type(MessageType.BUTTON_CLICK)
+                .sender(nickname)
+                .gameId(gameId)
+                .content(message.getContent())
+                .build();
+
+        redisStreamGameMessagePublisher.syncPublish(gameMQRequest);
+    }
 }

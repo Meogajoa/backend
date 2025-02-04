@@ -22,9 +22,18 @@ public class GameStompController {
 
         //chatLogService.roomChat(roomNumber, message, authorization);
         redisStreamChatPublisher.publishGameChatMessage(gameId, message, authorization);
-
-        //todo
     }
+
+    @MessageMapping("/game/{gameId}")
+    public void game(@DestinationVariable String gameId, @Header("Authorization") String authorization, @Payload NaegamajaMessage.Request message) {
+        gameService.test(gameId, authorization, message);
+    }
+
+    @MessageMapping("/game/{gameId}/buttonClick")
+    public void buttonClick(@DestinationVariable String gameId, @Header("Authorization") String authorization, @Payload NaegamajaMessage.Request message) {
+        gameService.buttonClick(gameId, authorization, message);
+    }
+
 
 
 }
