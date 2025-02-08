@@ -4,8 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
-import naegamaja_server.naegamaja.system.websocket.dto.NaegamajaMessage;
-import naegamaja_server.naegamaja.system.websocket.model.MessageType;
+import naegamaja_server.naegamaja.system.websocket.dto.MeogajoaMessage;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +20,7 @@ public class RedisStreamGameMessagePublisher {
     private final String ASYNC_STREAM_KEY = "stream:async:";
     private final CustomRedisSessionRepository customRedisSessionRepository;
 
-    public void syncPublish(NaegamajaMessage.GameMQRequest gameMQRequest) {
+    public void syncPublish(MeogajoaMessage.GameMQRequest gameMQRequest) {
         try {
 //            String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
 //            String userRoomId = customRedisSessionRepository.getRoomIdBySessionId(authorization);
@@ -37,7 +36,7 @@ public class RedisStreamGameMessagePublisher {
         }
     }
 
-    public void asyncPublish(NaegamajaMessage.GameMQRequest gameMQRequest) {
+    public void asyncPublish(MeogajoaMessage.GameMQRequest gameMQRequest) {
         try {
             Map<String, String> messageMap = objectMapper.convertValue(gameMQRequest, new TypeReference<Map<String, String>>() {
             });

@@ -1,18 +1,17 @@
 package naegamaja_server.naegamaja.domain.redis.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
 import naegamaja_server.naegamaja.domain.game.entity.Player;
 import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
-import naegamaja_server.naegamaja.system.websocket.dto.NaegamajaMessage;
-import naegamaja_server.naegamaja.system.websocket.model.MessageType;
+import naegamaja_server.naegamaja.system.websocket.dto.MeogajoaMessage;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,7 +25,7 @@ public class RedisPubSubSubscriber {
 
     public void roomChat(String message, String channel){
         try{
-            NaegamajaMessage.ChatPubSubResponse chatPubSubResponse = objectMapper.readValue(message, NaegamajaMessage.ChatPubSubResponse.class);
+            MeogajoaMessage.ChatPubSubResponse chatPubSubResponse = objectMapper.readValue(message, MeogajoaMessage.ChatPubSubResponse.class);
 
             ChatLog chatlog = chatPubSubResponse.getChatLog();
 
@@ -40,7 +39,7 @@ public class RedisPubSubSubscriber {
 
     public void gameChat(String message, String channel){
         try{
-            NaegamajaMessage.ChatPubSubResponse chatPubSubResponse = objectMapper.readValue(message, NaegamajaMessage.ChatPubSubResponse.class);
+            MeogajoaMessage.ChatPubSubResponse chatPubSubResponse = objectMapper.readValue(message, MeogajoaMessage.ChatPubSubResponse.class);
 
             ChatLog chatlog = chatPubSubResponse.getChatLog();
 
@@ -68,12 +67,21 @@ public class RedisPubSubSubscriber {
 
     public void gameStart(String message, String channel){
         try{
-            NaegamajaMessage.GameSystemResponse gameSystemResponse = objectMapper.readValue(message, NaegamajaMessage.GameSystemResponse.class);
-
-            System.out.println("/topic/room/" + gameSystemResponse.getId() + "로 보냈어");
+            MeogajoaMessage.GameSystemResponse gameSystemResponse = objectMapper.readValue(message, MeogajoaMessage.GameSystemResponse.class);
 
             simpMessagingTemplate.convertAndSend("/topic/room/" + gameSystemResponse.getId() + "/notice/system", gameSystemResponse);
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void gameEnd(String message, String channel){
+        try{
+            MeogajoaMessage.GameSystemResponse gameEndResponse = objectMapper.readValue(message, MeogajoaMessage.GameSystemResponse.class);
+
+            System.out.println("게임 종료 메시지 보냈어");
+            simpMessagingTemplate.convertAndSend("/topic/game/" + gameEndResponse.getId() + "/notice/system", gameEndResponse);
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -95,7 +103,7 @@ public class RedisPubSubSubscriber {
 
     public void gameDayOrNight(String message, String channel){
         try{
-            NaegamajaMessage.GameDayOrNightResponse gameDayOrNightResponse = objectMapper.readValue(message, NaegamajaMessage.GameDayOrNightResponse.class);
+            MeogajoaMessage.GameDayOrNightResponse gameDayOrNightResponse = objectMapper.readValue(message, MeogajoaMessage.GameDayOrNightResponse.class);
             simpMessagingTemplate.convertAndSend("/topic/game/" + gameDayOrNightResponse.getGameId() + "/notice/system", gameDayOrNightResponse);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -104,7 +112,7 @@ public class RedisPubSubSubscriber {
 
     public void miniGameNotice(String message, String channel){
         try{
-            NaegamajaMessage.MiniGameNoticeResponse gameMiniGameNoticeResponse = objectMapper.readValue(message, NaegamajaMessage.MiniGameNoticeResponse.class);
+            MeogajoaMessage.MiniGameNoticeResponse gameMiniGameNoticeResponse = objectMapper.readValue(message, MeogajoaMessage.MiniGameNoticeResponse.class);
             simpMessagingTemplate.convertAndSend("/topic/game/" + gameMiniGameNoticeResponse.getId() + "/notice/system", gameMiniGameNoticeResponse);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -113,7 +121,7 @@ public class RedisPubSubSubscriber {
 
     public void buttonGameStatus(String message, String channel){
         try{
-            NaegamajaMessage.ButtonGameStatusResponse buttonGameStatusResponse = objectMapper.readValue(message, NaegamajaMessage.ButtonGameStatusResponse.class);
+            MeogajoaMessage.ButtonGameStatusResponse buttonGameStatusResponse = objectMapper.readValue(message, MeogajoaMessage.ButtonGameStatusResponse.class);
             simpMessagingTemplate.convertAndSend("/topic/game/" + buttonGameStatusResponse.getId() + "/notice/system", buttonGameStatusResponse);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

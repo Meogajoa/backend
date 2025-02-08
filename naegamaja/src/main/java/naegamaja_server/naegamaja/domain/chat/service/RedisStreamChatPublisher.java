@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
-import naegamaja_server.naegamaja.system.websocket.dto.NaegamajaMessage;
+import naegamaja_server.naegamaja.system.websocket.dto.MeogajoaMessage;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class RedisStreamChatPublisher {
     private final String ASYNC_STREAM_KEY = "stream:async:";
     private final CustomRedisSessionRepository customRedisSessionRepository;
 
-    public void publishRoomChatMessage(String roomId, NaegamajaMessage.Request message, String authorization) {
+    public void publishRoomChatMessage(String roomId, MeogajoaMessage.Request message, String authorization) {
         try {
             if (!MessageType.CHAT.equals(message.getType())) return;
             String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
@@ -28,7 +28,7 @@ public class RedisStreamChatPublisher {
 
             if(userRoomId.isEmpty()) return;
 
-            NaegamajaMessage.ChatMQRequest chatMqRequest = NaegamajaMessage.ChatMQRequest.of(message, userRoomId, nickname);
+            MeogajoaMessage.ChatMQRequest chatMqRequest = MeogajoaMessage.ChatMQRequest.of(message, userRoomId, nickname);
 
             Map<String, String> messageMap = objectMapper.convertValue(chatMqRequest, new TypeReference<Map<String, String>>() {
             });
@@ -41,7 +41,7 @@ public class RedisStreamChatPublisher {
         }
     }
 
-    public void publishGameChatMessage(String gameId, NaegamajaMessage.Request message, String authorization) {
+    public void publishGameChatMessage(String gameId, MeogajoaMessage.Request message, String authorization) {
         try {
             if (!MessageType.CHAT.equals(message.getType())) return;
             String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
@@ -49,7 +49,7 @@ public class RedisStreamChatPublisher {
 
             if(userRoomId.isEmpty()) return;
 
-            NaegamajaMessage.ChatMQRequest chatMqRequest = NaegamajaMessage.ChatMQRequest.of(message, userRoomId, nickname);
+            MeogajoaMessage.ChatMQRequest chatMqRequest = MeogajoaMessage.ChatMQRequest.of(message, userRoomId, nickname);
 
             Map<String, String> messageMap = objectMapper.convertValue(chatMqRequest, new TypeReference<Map<String, String>>() {
             });

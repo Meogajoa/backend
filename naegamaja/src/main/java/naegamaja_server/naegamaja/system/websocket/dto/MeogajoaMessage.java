@@ -1,5 +1,6 @@
 package naegamaja_server.naegamaja.system.websocket.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
 import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
@@ -8,7 +9,8 @@ import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class NaegamajaMessage {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class MeogajoaMessage {
 
     @AllArgsConstructor
     @NoArgsConstructor
@@ -31,6 +33,16 @@ public class NaegamajaMessage {
         private MessageType type;
         private String content;
         private LocalDateTime sendTime;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class GameEndResponse {
+        private MessageType type;
+        private String id;
+        private String sender;
     }
 
     @AllArgsConstructor
@@ -66,7 +78,7 @@ public class NaegamajaMessage {
         private String content;
         private String sender;
 
-        public static ChatMQRequest of(NaegamajaMessage.Request request, String id, String sender) {
+        public static ChatMQRequest of(MeogajoaMessage.Request request, String id, String sender) {
             return ChatMQRequest.builder()
                     .type(request.getType())
                     .id(id)
@@ -86,7 +98,7 @@ public class NaegamajaMessage {
         private String content;
         private String sender;
 
-        public static GameChatMQRequest of(NaegamajaMessage.Request request, String id, String sender) {
+        public static GameChatMQRequest of(MeogajoaMessage.Request request, String id, String sender) {
             return GameChatMQRequest.builder()
                     .type(request.getType())
                     .id(id)

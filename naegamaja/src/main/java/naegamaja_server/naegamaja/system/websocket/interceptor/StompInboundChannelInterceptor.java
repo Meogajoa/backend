@@ -9,7 +9,7 @@ import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
 import naegamaja_server.naegamaja.domain.room.repository.CustomRedisRoomRepository;
 import naegamaja_server.naegamaja.domain.room.service.RedisPubSubRoomInfoPublisher;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
-import naegamaja_server.naegamaja.system.websocket.dto.NaegamajaMessage;
+import naegamaja_server.naegamaja.system.websocket.dto.MeogajoaMessage;
 import naegamaja_server.naegamaja.system.websocket.manager.WebSocketConnectionManager;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 import naegamaja_server.naegamaja.system.websocket.model.StompPrincipal;
@@ -101,7 +101,7 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
             String get5 = parts[5];
 
             if(type.equals("room") && get4.equals("notice") && get5.equals("system")){
-                NaegamajaMessage.GameMQRequest gameMQRequest = NaegamajaMessage.GameMQRequest.builder()
+                MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
                         .type(MessageType.GAME_DAY_OR_NIGHT)
                         .gameId(id)
                         .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
@@ -137,7 +137,7 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
                     //throw new RestException(ErrorCode.GLOBAL_BAD_REQUEST);
                 }
 
-                NaegamajaMessage.GameMQRequest gameMQRequest = NaegamajaMessage.GameMQRequest.builder()
+                MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
                         .type(MessageType.GAME_MY_INFO)
                         .gameId(roomId)
                         .sender(id)

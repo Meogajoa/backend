@@ -7,7 +7,7 @@ import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRe
 import naegamaja_server.naegamaja.domain.session.service.SessionService;
 import naegamaja_server.naegamaja.system.exception.model.ErrorCode;
 import naegamaja_server.naegamaja.system.exception.model.RestException;
-import naegamaja_server.naegamaja.system.websocket.dto.NaegamajaMessage;
+import naegamaja_server.naegamaja.system.websocket.dto.MeogajoaMessage;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +26,7 @@ public class GameService {
             throw new RestException(ErrorCode.NOT_ROOM_OWNER);
         }
 
-        NaegamajaMessage.GameMQRequest gameMQRequest = NaegamajaMessage.GameMQRequest.builder()
+        MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
                 .type(MessageType.GAME_START)
                 .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
                 .gameId(gameId)
@@ -37,13 +37,13 @@ public class GameService {
         redisStreamGameMessagePublisher.syncPublish(gameMQRequest);
     }
 
-    public void test(String gameId, String sessionId, NaegamajaMessage.Request message) {
+    public void test(String gameId, String sessionId, MeogajoaMessage.Request message) {
         String nickname = customRedisSessionRepository.getNicknameBySessionId(sessionId);
         if(!customRedisRoomRepository.isUserInRoom(nickname, gameId)){
             return;
         }
 
-        NaegamajaMessage.GameMQRequest gameMQRequest = NaegamajaMessage.GameMQRequest.builder()
+        MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
                 .type(message.getType())
                 .sender(nickname)
                 .gameId(gameId)
@@ -54,13 +54,13 @@ public class GameService {
 
     }
 
-    public void buttonClick(String gameId, String authorization, NaegamajaMessage.Request message) {
+    public void buttonClick(String gameId, String authorization, MeogajoaMessage.Request message) {
         String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
         if(!customRedisRoomRepository.isUserInRoom(nickname, gameId)){
             return;
         }
 
-        NaegamajaMessage.GameMQRequest gameMQRequest = NaegamajaMessage.GameMQRequest.builder()
+        MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
                 .type(MessageType.BUTTON_CLICK)
                 .sender(nickname)
                 .gameId(gameId)
