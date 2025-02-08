@@ -165,6 +165,6 @@ public class CustomRedisRoomRepository {
 
     public boolean isPlaying(String id) {
         String roomKey = ROOM_KEY_PREFIX + id;
-        return Boolean.parseBoolean((String) stringRedisTemplate.opsForHash().get(roomKey, "isPlaying"));
+        return Objects.equals((String) stringRedisTemplate.opsForHash().get(roomKey, "isPlaying"), "1");
     }
 }

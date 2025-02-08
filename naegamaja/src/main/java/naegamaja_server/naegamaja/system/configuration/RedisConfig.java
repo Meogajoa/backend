@@ -81,7 +81,11 @@ public class RedisConfig {
             MessageListenerAdapter GameDayOrNightListenerAdapter,
             MessageListenerAdapter MiniGameNoticeListenerAdapter,
             MessageListenerAdapter ButtonGameStatusListenerAdapter,
-            MessageListenerAdapter GameEndListenerAdapter
+            MessageListenerAdapter GameEndListenerAdapter,
+            MessageListenerAdapter GameChatToUserListenerAdapter,
+            MessageListenerAdapter BlackChatListenerAdapter,
+            MessageListenerAdapter WhiteChatListenerAdapter,
+            MessageListenerAdapter EliminatedChatListenerAdapter
     ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
@@ -95,6 +99,10 @@ public class RedisConfig {
         container.addMessageListener(MiniGameNoticeListenerAdapter, new ChannelTopic("pubsub:miniGameNotice"));
         container.addMessageListener(ButtonGameStatusListenerAdapter, new ChannelTopic("pubsub:buttonGameStatus"));
         container.addMessageListener(GameEndListenerAdapter, new ChannelTopic("pubsub:gameEnd"));
+        container.addMessageListener(GameChatToUserListenerAdapter, new ChannelTopic("pubsub:gameChatToUser"));
+        container.addMessageListener(BlackChatListenerAdapter, new ChannelTopic("pubsub:blackChat"));
+        container.addMessageListener(WhiteChatListenerAdapter, new ChannelTopic("pubsub:whiteChat"));
+        container.addMessageListener(EliminatedChatListenerAdapter, new ChannelTopic("pubsub:eliminatedChat"));
 
         return container;
     }
@@ -144,6 +152,25 @@ public class RedisConfig {
         return new MessageListenerAdapter(subscriber, "gameEnd");
     }
 
+    @Bean
+    public MessageListenerAdapter GameChatToUserListenerAdapter(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "gameChatToUser");
+    }
+
+    @Bean
+    public MessageListenerAdapter BlackChatListenerAdapter(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "blackChat");
+    }
+
+    @Bean
+    public MessageListenerAdapter WhiteChatListenerAdapter(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "whiteChat");
+    }
+
+    @Bean
+    public MessageListenerAdapter EliminatedChatListenerAdapter(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "eliminatedChat");
+    }
 
 
 

@@ -128,6 +128,26 @@ public class MeogajoaMessage {
     @NoArgsConstructor
     @Data
     @Builder
+    public static class ChatPubSubResponseToUser{
+        String id;
+        ChatLog chatLog;
+        String receiver;
+        String sender;
+
+        public static ChatPubSubResponseToUser of(String id, ChatLog chatLog, String receiver, String sender) {
+            return ChatPubSubResponseToUser.builder()
+                    .id(id)
+                    .chatLog(chatLog)
+                    .receiver(receiver)
+                    .sender(sender)
+                    .build();
+        }
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
     public static class RoomInfoPubSubResponse {
         String id;
         RoomUserInfo roomUserInfo;

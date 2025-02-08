@@ -34,6 +34,26 @@ public class GameStompController {
         gameService.buttonClick(gameId, authorization, message);
     }
 
+    @MessageMapping("/game/{id}/user/{number}/chat")
+    public void userChat(@DestinationVariable String id, @DestinationVariable Long number, @Header("Authorization") String authorization, @Payload MeogajoaMessage.Request message) {
+        gameService.userChat(id, number, authorization, message);
+    }
+
+    @MessageMapping("/game/{id}/chat/black")
+    public void blackChat(@DestinationVariable String id, @Header("Authorization") String authorization, @Payload MeogajoaMessage.Request message) {
+        gameService.blackChat(id, authorization, message);
+    }
+
+    @MessageMapping("/game/{id}/chat/white")
+    public void whiteChat(@DestinationVariable String id, @Header("Authorization") String authorization, @Payload MeogajoaMessage.Request message) {
+        gameService.whiteChat(id, authorization, message);
+    }
+
+    @MessageMapping("/game/{id}/chat/eliminated")
+    public void eliminatedChat(@DestinationVariable String id, @Header("Authorization") String authorization, @Payload MeogajoaMessage.Request message) {
+        gameService.eliminatedChat(id, authorization, message);
+    }
+
 
 
 }

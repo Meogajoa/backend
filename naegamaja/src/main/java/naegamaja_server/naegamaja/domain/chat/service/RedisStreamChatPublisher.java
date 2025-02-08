@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,7 @@ public class RedisStreamChatPublisher {
             String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
             String userRoomId = customRedisSessionRepository.getRoomIdBySessionId(authorization);
 
-            if(userRoomId.isEmpty()) return;
+            if (userRoomId.isEmpty()) return;
 
             MeogajoaMessage.ChatMQRequest chatMqRequest = MeogajoaMessage.ChatMQRequest.of(message, userRoomId, nickname);
 
@@ -47,7 +48,7 @@ public class RedisStreamChatPublisher {
             String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
             String userRoomId = customRedisSessionRepository.getRoomIdBySessionId(authorization);
 
-            if(userRoomId.isEmpty()) return;
+            if (userRoomId.isEmpty()) return;
 
             MeogajoaMessage.ChatMQRequest chatMqRequest = MeogajoaMessage.ChatMQRequest.of(message, userRoomId, nickname);
 
@@ -61,4 +62,92 @@ public class RedisStreamChatPublisher {
             e.printStackTrace();
         }
     }
+
+    public void publishGameChatToUser(String gameId, Long number, MeogajoaMessage.Request message, String authorization) {
+        try {
+            if (!MessageType.CHAT.equals(message.getType())) return;
+            String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+            String userRoomId = customRedisSessionRepository.getRoomIdBySessionId(authorization);
+
+            if (userRoomId.equals("-1") || !userRoomId.equals(gameId)) return;
+
+            MeogajoaMessage.ChatMQRequest chatMQRequest = MeogajoaMessage.ChatMQRequest.of(message, userRoomId, nickname);
+
+            Map<String, String> messageMap = objectMapper.convertValue(chatMQRequest, new TypeReference<Map<String, String>>() {
+            });
+
+            messageMap.put("type", "GAME_CHAT_TO_USER");
+            messageMap.put("number", number.toString());
+
+            System.out.println("진입점2");
+
+            stringRedisTemplate.opsForStream().add(ASYNC_STREAM_KEY, messageMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void publishBlackChat(String id, MeogajoaMessage.Request message, String authorization) {
+        try {
+            if (!MessageType.CHAT.equals(message.getType())) return;
+            String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+            String userRoomId = customRedisSessionRepository.getRoomIdBySessionId(authorization);
+
+            if (userRoomId.isEmpty()) return;
+
+            MeogajoaMessage.ChatMQRequest chatMqRequest = MeogajoaMessage.ChatMQRequest.of(message, userRoomId, nickname);
+
+            Map<String, String> messageMap = objectMapper.convertValue(chatMqRequest, new TypeReference<Map<String, String>>() {
+            });
+
+            messageMap.put("type", "BLACK_CHAT");
+
+            stringRedisTemplate.opsForStream().add(ASYNC_STREAM_KEY, messageMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void publishWhiteChat(String id, MeogajoaMessage.Request message, String authorization) {
+        try {
+            if (!MessageType.CHAT.equals(message.getType())) return;
+            String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+            String userRoomId = customRedisSessionRepository.getRoomIdBySessionId(authorization);
+
+            if (userRoomId.isEmpty()) return;
+
+            MeogajoaMessage.ChatMQRequest chatMqRequest = MeogajoaMessage.ChatMQRequest.of(message, userRoomId, nickname);
+
+            Map<String, String> messageMap = objectMapper.convertValue(chatMqRequest, new TypeReference<Map<String, String>>() {
+            });
+
+            messageMap.put("type", "WHITE_CHAT");
+
+            stringRedisTemplate.opsForStream().add(ASYNC_STREAM_KEY, messageMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void publishEliminatedChat(String id, MeogajoaMessage.Request message, String authorization) {
+        try {
+            if (!MessageType.CHAT.equals(message.getType())) return;
+            String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+            String userRoomId = customRedisSessionRepository.getRoomIdBySessionId(authorization);
+
+            if (userRoomId.isEmpty()) return;
+
+            MeogajoaMessage.ChatMQRequest chatMqRequest = MeogajoaMessage.ChatMQRequest.of(message, userRoomId, nickname);
+
+            Map<String, String> messageMap = objectMapper.convertValue(chatMqRequest, new TypeReference<Map<String, String>>() {
+            });
+
+            messageMap.put("type", "ELIMINATED_CHAT");
+
+            stringRedisTemplate.opsForStream().add(ASYNC_STREAM_KEY, messageMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
+
