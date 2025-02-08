@@ -157,7 +157,7 @@ public class RedisPubSubSubscriber {
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "BLACK");
 
-            simpMessagingTemplate.convertAndSend("/topic/game/" + chatPubSubResponse.getId() + "/chat/black", chatlog);
+            simpMessagingTemplate.convertAndSend("/topic/game/" + chatPubSubResponse.getId() + "/chat/black", chatlog, header);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -172,7 +172,7 @@ public class RedisPubSubSubscriber {
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "WHITE");
 
-            simpMessagingTemplate.convertAndSend("/topic/game/" + chatPubSubResponse.getId() + "/chat/white", chatlog);
+            simpMessagingTemplate.convertAndSend("/topic/game/" + chatPubSubResponse.getId() + "/chat/white", chatlog, header);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -187,7 +187,7 @@ public class RedisPubSubSubscriber {
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "ELIMINATED");
 
-            simpMessagingTemplate.convertAndSend("/topic/game/" + chatPubSubResponse.getId() + "/chat/eliminated", chatlog);
+            simpMessagingTemplate.convertAndSend("/topic/game/" + chatPubSubResponse.getId() + "/chat/eliminated", chatlog, header);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
