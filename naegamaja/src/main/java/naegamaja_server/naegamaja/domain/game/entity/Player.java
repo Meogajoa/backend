@@ -1,5 +1,6 @@
 package naegamaja_server.naegamaja.domain.game.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import naegamaja_server.naegamaja.domain.game.model.TeamColor;
 
@@ -14,5 +15,10 @@ public class Player {
     private String nickname;
     private TeamColor teamColor;
     private Long money;
+
+    @JsonProperty("spy")
     private Boolean isSpy;
+
+    @JsonProperty("eliminated")
+    private Boolean isEliminated;
 }

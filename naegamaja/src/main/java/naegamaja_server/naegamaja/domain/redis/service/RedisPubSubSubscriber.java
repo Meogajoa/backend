@@ -103,6 +103,15 @@ public class RedisPubSubSubscriber {
         }
     }
 
+    public void gameUserInfoPersonal(String message, String channel){
+        try{
+            Player player = objectMapper.readValue(message, Player.class);
+            simpMessagingTemplate.convertAndSend("/topic/user/" + player.getNickname() + "/gameInfo", player);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void gameDayOrNight(String message, String channel){
         try{
             MeogajoaMessage.GameDayOrNightResponse gameDayOrNightResponse = objectMapper.readValue(message, MeogajoaMessage.GameDayOrNightResponse.class);

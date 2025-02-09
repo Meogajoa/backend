@@ -94,7 +94,33 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
             processSubscription(type, id, sessionId);
         }
 
-        if(parts.length >= 6){
+        if(parts.length == 5){
+            String type = parts[2];
+            String nickname = parts[3];
+            String want = parts[4];
+
+            if(type.equals("user")){
+                if(want.equals("gameInfo")){
+                    //테스트할 때 sub 시 sessionId가 안 담겨서 잠시 쓰는 용도
+                    String tempSessionId = customRedisSessionRepository.getSessionIdByNickname(nickname);
+                    String roomId = customRedisSessionRepository.getRoomIdBySessionId(tempSessionId);
+                    if(roomId.equals("-1")){
+                        System.out.println("여기서 걸렸음 1월 27일");
+                        //throw new RestException(ErrorCode.GLOBAL_BAD_REQUEST);
+                    }
+
+                    MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
+                            .type(MessageType.GAME_MY_INFO)
+                            .gameId(roomId)
+                            .sender(nickname)
+                            .content("")
+                            .build();
+                    redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
+                }
+            }
+        }
+
+        if(parts.length == 6){
             String type = parts[2];
             String id = parts[3];
             String get4 = parts[4];
@@ -103,6 +129,17 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
             if(type.equals("room") && get4.equals("notice") && get5.equals("system")){
                 MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
                         .type(MessageType.GAME_DAY_OR_NIGHT)
+                        .gameId(id)
+                        .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
+                        .content("")
+                        .build();
+
+                redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
+            }
+
+            if(type.equals("game") && get4.equals("notice") && get5.equals("users")){
+                MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
+                        .type(MessageType.GAME_MY_INFO)
                         .gameId(id)
                         .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
                         .content("")
@@ -123,27 +160,6 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
             case "game":
                 break;
             case "user":
-//                if(!id.equals(customRedisSessionRepository.getNicknameBySessionId(sessionId))){
-//                    System.out.println("여기서 걸렸음 1월 27일");
-//                    //throw new RestException(ErrorCode.GLOBAL_BAD_REQUEST);
-//                }
-
-                //sub 시 sessionId가 안 담겨서 잠시 쓰는 용도
-                String tempSessionId = customRedisSessionRepository.getSessionIdByNickname(id);
-
-                String roomId = customRedisSessionRepository.getRoomIdBySessionId(tempSessionId);
-                if(roomId.equals("-1")){
-                    System.out.println("여기서 걸렸음 1월 27일");
-                    //throw new RestException(ErrorCode.GLOBAL_BAD_REQUEST);
-                }
-
-                MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
-                        .type(MessageType.GAME_MY_INFO)
-                        .gameId(roomId)
-                        .sender(id)
-                        .content("")
-                        .build();
-                redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
                 break;
         }
     }
