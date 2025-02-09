@@ -79,8 +79,6 @@ public class RedisStreamChatPublisher {
             messageMap.put("type", "GAME_CHAT_TO_USER");
             messageMap.put("number", number.toString());
 
-            System.out.println("진입점2");
-
             stringRedisTemplate.opsForStream().add(ASYNC_STREAM_KEY, messageMap);
         } catch (Exception e) {
             e.printStackTrace();

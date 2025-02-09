@@ -142,15 +142,15 @@ public class RedisPubSubSubscriber {
         try{
             MeogajoaMessage.ChatPubSubResponseToUser chatPubSubResponseToUser = objectMapper.readValue(message, MeogajoaMessage.ChatPubSubResponseToUser.class);
 
-            ChatLog chatLog = chatPubSubResponseToUser.getChatLog();
+            MeogajoaMessage.PersonalChatLog personalChatLog = chatPubSubResponseToUser.getPersonalChatLog();
             String receiver = chatPubSubResponseToUser.getReceiver();
             String sender = chatPubSubResponseToUser.getSender();
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "PERSONAL");
 
             System.out.println("개인채팅 보냈어");
-            simpMessagingTemplate.convertAndSend("/topic/user/" + receiver + "/gameChat", chatLog, header);
-            simpMessagingTemplate.convertAndSend("/topic/user/" + sender + "/gameChat", chatLog, header);
+            simpMessagingTemplate.convertAndSend("/topic/user/" + receiver + "/gameChat", personalChatLog, header);
+            simpMessagingTemplate.convertAndSend("/topic/user/" + sender + "/gameChat", personalChatLog, header);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -251,11 +251,11 @@ public class RedisPubSubSubscriber {
     public void personalChatList(String message, String channel){
         try{
             MeogajoaMessage.PersonalChatLogResponse personalChatLogResponse = objectMapper.readValue(message, MeogajoaMessage.PersonalChatLogResponse.class);
-            MeogajoaMessage.ChatLogResponse chatLogResponse = MeogajoaMessage.ChatLogResponse.from(personalChatLogResponse);
+
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "PERSONAL");
 
-            simpMessagingTemplate.convertAndSend("/topic/user/" + personalChatLogResponse.getReceiver() + "/gameChat", chatLogResponse, header);
+            simpMessagingTemplate.convertAndSend("/topic/user/" + personalChatLogResponse.getReceiver() + "/gameChat", personalChatLogResponse, header);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

@@ -90,13 +90,11 @@ public class GameService {
 
     public void userChat(String id, Long number, String authorization, MeogajoaMessage.Request message) {
         if(!customRedisSessionRepository.isValidSessionId(authorization)){
-            //System.out.println("진입점 -1");
             return;
         }
 
         String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
         if(!customRedisRoomRepository.isUserInRoom(nickname, id)){
-            //System.out.println("진입점 0");
             return;
         }
 
@@ -104,7 +102,6 @@ public class GameService {
             return;
         }
 
-        //System.out.println("진입점 1");
         redisStreamChatPublisher.publishGameChatToUser(id, number, message, authorization);
     }
 

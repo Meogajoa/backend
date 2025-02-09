@@ -120,14 +120,14 @@ public class MeogajoaMessage {
     @Builder
     public static class ChatPubSubResponseToUser{
         String id;
-        ChatLog chatLog;
+        PersonalChatLog personalChatLog;
         String receiver;
         String sender;
 
-        public static ChatPubSubResponseToUser of(String id, ChatLog chatLog, String receiver, String sender) {
+        public static ChatPubSubResponseToUser of(String id, PersonalChatLog personalChatLog, String receiver, String sender) {
             return ChatPubSubResponseToUser.builder()
                     .id(id)
-                    .chatLog(chatLog)
+                    .personalChatLog(personalChatLog)
                     .receiver(receiver)
                     .sender(sender)
                     .build();
@@ -188,16 +188,6 @@ public class MeogajoaMessage {
         private List<Long> eliminated;
     }
 
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    @Builder
-    public static class PersonalChatLogResponse {
-        private MessageType type;
-        private String id;
-        private String receiver;
-        private List<ChatLog> chatLogs;
-    }
 
 
     @AllArgsConstructor
@@ -209,12 +199,30 @@ public class MeogajoaMessage {
         private String id;
         private List<ChatLog> chatLogs;
 
-        public static ChatLogResponse from(PersonalChatLogResponse personalChatLogResponse) {
-            return ChatLogResponse.builder()
-                    .type(personalChatLogResponse.getType())
-                    .id(personalChatLogResponse.getId())
-                    .chatLogs(personalChatLogResponse.getChatLogs())
-                    .build();
-        }
     }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @Data
+    public static class PersonalChatLog {
+        private String id;
+        private String sender;
+        private String receiver;
+        private String content;
+        private LocalDateTime sendTime;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class PersonalChatLogResponse {
+        private MessageType type;
+        private String id;
+        private String receiver;
+        private List<PersonalChatLog> personalChatLogs;
+    }
+
+
 }
