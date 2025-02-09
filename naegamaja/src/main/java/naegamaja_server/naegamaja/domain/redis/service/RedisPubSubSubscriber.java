@@ -1,7 +1,6 @@
 package naegamaja_server.naegamaja.domain.redis.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
@@ -115,7 +114,7 @@ public class RedisPubSubSubscriber {
     public void gameDayOrNight(String message, String channel){
         try{
             MeogajoaMessage.GameDayOrNightResponse gameDayOrNightResponse = objectMapper.readValue(message, MeogajoaMessage.GameDayOrNightResponse.class);
-            simpMessagingTemplate.convertAndSend("/topic/game/" + gameDayOrNightResponse.getGameId() + "/notice/system", gameDayOrNightResponse);
+            simpMessagingTemplate.convertAndSend("/topic/game/" + gameDayOrNightResponse.getId() + "/notice/system", gameDayOrNightResponse);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
