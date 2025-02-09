@@ -202,7 +202,7 @@ public class RedisPubSubSubscriber {
         }
     }
 
-    public void gameUserList(String message, String channel){
+    public void gameUserListInfo(String message, String channel){
         try{
             MeogajoaMessage.GameUserListResponse gameUserListResponse = objectMapper.readValue(message, MeogajoaMessage.GameUserListResponse.class);
 

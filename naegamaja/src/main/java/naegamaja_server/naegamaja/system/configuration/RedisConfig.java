@@ -86,7 +86,8 @@ public class RedisConfig {
             MessageListenerAdapter BlackChatListenerAdapter,
             MessageListenerAdapter WhiteChatListenerAdapter,
             MessageListenerAdapter EliminatedChatListenerAdapter,
-            MessageListenerAdapter GameUserInfoPersonalListenerAdapter
+            MessageListenerAdapter GameUserInfoPersonalListenerAdapter,
+            MessageListenerAdapter GameUserListInfoListenerAdapter
     ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
@@ -105,6 +106,8 @@ public class RedisConfig {
         container.addMessageListener(WhiteChatListenerAdapter, new ChannelTopic("pubsub:whiteChat"));
         container.addMessageListener(EliminatedChatListenerAdapter, new ChannelTopic("pubsub:eliminatedChat"));
         container.addMessageListener(GameUserInfoPersonalListenerAdapter, new ChannelTopic("pubsub:gameUserInfoPersonal"));
+        container.addMessageListener(GameUserListInfoListenerAdapter, new ChannelTopic("pubsub:gameUserListInfo"));
+
 
         return container;
     }
@@ -177,6 +180,11 @@ public class RedisConfig {
     @Bean
     public MessageListenerAdapter GameUserInfoPersonalListenerAdapter(RedisPubSubSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "gameUserInfoPersonal");
+    }
+
+    @Bean
+    public MessageListenerAdapter GameUserListInfoListenerAdapter(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "gameUserListInfo");
     }
 
 
