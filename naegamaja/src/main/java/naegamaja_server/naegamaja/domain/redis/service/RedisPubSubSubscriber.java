@@ -202,13 +202,15 @@ public class RedisPubSubSubscriber {
         }
     }
 
-//    public void gameUserList(String message, String channel){
-//        try{
-//            NaegamajaMessage.GameUserListResponse gameUserListResponse = objectMapper.readValue(message, NaegamajaMessage.GameUserListResponse.class);
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    public void gameUserList(String message, String channel){
+        try{
+            MeogajoaMessage.GameUserListResponse gameUserListResponse = objectMapper.readValue(message, MeogajoaMessage.GameUserListResponse.class);
+
+            simpMessagingTemplate.convertAndSend("/topic/game/" + gameUserListResponse.getId() + "/notice/users", gameUserListResponse);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
 }

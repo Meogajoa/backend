@@ -138,8 +138,12 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
             }
 
             if(type.equals("game") && get4.equals("notice") && get5.equals("users")){
+                if(!customRedisRoomRepository.isUserInRoom(customRedisSessionRepository.getNicknameBySessionId(sessionId), id)){
+                    return;
+                }
+
                 MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
-                        .type(MessageType.GAME_MY_INFO)
+                        .type(MessageType.GAME_USER_LIST)
                         .gameId(id)
                         .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
                         .content("")

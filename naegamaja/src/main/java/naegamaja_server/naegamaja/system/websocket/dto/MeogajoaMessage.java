@@ -185,4 +185,16 @@ public class MeogajoaMessage {
         private List<Long> fiftyButtons;
         private List<Long> hundredButtons;
     }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class GameUserListResponse {
+        private MessageType type;
+        private String id;
+        private List<Long> blackTeam;
+        private List<Long> whiteTeam;
+        private List<Long> eliminated;
+    }
 }
