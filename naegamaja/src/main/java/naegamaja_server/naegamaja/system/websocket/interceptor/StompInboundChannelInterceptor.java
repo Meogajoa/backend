@@ -138,14 +138,14 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
             }
 
             if(type.equals("game") && get4.equals("notice") && get5.equals("users")){
-                if(!customRedisRoomRepository.isUserInRoom(customRedisSessionRepository.getNicknameBySessionId(sessionId), id)){
-                    return;
-                }
+//                if(!customRedisRoomRepository.isUserInRoom(customRedisSessionRepository.getNicknameBySessionId(sessionId), id)){
+//                    System.out.println("여기서 걸림 2/7");
+//                }
 
                 MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
                         .type(MessageType.GAME_USER_LIST)
                         .gameId(id)
-                        .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
+                        .sender("") // 차후 조정 시 제대로 된 nickname 넣어야함 .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
                         .content("")
                         .build();
 
