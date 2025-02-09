@@ -4,11 +4,16 @@ import lombok.RequiredArgsConstructor;
 import naegamaja_server.naegamaja.domain.chat.service.RedisStreamChatPublisher;
 import naegamaja_server.naegamaja.domain.game.Service.GameService;
 import naegamaja_server.naegamaja.system.websocket.dto.MeogajoaMessage;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 @Controller
 @RequiredArgsConstructor
@@ -52,6 +57,12 @@ public class GameStompController {
     @MessageMapping("/game/{id}/chat/eliminated")
     public void eliminatedChat(@DestinationVariable String id, @Header("Authorization") String authorization, @Payload MeogajoaMessage.Request message) {
         gameService.eliminatedChat(id, authorization, message);
+    }
+
+    @MessageMapping("/game/{gameId}/getChat")
+    public void getChat(@DestinationVariable String gameId, @Header("Authorization") String sessionId) {
+        System.out.println("컨트롤러 진입점");
+        gameService.requestChat(gameId, sessionId);
     }
 
 

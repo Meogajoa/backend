@@ -211,5 +211,67 @@ public class RedisPubSubSubscriber {
         }
     }
 
+    public void blackChatList(String message, String channel){
+        try{
+            MeogajoaMessage.ChatLogResponse chatLogResponse = objectMapper.readValue(message, MeogajoaMessage.ChatLogResponse.class);
+
+            Map<String, Object> header = new HashMap<>();
+            header.put("x-chat-room", "BLACK");
+
+            simpMessagingTemplate.convertAndSend("/topic/game/" + chatLogResponse.getId() + "/chat/black", chatLogResponse, header);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void whiteChatList(String message, String channel){
+        try{
+            MeogajoaMessage.ChatLogResponse chatLogResponse = objectMapper.readValue(message, MeogajoaMessage.ChatLogResponse.class);
+            Map<String, Object> header = new HashMap<>();
+            header.put("x-chat-room", "WHITE");
+
+            simpMessagingTemplate.convertAndSend("/topic/game/" + chatLogResponse.getId() + "/chat/white", chatLogResponse, header);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void gameChatList(String message, String channel){
+        try{
+            MeogajoaMessage.ChatLogResponse chatLogResponse = objectMapper.readValue(message, MeogajoaMessage.ChatLogResponse.class);
+            Map<String, Object> header = new HashMap<>();
+            header.put("x-chat-room", "PUBLIC");
+
+            simpMessagingTemplate.convertAndSend("/topic/game/" + chatLogResponse.getId() + "/chat", chatLogResponse, header);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void personalChatList(String message, String channel){
+        try{
+            MeogajoaMessage.PersonalChatLogResponse personalChatLogResponse = objectMapper.readValue(message, MeogajoaMessage.PersonalChatLogResponse.class);
+            MeogajoaMessage.ChatLogResponse chatLogResponse = MeogajoaMessage.ChatLogResponse.from(personalChatLogResponse);
+            Map<String, Object> header = new HashMap<>();
+            header.put("x-chat-room", "PERSONAL");
+
+            simpMessagingTemplate.convertAndSend("/topic/user/" + personalChatLogResponse.getReceiver() + "/gameChat", chatLogResponse, header);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void eliminatedChatList(String message, String channel){
+        try{
+            MeogajoaMessage.ChatLogResponse chatLogResponse = objectMapper.readValue(message, MeogajoaMessage.ChatLogResponse.class);
+            Map<String, Object> header = new HashMap<>();
+            header.put("x-chat-room", "ELIMINATED");
+
+            simpMessagingTemplate.convertAndSend("/topic/game/" + chatLogResponse.getId() + "/chat/eliminated", chatLogResponse, header);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }

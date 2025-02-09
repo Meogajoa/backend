@@ -23,6 +23,22 @@ public class GameService {
     private final CustomRedisRoomRepository customRedisRoomRepository;
     private final RedisStreamChatPublisher redisStreamChatPublisher;
 
+    public void requestChat(String gameId, String sessionId) {
+        String nickname = customRedisSessionRepository.getNicknameBySessionId(sessionId);
+        if(!customRedisRoomRepository.isUserInRoom(nickname, gameId) || !customRedisRoomRepository.isPlaying(gameId)){
+            return;
+        }
+
+        MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
+                .type(MessageType.GET_GAME_CHAT)
+                .sender(nickname)
+                .gameId(gameId)
+                .build();
+
+        System.out.println("서비스 진입점");
+        redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
+    }
+
     public void startGame(String gameId, String sessionId) {
         if(!roomService.getRoomOwner(gameId).equals(sessionService.getNicknameBySessionId(sessionId))) {
             throw new RestException(ErrorCode.NOT_ROOM_OWNER);

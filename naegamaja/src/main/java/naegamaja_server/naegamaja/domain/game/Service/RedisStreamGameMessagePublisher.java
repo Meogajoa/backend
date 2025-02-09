@@ -41,6 +41,8 @@ public class RedisStreamGameMessagePublisher {
             Map<String, String> messageMap = objectMapper.convertValue(gameMQRequest, new TypeReference<Map<String, String>>() {
             });
 
+            System.out.println("진입점 3");
+
             stringRedisTemplate.opsForStream().add(ASYNC_STREAM_KEY, messageMap);
         } catch (Exception e){
             e.printStackTrace();

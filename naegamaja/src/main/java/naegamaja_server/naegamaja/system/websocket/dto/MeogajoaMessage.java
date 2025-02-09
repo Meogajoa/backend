@@ -39,16 +39,6 @@ public class MeogajoaMessage {
     @NoArgsConstructor
     @Data
     @Builder
-    public static class GameEndResponse {
-        private MessageType type;
-        private String id;
-        private String sender;
-    }
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    @Builder
     public static class GameDayOrNightResponse {
         private String id;
         private String sender;
@@ -196,5 +186,35 @@ public class MeogajoaMessage {
         private List<Long> blackTeam;
         private List<Long> whiteTeam;
         private List<Long> eliminated;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class PersonalChatLogResponse {
+        private MessageType type;
+        private String id;
+        private String receiver;
+        private List<ChatLog> chatLogs;
+    }
+
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class ChatLogResponse {
+        private MessageType type;
+        private String id;
+        private List<ChatLog> chatLogs;
+
+        public static ChatLogResponse from(PersonalChatLogResponse personalChatLogResponse) {
+            return ChatLogResponse.builder()
+                    .type(personalChatLogResponse.getType())
+                    .id(personalChatLogResponse.getId())
+                    .chatLogs(personalChatLogResponse.getChatLogs())
+                    .build();
+        }
     }
 }
