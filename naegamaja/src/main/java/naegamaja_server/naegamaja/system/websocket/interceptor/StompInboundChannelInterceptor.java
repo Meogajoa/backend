@@ -126,11 +126,11 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
             String get4 = parts[4];
             String get5 = parts[5];
 
-            if(type.equals("room") && get4.equals("notice") && get5.equals("system")){
+            if(type.equals("game") && get4.equals("notice") && get5.equals("system")){
                 MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
                         .type(MessageType.GAME_DAY_OR_NIGHT)
                         .gameId(id)
-                        .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
+                        .sender("")
                         .content("")
                         .build();
 
