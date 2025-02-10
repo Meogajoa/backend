@@ -94,17 +94,28 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
             processSubscription(type, id, sessionId);
         }
 
-        if(parts.length == 5){
+        if(parts.length == 5) {
             String type = parts[2];
-            String nickname = parts[3];
+            String getTwo = parts[3];
             String want = parts[4];
 
-            if(type.equals("user")){
-                if(want.equals("gameInfo")){
+            if (type.equals("game") && want.equals("chat")) {
+                MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
+                        .type(MessageType.GET_GAME_CHAT)
+                        .gameId(getTwo)
+                        .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
+                        .content("")
+                        .build();
+
+                redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
+            }
+
+            if (type.equals("user")) {
+                if (want.equals("gameInfo")) {
                     //테스트할 때 sub 시 sessionId가 안 담겨서 잠시 쓰는 용도
-                    String tempSessionId = customRedisSessionRepository.getSessionIdByNickname(nickname);
+                    String tempSessionId = customRedisSessionRepository.getSessionIdByNickname(getTwo);
                     String roomId = customRedisSessionRepository.getRoomIdBySessionId(tempSessionId);
-                    if(roomId.equals("-1")){
+                    if (roomId.equals("-1")) {
                         System.out.println("여기서 걸렸음 1월 27일");
                         //throw new RestException(ErrorCode.GLOBAL_BAD_REQUEST);
                     }
@@ -112,9 +123,27 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
                     MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
                             .type(MessageType.GAME_MY_INFO)
                             .gameId(roomId)
-                            .sender(nickname)
+                            .sender(getTwo)
                             .content("")
                             .build();
+                    redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
+                }
+
+                if(want.equals("gameChat")){
+                    String tempSessionId = customRedisSessionRepository.getSessionIdByNickname(getTwo);
+                    String roomId = customRedisSessionRepository.getRoomIdBySessionId(tempSessionId);
+                    if (roomId.equals("-1")) {
+                        System.out.println("여기서 걸렸음 1월 27일");
+                        //throw new RestException(ErrorCode.GLOBAL_BAD_REQUEST);
+                    }
+
+                    MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
+                            .type(MessageType.GET_GAME_CHAT_PERSONAL)
+                            .gameId(roomId)
+                            .sender(getTwo)
+                            .content("")
+                            .build();
+
                     redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
                 }
             }
@@ -131,6 +160,33 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
                         .type(MessageType.GAME_DAY_OR_NIGHT)
                         .gameId(id)
                         .sender("")
+                        .content("")
+                        .build();
+
+                redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
+            }else if(type.equals("game") && get4.equals("chat") && get5.equals("black")){
+                MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
+                        .type(MessageType.GET_GAME_CHAT_BLACK)
+                        .gameId(id)
+                        .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
+                        .content("")
+                        .build();
+
+                redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
+            }else if(type.equals("game") && get4.equals("chat") && get5.equals("white")) {
+                MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
+                        .type(MessageType.GET_GAME_CHAT_WHITE)
+                        .gameId(id)
+                        .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
+                        .content("")
+                        .build();
+
+                redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
+            }else if(type.equals("game") && get4.equals("chat") && get5.equals("eliminated")) {
+                MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
+                        .type(MessageType.GET_GAME_CHAT_ELIMINATED)
+                        .gameId(id)
+                        .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
                         .content("")
                         .build();
 
