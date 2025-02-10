@@ -200,6 +200,7 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
                 redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
             }
 
+
             if(type.equals("game") && get4.equals("notice") && get5.equals("users")){
 //                if(!customRedisRoomRepository.isUserInRoom(customRedisSessionRepository.getNicknameBySessionId(sessionId), id)){
 //                    System.out.println("여기서 걸림 2/7");
