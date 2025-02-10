@@ -147,5 +147,26 @@ public class RedisStreamChatPublisher {
             e.printStackTrace();
         }
     }
+
+    public void publishRedChat(String id, MeogajoaMessage.Request message, String authorization) {
+        try {
+            if (!MessageType.CHAT.equals(message.getType())) return;
+            String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+            String userRoomId = customRedisSessionRepository.getRoomIdBySessionId(authorization);
+
+            if (userRoomId.isEmpty()) return;
+
+            MeogajoaMessage.ChatMQRequest chatMqRequest = MeogajoaMessage.ChatMQRequest.of(message, userRoomId, nickname);
+
+            Map<String, String> messageMap = objectMapper.convertValue(chatMqRequest, new TypeReference<Map<String, String>>() {
+            });
+
+            messageMap.put("type", "RED_CHAT");
+
+            stringRedisTemplate.opsForStream().add(ASYNC_STREAM_KEY, messageMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
 

@@ -182,7 +182,14 @@ public class StompInboundChannelInterceptor implements ChannelInterceptor {
                         .build();
 
                 redisStreamGameMessagePublisher.asyncPublish(gameMQRequest);
-            }else if(type.equals("game") && get4.equals("chat") && get5.equals("eliminated")) {
+            }else if(type.equals("game") && get4.equals("chat") && get5.equals("red")){
+                MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
+                        .type(MessageType.GET_GAME_CHAT_RED)
+                        .gameId(id)
+                        .sender(customRedisSessionRepository.getNicknameBySessionId(sessionId))
+                        .content("")
+                        .build();
+            } else if(type.equals("game") && get4.equals("chat") && get5.equals("eliminated")) {
                 MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
                         .type(MessageType.GET_GAME_CHAT_ELIMINATED)
                         .gameId(id)

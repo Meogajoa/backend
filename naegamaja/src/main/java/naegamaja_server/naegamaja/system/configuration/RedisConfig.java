@@ -93,7 +93,9 @@ public class RedisConfig {
             MessageListenerAdapter BlackChatListListenerAdapter,
             MessageListenerAdapter WhiteChatListListenerAdapter,
             MessageListenerAdapter EliminatedChatListListenerAdapter,
-            MessageListenerAdapter PersonalChatListListenerAdapter
+            MessageListenerAdapter PersonalChatListListenerAdapter,
+            MessageListenerAdapter RedChatListenerAdapter,
+            MessageListenerAdapter RedChatListListenerAdapter
     ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
@@ -118,6 +120,8 @@ public class RedisConfig {
         container.addMessageListener(WhiteChatListListenerAdapter, new ChannelTopic("pubsub:whiteChatList"));
         container.addMessageListener(EliminatedChatListListenerAdapter, new ChannelTopic("pubsub:eliminatedChatList"));
         container.addMessageListener(PersonalChatListListenerAdapter, new ChannelTopic("pubsub:personalChatList"));
+        container.addMessageListener(RedChatListenerAdapter, new ChannelTopic("pubsub:redChat"));
+        container.addMessageListener(RedChatListListenerAdapter, new ChannelTopic("pubsub:redChatList"));
 
 
         return container;
@@ -214,6 +218,19 @@ public class RedisConfig {
     }
 
     @Bean
+    public MessageListenerAdapter RedChatListenerAdapter(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "redChat");
+    }
+
+    @Bean
+    public MessageListenerAdapter RedChatListListenerAdapter(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "redChatList");
+    }
+
+
+
+
+    @Bean
     public MessageListenerAdapter EliminatedChatListListenerAdapter(RedisPubSubSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "eliminatedChatList");
     }
@@ -222,6 +239,8 @@ public class RedisConfig {
     public MessageListenerAdapter PersonalChatListListenerAdapter(RedisPubSubSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "personalChatList");
     }
+
+
 
 
 

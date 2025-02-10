@@ -155,4 +155,21 @@ public class GameService {
 
         redisStreamChatPublisher.publishEliminatedChat(id, message, authorization);
     }
+
+    public void redChat(String id, String authorization, MeogajoaMessage.Request message) {
+        if(!customRedisSessionRepository.isValidSessionId(authorization)){
+            return;
+        }
+
+        String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+        if(!customRedisRoomRepository.isUserInRoom(nickname, id)){
+            return;
+        }
+
+        if(!customRedisRoomRepository.isPlaying(id)){
+            return;
+        }
+
+        redisStreamChatPublisher.publishRedChat(id, message, authorization);
+    }
 }

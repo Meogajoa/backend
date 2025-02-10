@@ -54,6 +54,11 @@ public class GameStompController {
         gameService.whiteChat(id, authorization, message);
     }
 
+    @MessageMapping("/game/{id}/chat/red")
+    public void redChat(@DestinationVariable String id, @Header("Authorization") String authorization, @Payload MeogajoaMessage.Request message) {
+        gameService.redChat(id, authorization, message);
+    }
+
     @MessageMapping("/game/{id}/chat/eliminated")
     public void eliminatedChat(@DestinationVariable String id, @Header("Authorization") String authorization, @Payload MeogajoaMessage.Request message) {
         gameService.eliminatedChat(id, authorization, message);

@@ -156,7 +156,7 @@ public class RoomService {
                         .owner(userNickname)
                         .name(request.getName())
                         .password(request.getPassword())
-                        .maxUser(8)
+                        .maxUser(9)
                         .currentUser(1)
                         .isPlaying(false)
                         .isLocked(request.getPassword() != null && !request.getPassword().isEmpty())

@@ -273,5 +273,32 @@ public class RedisPubSubSubscriber {
         }
     }
 
+    public void redChat(String message, String channel){
+        try{
+            MeogajoaMessage.ChatPubSubResponse chatPubSubResponse = objectMapper.readValue(message, MeogajoaMessage.ChatPubSubResponse.class);
+
+            ChatLog chatlog = chatPubSubResponse.getChatLog();
+
+            Map<String, Object> header = new HashMap<>();
+            header.put("x-chat-room", "RED");
+
+            simpMessagingTemplate.convertAndSend("/topic/game/" + chatPubSubResponse.getId() + "/chat/red", chatlog, header);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void redChatList(String message, String channel){
+        try{
+            MeogajoaMessage.ChatLogResponse chatLogResponse = objectMapper.readValue(message, MeogajoaMessage.ChatLogResponse.class);
+            Map<String, Object> header = new HashMap<>();
+            header.put("x-chat-room", "RED");
+
+            simpMessagingTemplate.convertAndSend("/topic/game/" + chatLogResponse.getId() + "/chat/red", chatLogResponse, header);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }
