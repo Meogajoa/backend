@@ -259,7 +259,7 @@ public class RedisPubSubSubscriber {
         try{
             MeogajoaMessage.ChatLogResponse chatLogResponse = objectMapper.readValue(message, MeogajoaMessage.ChatLogResponse.class);
             Map<String, Object> header = new HashMap<>();
-            header.put("x-chat-room", "PUBLIC");
+            header.put("x-chat-room", "GENERAL");
             header.put("x-log-type", "HISTORY");
 
             simpMessagingTemplate.convertAndSend("/topic/game/" + chatLogResponse.getId() + "/chat", chatLogResponse, header);
