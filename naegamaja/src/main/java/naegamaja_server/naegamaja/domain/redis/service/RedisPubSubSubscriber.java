@@ -142,6 +142,15 @@ public class RedisPubSubSubscriber {
         }
     }
 
+    public void voteGameStatus(String message, String channel){
+        try{
+            MeogajoaMessage.VoteGameStatusResponse voteGameStatusResponse = objectMapper.readValue(message, MeogajoaMessage.VoteGameStatusResponse.class);
+            simpMessagingTemplate.convertAndSend("/topic/game/" + voteGameStatusResponse.getId() + "/notice/system", voteGameStatusResponse);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void gameChatToUser(String message, String channel){
         try{
             MeogajoaMessage.ChatPubSubResponseToUser chatPubSubResponseToUser = objectMapper.readValue(message, MeogajoaMessage.ChatPubSubResponseToUser.class);

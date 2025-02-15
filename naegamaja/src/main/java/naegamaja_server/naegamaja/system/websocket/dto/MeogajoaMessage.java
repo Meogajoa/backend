@@ -8,6 +8,7 @@ import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MeogajoaMessage {
@@ -174,6 +175,17 @@ public class MeogajoaMessage {
         private List<Long> twentyButtons;
         private List<Long> fiftyButtons;
         private List<Long> hundredButtons;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class VoteGameStatusResponse {
+        private MessageType type;
+        private String id;
+        private String sender;
+        private Map<String, Long> result;
     }
 
     @AllArgsConstructor
