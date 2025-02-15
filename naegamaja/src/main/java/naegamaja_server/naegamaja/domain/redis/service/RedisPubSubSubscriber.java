@@ -35,7 +35,7 @@ public class RedisPubSubSubscriber {
             header.put("x-chat-room", "LOBBY");
             header.put("x-log-type", "SINGLE");
 
-            simpMessagingTemplate.convertAndSend("/topic/room/" + chatPubSubResponse.getId() + "/chat", chatlog);
+            simpMessagingTemplate.convertAndSend("/topic/room/" + chatPubSubResponse.getId() + "/chat", chatlog, header);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
