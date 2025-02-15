@@ -39,6 +39,11 @@ public class GameStompController {
         gameService.buttonClick(gameId, authorization, message);
     }
 
+    @MessageMapping("/game/{gameId}/vote")
+    public void vote(@DestinationVariable String gameId, @Header("Authorization") String authorization, @Payload MeogajoaMessage.Request message) {
+        gameService.vote(gameId, authorization, message);
+    }
+
     @MessageMapping("/game/{id}/user/{number}/chat")
     public void userChat(@DestinationVariable String id, @DestinationVariable Long number, @Header("Authorization") String authorization, @Payload MeogajoaMessage.Request message) {
         gameService.userChat(id, number, authorization, message);
