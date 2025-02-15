@@ -31,6 +31,9 @@ public class RedisPubSubSubscriber {
             ChatLog chatlog = chatPubSubResponse.getChatLog();
 
             System.out.println("/topic/room/" + chatPubSubResponse.getId() + "로 보냈어");
+            Map<String, Object> header = new HashMap<>();
+            header.put("x-chat-room", "LOBBY");
+            header.put("x-log-type", "SINGLE");
 
             simpMessagingTemplate.convertAndSend("/topic/room/" + chatPubSubResponse.getId() + "/chat", chatlog);
         } catch (JsonProcessingException e) {
@@ -46,7 +49,8 @@ public class RedisPubSubSubscriber {
 
             System.out.println("/topic/game/" + chatPubSubResponse.getId() + "로 보냈어");
             Map<String, Object> header = new HashMap<>();
-            header.put("x-chat-room", "PUBLIC");
+            header.put("x-chat-room", "GENERAL");
+            header.put("x-log-type", "SINGLE");
             simpMessagingTemplate.convertAndSend("/topic/game/" + chatPubSubResponse.getId() + "/chat", chatlog, header);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -147,6 +151,7 @@ public class RedisPubSubSubscriber {
             String sender = chatPubSubResponseToUser.getSender();
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "PERSONAL");
+            header.put("x-log-type", "PERSONAL_SINGLE");
 
             System.out.println("개인채팅 보냈어");
             simpMessagingTemplate.convertAndSend("/topic/user/" + receiver + "/gameChat", personalChatLog, header);
@@ -164,6 +169,7 @@ public class RedisPubSubSubscriber {
 
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "BLACK");
+            header.put("x-log-type", "SINGLE");
 
             simpMessagingTemplate.convertAndSend("/topic/game/" + chatPubSubResponse.getId() + "/chat/black", chatlog, header);
         } catch (JsonProcessingException e) {
@@ -179,6 +185,7 @@ public class RedisPubSubSubscriber {
 
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "WHITE");
+            header.put("x-log-type", "SINGLE");
 
             simpMessagingTemplate.convertAndSend("/topic/game/" + chatPubSubResponse.getId() + "/chat/white", chatlog, header);
         } catch (JsonProcessingException e) {
@@ -194,6 +201,7 @@ public class RedisPubSubSubscriber {
 
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "ELIMINATED");
+            header.put("x-log-type", "SINGLE");
 
             simpMessagingTemplate.convertAndSend("/topic/game/" + chatPubSubResponse.getId() + "/chat/eliminated", chatlog, header);
         } catch (JsonProcessingException e) {
@@ -217,6 +225,7 @@ public class RedisPubSubSubscriber {
 
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "BLACK");
+            header.put("x-log-type", "HISTORY");
 
             simpMessagingTemplate.convertAndSend("/topic/game/" + chatLogResponse.getId() + "/chat/black", chatLogResponse, header);
         } catch (JsonProcessingException e) {
@@ -229,6 +238,7 @@ public class RedisPubSubSubscriber {
             MeogajoaMessage.ChatLogResponse chatLogResponse = objectMapper.readValue(message, MeogajoaMessage.ChatLogResponse.class);
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "WHITE");
+            header.put("x-log-type", "HISTORY");
 
             simpMessagingTemplate.convertAndSend("/topic/game/" + chatLogResponse.getId() + "/chat/white", chatLogResponse, header);
         } catch (JsonProcessingException e) {
@@ -241,6 +251,7 @@ public class RedisPubSubSubscriber {
             MeogajoaMessage.ChatLogResponse chatLogResponse = objectMapper.readValue(message, MeogajoaMessage.ChatLogResponse.class);
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "PUBLIC");
+            header.put("x-log-type", "HISTORY");
 
             simpMessagingTemplate.convertAndSend("/topic/game/" + chatLogResponse.getId() + "/chat", chatLogResponse, header);
         } catch (JsonProcessingException e) {
@@ -254,6 +265,7 @@ public class RedisPubSubSubscriber {
 
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "PERSONAL");
+            header.put("x-log-type", "PERSONAL_HISTORY");
 
             simpMessagingTemplate.convertAndSend("/topic/user/" + personalChatLogResponse.getReceiver() + "/gameChat", personalChatLogResponse, header);
         } catch (JsonProcessingException e) {
@@ -266,6 +278,7 @@ public class RedisPubSubSubscriber {
             MeogajoaMessage.ChatLogResponse chatLogResponse = objectMapper.readValue(message, MeogajoaMessage.ChatLogResponse.class);
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "ELIMINATED");
+            header.put("x-log-type", "HISTORY");
 
             simpMessagingTemplate.convertAndSend("/topic/game/" + chatLogResponse.getId() + "/chat/eliminated", chatLogResponse, header);
         } catch (JsonProcessingException e) {
@@ -281,6 +294,7 @@ public class RedisPubSubSubscriber {
 
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "RED");
+            header.put("x-log-type", "SINGLE");
 
             simpMessagingTemplate.convertAndSend("/topic/game/" + chatPubSubResponse.getId() + "/chat/red", chatlog, header);
         } catch (JsonProcessingException e) {
@@ -293,6 +307,7 @@ public class RedisPubSubSubscriber {
             MeogajoaMessage.ChatLogResponse chatLogResponse = objectMapper.readValue(message, MeogajoaMessage.ChatLogResponse.class);
             Map<String, Object> header = new HashMap<>();
             header.put("x-chat-room", "RED");
+            header.put("x-log-type", "HISTORY");
 
             simpMessagingTemplate.convertAndSend("/topic/game/" + chatLogResponse.getId() + "/chat/red", chatLogResponse, header);
         } catch (JsonProcessingException e) {
