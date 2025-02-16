@@ -96,7 +96,9 @@ public class RedisConfig {
             MessageListenerAdapter PersonalChatListListenerAdapter,
             MessageListenerAdapter RedChatListenerAdapter,
             MessageListenerAdapter RedChatListListenerAdapter,
-            MessageListenerAdapter VoteGameStatusListenerAdapter
+            MessageListenerAdapter VoteGameStatusListenerAdapter,
+            MessageListenerAdapter VoteResultListenerAdapter,
+            MessageListenerAdapter eliminatedUserListenerAdapter
     ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
@@ -124,6 +126,8 @@ public class RedisConfig {
         container.addMessageListener(RedChatListenerAdapter, new ChannelTopic("pubsub:redChat"));
         container.addMessageListener(RedChatListListenerAdapter, new ChannelTopic("pubsub:redChatList"));
         container.addMessageListener(VoteGameStatusListenerAdapter, new ChannelTopic("pubsub:voteGameStatus"));
+        container.addMessageListener(VoteResultListenerAdapter, new ChannelTopic("pubsub:voteResult"));
+        container.addMessageListener(eliminatedUserListenerAdapter, new ChannelTopic("pubsub:eliminatedUser"));
 
 
         return container;
@@ -245,6 +249,16 @@ public class RedisConfig {
     @Bean
     public MessageListenerAdapter VoteGameStatusListenerAdapter(RedisPubSubSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "voteGameStatus");
+    }
+
+    @Bean
+    public MessageListenerAdapter VoteResultListenerAdapter(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "voteResult");
+    }
+
+    @Bean
+    public MessageListenerAdapter eliminatedUserListenerAdapter(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "eliminatedUser");
     }
 
 

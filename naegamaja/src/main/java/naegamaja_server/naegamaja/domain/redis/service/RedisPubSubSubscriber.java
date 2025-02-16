@@ -330,5 +330,23 @@ public class RedisPubSubSubscriber {
         }
     }
 
+    public void voteResult(String message, String channel){
+        try{
+            MeogajoaMessage.VoteResultResponse voteResultResponse = objectMapper.readValue(message, MeogajoaMessage.VoteResultResponse.class);
+            simpMessagingTemplate.convertAndSend("/topic/game/" + voteResultResponse.getId() + "/notice/system", voteResultResponse);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void eliminatedUser(String message, String channel){
+        try{
+            MeogajoaMessage.EliminatedUserResponse eliminatedUserResponse = objectMapper.readValue(message, MeogajoaMessage.EliminatedUserResponse.class);
+            simpMessagingTemplate.convertAndSend("/topic/user/" + eliminatedUserResponse.getNickname() + "/gameInfo", eliminatedUserResponse);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }

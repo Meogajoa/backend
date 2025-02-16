@@ -250,4 +250,29 @@ public class MeogajoaMessage {
         private Player player;
         private LocalDateTime sendTime;
     }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class VoteResultResponse {
+        private MessageType type;
+        private String id;
+        private String sender;
+        private List<Long> eliminatedId;
+        private Long surviveCount;
+        private LocalDateTime sendTime;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class EliminatedUserResponse {
+        private MessageType type;
+        private String id;
+        private String sender;
+        private String nickname;
+        private LocalDateTime sendTime;
+    }
 }
