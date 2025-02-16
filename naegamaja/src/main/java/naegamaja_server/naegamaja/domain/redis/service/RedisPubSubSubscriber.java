@@ -115,7 +115,14 @@ public class RedisPubSubSubscriber {
     public void gameUserInfoPersonal(String message, String channel){
         try{
             Player player = objectMapper.readValue(message, Player.class);
-            simpMessagingTemplate.convertAndSend("/topic/user/" + player.getNickname() + "/gameInfo", player);
+            MeogajoaMessage.PlayerInfoResponse playerInfoResponse = MeogajoaMessage.PlayerInfoResponse.builder()
+                    .type(MessageType.GAME_USER_INFO)
+                    .id(UUID.randomUUID().toString())
+                    .sendTime(LocalDateTime.now())
+                    .sender("SYSTEM")
+                    .player(player)
+                    .build();
+            simpMessagingTemplate.convertAndSend("/topic/user/" + player.getNickname() + "/gameInfo", playerInfoResponse);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
