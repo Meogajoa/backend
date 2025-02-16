@@ -8,12 +8,15 @@ import naegamaja_server.naegamaja.domain.game.entity.Player;
 import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
 import naegamaja_server.naegamaja.domain.session.repository.CustomRedisSessionRepository;
 import naegamaja_server.naegamaja.system.websocket.dto.MeogajoaMessage;
+import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -61,12 +64,8 @@ public class RedisPubSubSubscriber {
         try{
             RoomUserInfo roomUserInfo = objectMapper.readValue(message, RoomUserInfo.class);
 
-            Thread.sleep(500);
-
             simpMessagingTemplate.convertAndSend("/topic/room/" + roomUserInfo.getRoomId() + "/notice/users", roomUserInfo.getUsers());
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -96,7 +95,14 @@ public class RedisPubSubSubscriber {
             List<Player> playerList = objectMapper.readValue(message, objectMapper.getTypeFactory().constructCollectionType(List.class, Player.class));
 
             for(Player player : playerList){
-                simpMessagingTemplate.convertAndSend("/topic/user/" + player.getNickname() + "/gameInfo", player);
+                MeogajoaMessage.PlayerInfoResponse playerInfoResponse = MeogajoaMessage.PlayerInfoResponse.builder()
+                        .type(MessageType.GAME_USER_INFO)
+                        .id(UUID.randomUUID().toString())
+                        .sendTime(LocalDateTime.now())
+                        .sender("SYSTEM")
+                        .player(player)
+                        .build();
+                simpMessagingTemplate.convertAndSend("/topic/user/" + player.getNickname() + "/gameInfo", playerInfoResponse);
             }
 
             System.out.println("유저 개인 정보 출력");

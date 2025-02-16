@@ -3,6 +3,7 @@ package naegamaja_server.naegamaja.system.websocket.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import naegamaja_server.naegamaja.domain.chat.entity.ChatLog;
+import naegamaja_server.naegamaja.domain.game.entity.Player;
 import naegamaja_server.naegamaja.domain.room.dto.RoomUserInfo;
 import naegamaja_server.naegamaja.system.websocket.model.MessageType;
 
@@ -238,4 +239,15 @@ public class MeogajoaMessage {
     }
 
 
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class PlayerInfoResponse {
+        private MessageType type;
+        private String id;
+        private String sender;
+        private Player player;
+        private LocalDateTime sendTime;
+    }
 }
