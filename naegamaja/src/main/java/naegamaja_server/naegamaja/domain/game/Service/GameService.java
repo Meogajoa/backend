@@ -188,4 +188,20 @@ public class GameService {
 
         redisStreamGameMessagePublisher.syncPublish(gameMQRequest);
     }
+
+    public void cancelVote(String gameId, String authorization, MeogajoaMessage.Request message) {
+        String nickname = customRedisSessionRepository.getNicknameBySessionId(authorization);
+        if(!customRedisRoomRepository.isUserInRoom(nickname, gameId)){
+            return;
+        }
+
+        MeogajoaMessage.GameMQRequest gameMQRequest = MeogajoaMessage.GameMQRequest.builder()
+                .type(MessageType.CANCEL_VOTE)
+                .sender(nickname)
+                .gameId(gameId)
+                .content(message.getContent())
+                .build();
+
+        redisStreamGameMessagePublisher.syncPublish(gameMQRequest);
+    }
 }

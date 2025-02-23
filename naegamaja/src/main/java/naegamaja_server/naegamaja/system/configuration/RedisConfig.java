@@ -99,7 +99,8 @@ public class RedisConfig {
             MessageListenerAdapter VoteGameStatusListenerAdapter,
             MessageListenerAdapter VoteResultListenerAdapter,
             MessageListenerAdapter eliminatedUserListenerAdapter,
-            MessageListenerAdapter reVoteNoticeListenerAdapter
+            MessageListenerAdapter reVoteNoticeListenerAdapter,
+            MessageListenerAdapter availableVoteCountListenerAdapter
     ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
@@ -130,6 +131,7 @@ public class RedisConfig {
         container.addMessageListener(VoteResultListenerAdapter, new ChannelTopic("pubsub:voteResult"));
         container.addMessageListener(eliminatedUserListenerAdapter, new ChannelTopic("pubsub:eliminatedUser"));
         container.addMessageListener(reVoteNoticeListenerAdapter, new ChannelTopic("pubsub:reVoteNotice"));
+        container.addMessageListener(availableVoteCountListenerAdapter, new ChannelTopic("pubsub:availableVoteCount"));
 
 
         return container;
@@ -268,7 +270,10 @@ public class RedisConfig {
         return new MessageListenerAdapter(subscriber, "reVoteNotice");
     }
 
-
+    @Bean
+    public MessageListenerAdapter availableVoteCountListenerAdapter(RedisPubSubSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "availableVoteCount");
+    }
 
 
 

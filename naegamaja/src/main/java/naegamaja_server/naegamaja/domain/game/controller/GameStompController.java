@@ -44,6 +44,11 @@ public class GameStompController {
         gameService.vote(gameId, authorization, message);
     }
 
+    @MessageMapping("/game/{gameId}/cancelVote")
+    public void cancelVote(@DestinationVariable String gameId, @Header("Authorization") String authorization, @Payload MeogajoaMessage.Request message) {
+        gameService.cancelVote(gameId, authorization, message);
+    }
+
     @MessageMapping("/game/{id}/user/{number}/chat")
     public void userChat(@DestinationVariable String id, @DestinationVariable Long number, @Header("Authorization") String authorization, @Payload MeogajoaMessage.Request message) {
         gameService.userChat(id, number, authorization, message);

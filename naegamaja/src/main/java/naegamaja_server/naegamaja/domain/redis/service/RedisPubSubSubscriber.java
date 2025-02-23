@@ -364,5 +364,14 @@ public class RedisPubSubSubscriber {
         }
     }
 
+    public void availableVoteCount(String message, String channel){
+        try{
+            MeogajoaMessage.AvailableVoteCountResponse availableVoteCountResponse = objectMapper.readValue(message, MeogajoaMessage.AvailableVoteCountResponse.class);
+            simpMessagingTemplate.convertAndSend("/topic/user/" + availableVoteCountResponse.getUserNickname() + "/gameInfo", availableVoteCountResponse);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }
