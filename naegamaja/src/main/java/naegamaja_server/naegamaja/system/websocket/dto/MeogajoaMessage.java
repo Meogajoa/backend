@@ -45,6 +45,7 @@ public class MeogajoaMessage {
         private String id;
         private String sender;
         private MessageType type;
+        private String gameId;
         private int day;
         private String dayOrNight;
         private LocalDateTime sendTime;

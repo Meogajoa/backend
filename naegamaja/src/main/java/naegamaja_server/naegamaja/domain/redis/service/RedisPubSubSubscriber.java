@@ -131,7 +131,7 @@ public class RedisPubSubSubscriber {
     public void gameDayOrNight(String message, String channel){
         try{
             MeogajoaMessage.GameDayOrNightResponse gameDayOrNightResponse = objectMapper.readValue(message, MeogajoaMessage.GameDayOrNightResponse.class);
-            simpMessagingTemplate.convertAndSend("/topic/game/" + gameDayOrNightResponse.getId() + "/notice/system", gameDayOrNightResponse);
+            simpMessagingTemplate.convertAndSend("/topic/game/" + gameDayOrNightResponse.getGameId() + "/notice/system", gameDayOrNightResponse);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
